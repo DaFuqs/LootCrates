@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "lootcrates",
+  "version": "${version}",
+  "name": "Lootcrates",
+  "description": "",
+  "authors": [
+    "DaFuqs"
+  ],
+  "contact": {
+    "website": "github.com/DaFuqs",
+    "repo": "github.com/DaFuqs/LootCrates"
+  },
+  "license": "MIT",
+  "icon": "assets/lootcrates/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "de.dafuqs.lootcrates.LootCratesClient"
+    ],
+    "main": [
+      "de.dafuqs.lootcrates.LootCrates"
+    ]
+  },
+  "mixins": [
+    "lootcrates.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.0",
+    "fabric": "*",
+    "minecraft": "1.16.4"
+  }
+}
