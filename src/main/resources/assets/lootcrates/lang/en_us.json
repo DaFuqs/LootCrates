@@ -1,0 +1,19 @@
+{
+  "item.lootcrates.common_crate_key": "Common Crate Key",
+  "item.lootcrates.uncommon_crate_key": "Uncommon Crate Key",
+  "item.lootcrates.rare_crate_key": "Rare Crate Key",
+  "item.lootcrates.epic_crate_key": "Epic Crate Key",
+
+  "block.lootcrates.common_loot_crate": "Common Loot Crate",
+  "block.lootcrates.uncommon_loot_crate": "Uncommon Loot Crate",
+  "block.lootcrates.rare_loot_crate": "Rare Loot Crate",
+  "block.lootcrates.epic_loot_crate": "Epic Loot Crate",
+
+  "block.lootcrates.common_shulker_loot_crate": "Common Shulker Loot Crate",
+  "block.lootcrates.uncommon_shulker_loot_crate": "Uncommon Shulker Loot Crate",
+  "block.lootcrates.rare_shulker_loot_crate": "Rare Shulker Loot Crate",
+  "block.lootcrates.epic_shulker_loot_crate": "Epic Shulker Loot Crate",
+
+  "container.lootcrates.loot_crate": "Loot Crate",
+  "container.lootcrates.shulker_crate": "Shulker Loot Crate"
+}

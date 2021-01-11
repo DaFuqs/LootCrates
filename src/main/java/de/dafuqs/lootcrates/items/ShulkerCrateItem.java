@@ -1,7 +1,9 @@
-package de.dafuqs.lootcrates.items.keys;
+package de.dafuqs.lootcrates.items;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -15,10 +17,10 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ShulkerCrateItem extends Item {
+public class ShulkerCrateItem extends BlockItem {
 
-    public ShulkerCrateItem(Settings settings) {
-        super(settings);
+    public ShulkerCrateItem(Block block, Settings settings) {
+        super(block, settings);
     }
 
     @Override

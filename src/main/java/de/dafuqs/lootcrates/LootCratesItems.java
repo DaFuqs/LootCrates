@@ -1,4 +1,4 @@
-package de.dafuqs.lootcrates.items;
+package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.LootCrates;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -23,7 +23,7 @@ public class LootCratesItems {
         Registry.register(Registry.ITEM, new Identifier(LootCrates.MOD_ID, string), item);
     }
 
-    public static void initialize() {
+    public static void register() {
         register("common_crate_key", COMMON_CRATE_KEY);
         register("uncommon_crate_key", UNCOMMON_CRATE_KEY);
         register("rare_crate_key", RARE_CRATE_KEY);

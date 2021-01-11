@@ -1,4 +1,4 @@
-package de.dafuqs.lootcrates.items.keys;
+package de.dafuqs.lootcrates.items;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
@@ -17,9 +17,9 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ShulkerCrateItem extends BlockItem {
+public class LootCrateItem extends BlockItem {
 
-    public ShulkerCrateItem(Block block, Settings settings) {
+    public LootCrateItem(Block block, Settings settings) {
         super(block, settings);
     }
 
@@ -37,7 +37,7 @@ public class ShulkerCrateItem extends BlockItem {
             String lootTableText = compoundTag.getString("LootTable");
             tooltip.add(new LiteralText("Locked: " + lootTableText));
         } else {
-            tooltip.add(new LiteralText("Unlocked"));
+            tooltip.add(new LiteralText("No loot table set"));
         }
     }
 
