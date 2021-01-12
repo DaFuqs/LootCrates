@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "lootcrates",
   "version": "${version}",
-  "name": "Lootcrates",
+  "name": "LootCrates",
   "description": "",
   "authors": [
     "DaFuqs"
