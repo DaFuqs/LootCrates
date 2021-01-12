@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.LootCrates;
+import de.dafuqs.lootcrates.items.LootKeyItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
@@ -14,10 +15,10 @@ public class LootCratesItems {
             .maxCount(16);
 
     // an instance of our new item
-    public static final Item COMMON_CRATE_KEY = new Item(crateKeyItemSettings.rarity(Rarity.COMMON));
-    public static final Item UNCOMMON_CRATE_KEY = new Item(crateKeyItemSettings.rarity(Rarity.UNCOMMON));
-    public static final Item RARE_CRATE_KEY = new Item(crateKeyItemSettings.rarity(Rarity.RARE));
-    public static final Item EPIC_CRATE_KEY = new Item(crateKeyItemSettings.rarity(Rarity.EPIC));
+    public static final Item COMMON_CRATE_KEY = new LootKeyItem(crateKeyItemSettings.rarity(Rarity.COMMON));
+    public static final Item UNCOMMON_CRATE_KEY = new LootKeyItem(crateKeyItemSettings.rarity(Rarity.UNCOMMON));
+    public static final Item RARE_CRATE_KEY = new LootKeyItem(crateKeyItemSettings.rarity(Rarity.RARE));
+    public static final Item EPIC_CRATE_KEY = new LootKeyItem(crateKeyItemSettings.rarity(Rarity.EPIC));
 
     private static void register(String string, Item item) {
         Registry.register(Registry.ITEM, new Identifier(LootCrates.MOD_ID, string), item);
