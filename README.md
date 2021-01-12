@@ -1,6 +1,6 @@
-## LootCrates
+# LootCrates
 
-# About
+## About
 
 LootCrates is mod for Minecraft for the fabric mod loader that adds additional chests and shulker boxes with a twist.
 The container blocks do not generate naturally in the world.
@@ -8,19 +8,13 @@ Instead they are ment to be used by server administrators or modpack makers to d
 
 The loot crates are highly customizable on how they function.
 
-# Example Usages
+## Example Usages
 
 - loot crates that can be looted once per player in structures as a reward for exploration
 - Use locked crates as a form of progression, handing out the keys as rewards for quests or advancements
 - Use shulker crates in mob drops for that "loot chest" feel
 - To build upon that: Use locked shulker crates instead, to encourage trading scatter the required keys around the landscape for players to find.
 - Scatter keys around the landscape and place loot crates at the servers central square. To get players to run into each other for socializaton or PvP, fighting each other for their keys
-
-
-## Screenshots
-
-![All the Loot Boxes](./images/readme_screenshot_loot_boxes.png)
-![All the Shulker Loot Boxes](./images/readme_screenshot_shulker_loot_boxes.png)
 
 ## Rarities
 Loot Boxes, Loot Shulker Chests and Keys come in all the vanilla rarities, each with their own unique look:
@@ -29,9 +23,15 @@ Loot Boxes, Loot Shulker Chests and Keys come in all the vanilla rarities, each 
 - Rare
 - Epic
 
+# The blocks
+
+## Screenshots
+
+![All the Loot Boxes](./images/readme_screenshot_loot_boxes.png)
+![All the Shulker Loot Boxes](./images/readme_screenshot_shulker_loot_boxes.png)
+
 ## Loot Crates
 Loot crates cannot be broken or moved. Instead, they generate loot over time!
-
 
 ## Shulker Crates
 Shulker Crates, like their loot crate counterparts, can generate loot.
@@ -43,7 +43,9 @@ Crates may be locked, requiring a key with matching rarity to unlock.
 Other than that the keys themselves are rather unspectacular.
 
 
-## Overview over the crates NBT data
+# Overview over the available NBT data
+
+The data is identical between loot and shulker crates.
 
 NBT                       | NBT Type   | Effect
 ------------------------- | ---------- | ------
