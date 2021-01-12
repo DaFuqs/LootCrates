@@ -1,5 +1,6 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
+import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -40,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
-public class ShulkerLootCrateBlock extends BlockWithEntity {
+public class ShulkerLootCrateBlock extends LootCrateBlock {
 
     public static final DirectionProperty FACING;
     public static final Identifier CONTENTS;
@@ -57,6 +58,10 @@ public class ShulkerLootCrateBlock extends BlockWithEntity {
 
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
+    }
+
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return this.getDefaultState().with(FACING, ctx.getSide());
     }
 
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
@@ -89,100 +94,8 @@ public class ShulkerLootCrateBlock extends BlockWithEntity {
         }
     }
 
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getSide());
-    }
-
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
-    }
-
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof ShulkerLootCrateBlockEntity) {
-            ShulkerLootCrateBlockEntity shulkerBoxBlockEntity = (ShulkerLootCrateBlockEntity)blockEntity;
-            if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
-                ItemStack itemStack = new ItemStack(this);
-                CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
-                if (!compoundTag.isEmpty()) {
-                    itemStack.putSubTag("BlockEntityTag", compoundTag);
-                }
-
-                if (shulkerBoxBlockEntity.hasCustomName()) {
-                    itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
-                }
-
-                ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, itemStack);
-                itemEntity.setToDefaultPickupDelay();
-                world.spawnEntity(itemEntity);
-            } else {
-                shulkerBoxBlockEntity.checkLootInteraction(player);
-            }
-        }
-
-        super.onBreak(world, pos, state, player);
-    }
-
-    public List<ItemStack> getDroppedStacks(BlockState state, net.minecraft.loot.context.LootContext.Builder builder) {
-        BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
-        if (blockEntity instanceof ShulkerLootCrateBlockEntity) {
-            ShulkerLootCrateBlockEntity shulkerBoxBlockEntity = (ShulkerLootCrateBlockEntity)blockEntity;
-            builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
-                for(int i = 0; i < shulkerBoxBlockEntity.size(); ++i) {
-                    consumer.accept(shulkerBoxBlockEntity.getStack(i));
-                }
-
-            });
-        }
-
-        return super.getDroppedStacks(state, builder);
-    }
-
-    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        if (itemStack.hasCustomName()) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof ShulkerLootCrateBlockEntity) {
-                ((ShulkerLootCrateBlockEntity)blockEntity).setCustomName(itemStack.getName());
-            }
-        }
-
-    }
-
-    @Environment(EnvType.CLIENT)
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        super.appendTooltip(stack, world, tooltip, options);
-        CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
-        if (compoundTag != null) {
-            if (compoundTag.contains("LootTable", 8)) {
-                tooltip.add(new LiteralText("???????"));
-            }
-
-            if (compoundTag.contains("Items", 9)) {
-                DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
-                Inventories.fromTag(compoundTag, defaultedList);
-                int i = 0;
-                int j = 0;
-                Iterator var9 = defaultedList.iterator();
-
-                while(var9.hasNext()) {
-                    ItemStack itemStack = (ItemStack)var9.next();
-                    if (!itemStack.isEmpty()) {
-                        ++j;
-                        if (i <= 4) {
-                            ++i;
-                            MutableText mutableText = itemStack.getName().shallowCopy();
-                            mutableText.append(" x").append(String.valueOf(itemStack.getCount()));
-                            tooltip.add(mutableText);
-                        }
-                    }
-                }
-
-                if (j - i > 0) {
-                    tooltip.add((new TranslatableText("container.shulkerBox.more", new Object[]{j - i})).formatted(Formatting.ITALIC));
-                }
-            }
-        }
-
     }
 
     public PistonBehavior getPistonBehavior(BlockState state) {
@@ -192,18 +105,6 @@ public class ShulkerLootCrateBlock extends BlockWithEntity {
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         return blockEntity instanceof ShulkerLootCrateBlockEntity ? VoxelShapes.cuboid(((ShulkerLootCrateBlockEntity)blockEntity).getBoundingBox(state)) : VoxelShapes.fullCube();
-    }
-
-    @Environment(EnvType.CLIENT)
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-        ItemStack itemStack = super.getPickStack(world, pos, state);
-        ShulkerLootCrateBlockEntity shulkerBoxBlockEntity = (ShulkerLootCrateBlockEntity)world.getBlockEntity(pos);
-        CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
-        if (!compoundTag.isEmpty()) {
-            itemStack.putSubTag("BlockEntityTag", compoundTag);
-        }
-
-        return itemStack;
     }
 
     public BlockState rotate(BlockState state, BlockRotation rotation) {

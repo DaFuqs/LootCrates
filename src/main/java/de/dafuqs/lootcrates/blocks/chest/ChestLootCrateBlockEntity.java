@@ -5,6 +5,7 @@
 
 package de.dafuqs.lootcrates.blocks.chest;
 
+import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -28,54 +29,14 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
 
-public class ChestLootCrateBlockEntity extends LootableContainerBlockEntity implements Tickable {
+public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements Tickable {
 
-    private DefaultedList<ItemStack> inventory;
     private int viewerCount;
     protected float animationAngle;
     protected float lastAnimationAngle;
 
-    private Identifier lootTable;
-    private int replenishTimeTicks;
-    private int lastReplenishTimeTicks;
-
     public ChestLootCrateBlockEntity() {
-        super(LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY);
-        this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
-
-        this.lootTable = LootTables.BASTION_TREASURE_CHEST; // TODO
-        this.replenishTimeTicks = 600; // = 30 seconds
-        this.lastReplenishTimeTicks = 0;
-    }
-
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
-        if (!this.serializeLootTable(tag)) {
-            Inventories.toTag(tag, this.inventory);
-        }
-
-        return tag;
-    }
-
-    public void fromTag(BlockState state, CompoundTag tag) {
-        super.fromTag(state, tag);
-        this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(tag)) {
-            Inventories.fromTag(tag, this.inventory);
-        }
-
-    }
-
-    public int size() {
-        return 27;
-    }
-
-    protected DefaultedList<ItemStack> getInvStackList() {
-        return this.inventory;
-    }
-
-    protected void setInvStackList(DefaultedList<ItemStack> list) {
-        this.inventory = list;
+        super(LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY, DefaultedList.ofSize(27, ItemStack.EMPTY));
     }
 
     protected Text getContainerName() {
@@ -84,6 +45,35 @@ public class ChestLootCrateBlockEntity extends LootableContainerBlockEntity impl
 
     protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
         return GenericContainerScreenHandler.createGeneric9x3(syncId, playerInventory, this);
+    }
+
+    @Override
+    public void tick() {
+        this.lastAnimationAngle = this.animationAngle;
+        if (this.viewerCount > 0 && this.animationAngle == 0.0F) {
+            playSound(SoundEvents.BLOCK_CHEST_OPEN);
+        }
+
+        if (this.viewerCount == 0 && this.animationAngle > 0.0F || this.viewerCount > 0 && this.animationAngle < 1.0F) {
+            float g = this.animationAngle;
+            if (this.viewerCount > 0) {
+                this.animationAngle += 0.1F;
+            } else {
+                this.animationAngle -= 0.1F;
+            }
+
+            if (this.animationAngle > 1.0F) {
+                this.animationAngle = 1.0F;
+            }
+
+            if (this.animationAngle < 0.5F && g >= 0.5F) {
+                playSound(SoundEvents.BLOCK_CHEST_CLOSE);
+            }
+
+            if (this.animationAngle < 0.0F) {
+                this.animationAngle = 0.0F;
+            }
+        }
     }
 
     public void onOpen(PlayerEntity player) {
@@ -104,34 +94,6 @@ public class ChestLootCrateBlockEntity extends LootableContainerBlockEntity impl
         }
     }
 
-    @Override
-    public void tick() {
-        this.lastAnimationAngle = this.animationAngle;
-        if (this.viewerCount > 0 && this.animationAngle == 0.0F) {
-            this.playSound(SoundEvents.BLOCK_CHEST_OPEN);
-        }
-
-        if (this.viewerCount == 0 && this.animationAngle > 0.0F || this.viewerCount > 0 && this.animationAngle < 1.0F) {
-            float g = this.animationAngle;
-            if (this.viewerCount > 0) {
-                this.animationAngle += 0.1F;
-            } else {
-                this.animationAngle -= 0.1F;
-            }
-
-            if (this.animationAngle > 1.0F) {
-                this.animationAngle = 1.0F;
-            }
-
-            if (this.animationAngle < 0.5F && g >= 0.5F) {
-                this.playSound(SoundEvents.BLOCK_CHEST_CLOSE);
-            }
-
-            if (this.animationAngle < 0.0F) {
-                this.animationAngle = 0.0F;
-            }
-        }
-    }
 
     public boolean onSyncedBlockEvent(int type, int data) {
         if (type == 1) {
@@ -147,13 +109,6 @@ public class ChestLootCrateBlockEntity extends LootableContainerBlockEntity impl
             --this.viewerCount;
         }
         this.onInvOpenOrClose();
-    }
-
-    private void playSound(SoundEvent soundEvent) {
-        double d = (double)this.pos.getX() + 0.5D;
-        double e = (double)this.pos.getY() + 0.5D;
-        double f = (double)this.pos.getZ() + 0.5D;
-        this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
     }
 
     @Environment(EnvType.CLIENT)

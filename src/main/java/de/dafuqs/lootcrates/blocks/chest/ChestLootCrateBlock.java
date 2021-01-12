@@ -1,7 +1,9 @@
 package de.dafuqs.lootcrates.blocks.chest;
 
+import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.PiglinBrain;
@@ -23,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
-public class ChestLootCrateBlock extends BlockWithEntity {
+public class ChestLootCrateBlock extends LootCrateBlock {
 
     public static final DirectionProperty FACING;
     protected static final VoxelShape SHAPE;
@@ -50,6 +52,10 @@ public class ChestLootCrateBlock extends BlockWithEntity {
         }
     }
 
+    public PistonBehavior getPistonBehavior(BlockState state) {
+        return PistonBehavior.BLOCK;
+    }
+
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ChestLootCrateBlockEntity) {
@@ -62,10 +68,6 @@ public class ChestLootCrateBlock extends BlockWithEntity {
         return world.getBlockState(blockPos).isSolidBlock(world, blockPos);
     }
 
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-        return false;
-    }
-
     @Nullable
     public BlockEntity createBlockEntity(BlockView world) {
         return new ChestLootCrateBlockEntity();
@@ -73,15 +75,6 @@ public class ChestLootCrateBlock extends BlockWithEntity {
 
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
-    }
-
-    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        if (itemStack.hasCustomName()) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof ChestLootCrateBlockEntity) {
-                ((ChestLootCrateBlockEntity)blockEntity).setCustomName(itemStack.getName());
-            }
-        }
     }
 
     public BlockState rotate(BlockState state, BlockRotation rotation) {

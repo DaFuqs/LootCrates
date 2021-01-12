@@ -1,8 +1,10 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
+import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
@@ -28,28 +30,29 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class ShulkerLootCrateBlockEntity extends LootableContainerBlockEntity implements Tickable {
+public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements Tickable {
 
-    private static final int[] AVAILABLE_SLOTS = IntStream.range(0, 27).toArray();
-    private DefaultedList<ItemStack> inventory;
     private int viewerCount;
-    private net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage animationStage;
+    private ShulkerBoxBlockEntity.AnimationStage animationStage;
     private float animationProgress;
     private float prevAnimationProgress;
 
-    private Identifier lootTable;
-
     public ShulkerLootCrateBlockEntity() {
-        super(LootCratesBlockEntityType.SHULKER_LOOT_CRATE_BLOCK_ENTITY);
-        this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
-        this.animationStage = net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+        super(LootCratesBlockEntityType.SHULKER_LOOT_CRATE_BLOCK_ENTITY, DefaultedList.ofSize(27, ItemStack.EMPTY));
+        this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+    }
 
-        this.lootTable = LootTables.RUINED_PORTAL_CHEST; // TODO
+    protected Text getContainerName() {
+        return new TranslatableText("container.lootcrates.shulker_crate");
+    }
+
+    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+        return new ShulkerBoxScreenHandler(syncId, playerInventory, this);
     }
 
     public void tick() {
         this.updateAnimation();
-        if (this.animationStage == net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.OPENING || this.animationStage == net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.CLOSING) {
+        if (this.animationStage == ShulkerBoxBlockEntity.AnimationStage.OPENING || this.animationStage == ShulkerBoxBlockEntity.AnimationStage.CLOSING) {
             this.pushEntities();
         }
     }
@@ -64,7 +67,7 @@ public class ShulkerLootCrateBlockEntity extends LootableContainerBlockEntity im
                 this.animationProgress += 0.1F;
                 if (this.animationProgress >= 1.0F) {
                     this.pushEntities();
-                    this.animationStage = net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.OPENED;
+                    this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
                     this.animationProgress = 1.0F;
                     this.updateNeighborStates();
                 }
@@ -72,7 +75,7 @@ public class ShulkerLootCrateBlockEntity extends LootableContainerBlockEntity im
             case CLOSING:
                 this.animationProgress -= 0.1F;
                 if (this.animationProgress <= 0.0F) {
-                    this.animationStage = net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+                    this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
                     this.animationProgress = 0.0F;
                     this.updateNeighborStates();
                 }
@@ -83,7 +86,7 @@ public class ShulkerLootCrateBlockEntity extends LootableContainerBlockEntity im
 
     }
 
-    public net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage getAnimationStage() {
+    public ShulkerBoxBlockEntity.AnimationStage getAnimationStage() {
         return this.animationStage;
     }
 
@@ -152,23 +155,16 @@ public class ShulkerLootCrateBlockEntity extends LootableContainerBlockEntity im
         }
     }
 
-    public int size() {
-        return this.inventory.size();
-    }
-
     public boolean onSyncedBlockEvent(int type, int data) {
         if (type == 1) {
             this.viewerCount = data;
             if (data == 0) {
-                this.animationStage = net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.CLOSING;
+                this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSING;
+                this.updateNeighborStates();
+            } else if (data == 1) {
+                this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENING;
                 this.updateNeighborStates();
             }
-
-            if (data == 1) {
-                this.animationStage = net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.OPENING;
-                this.updateNeighborStates();
-            }
-
             return true;
         } else {
             return super.onSyncedBlockEvent(type, data);
@@ -180,7 +176,6 @@ public class ShulkerLootCrateBlockEntity extends LootableContainerBlockEntity im
     }
 
     public void onOpen(PlayerEntity player) {
-
         if (!player.isSpectator()) {
             if (this.viewerCount < 0) {
                 this.viewerCount = 0;
@@ -189,7 +184,7 @@ public class ShulkerLootCrateBlockEntity extends LootableContainerBlockEntity im
             ++this.viewerCount;
             this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount == 1) {
-                this.world.playSound(null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+                playSound(SoundEvents.BLOCK_SHULKER_BOX_OPEN);
             }
         }
 
@@ -200,82 +195,20 @@ public class ShulkerLootCrateBlockEntity extends LootableContainerBlockEntity im
             --this.viewerCount;
             this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount <= 0) {
-                this.world.playSound(null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+                playSound(SoundEvents.BLOCK_SHULKER_BOX_CLOSE);
             }
         }
 
     }
 
-    protected Text getContainerName() {
-        return new TranslatableText("container.lootcrates.shulker_crate");
-    }
-
-    public void fromTag(BlockState state, CompoundTag tag) {
-        super.fromTag(state, tag);
-        this.deserializeInventory(tag);
-    }
-
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
-        return this.serializeInventory(tag);
-    }
-
-    public void deserializeInventory(CompoundTag tag) {
-        this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(tag) && tag.contains("Items", 9)) {
-            Inventories.fromTag(tag, this.inventory);
-        }
-
-    }
-
-    public CompoundTag serializeInventory(CompoundTag tag) {
-        if (!this.serializeLootTable(tag)) {
-            Inventories.toTag(tag, this.inventory, false);
-        }
-
-        return tag;
-    }
-
-    protected DefaultedList<ItemStack> getInvStackList() {
-        return this.inventory;
-    }
-
-    protected void setInvStackList(DefaultedList<ItemStack> list) {
-        this.inventory = list;
-    }
-
-    public int[] getAvailableSlots(Direction side) {
-        return AVAILABLE_SLOTS;
-    }
-
-    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
-        return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
-    }
-
-    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-        return true;
-    }
 
     public float getAnimationProgress(float f) {
         return MathHelper.lerp(f, this.prevAnimationProgress, this.animationProgress);
     }
 
-    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
-        return new ShulkerBoxScreenHandler(syncId, playerInventory, this);
-    }
 
     public boolean suffocates() {
         return this.animationStage == net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.CLOSED;
-    }
-
-    public static enum AnimationStage {
-        CLOSED,
-        OPENING,
-        OPENED,
-        CLOSING;
-
-        private AnimationStage() {
-        }
     }
 
 }
