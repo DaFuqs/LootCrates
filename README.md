@@ -2,11 +2,10 @@
 
 ## About
 
-LootCrates is mod for Minecraft for the fabric mod loader that adds additional chests and shulker boxes, but with a twist.
-The container blocks do not generate naturally in the world.
-Instead they are ment to be used by server administrators or modpack makers to distribute loot in structures, add them as drops, or use them as rewards for quests.
+LootCrates is a Minecraft mod for the fabric mod loader. The mod adds additional chests and shulker boxes, with a twist.
+The crates are meant to be used by server administrators or modpack makers to distribute loot in structures, add them as drops, or use them as rewards for quests.
 
-The loot crates are highly customizable on how they function.
+The container blocks do not generate naturally in the world and are highly customizable on how they function.
 
 ## Example Usages
 
@@ -17,7 +16,7 @@ The loot crates are highly customizable on how they function.
 - Place instant regenerating, locked loot crates at the servers central square to get players to run into each other for socializaton or PvP, fighting each other for their keys
 
 ## Rarities
-Loot crates, shulker crates and keys all come in all the vanilla rarities, each with their own unique look:
+All the loot crates, shulker crates and keys come in all the vanilla rarities, each with their own unique look:
 - Common
 - Uncommon
 - Rare
@@ -28,15 +27,15 @@ Loot crates, shulker crates and keys all come in all the vanilla rarities, each 
 ## Screenshots
 
 ![All the Loot Crates](./images/readme_screenshot_loot_crates.png)
-![All the Shulker Loot_Crates](./images/readme_screenshot_shulker_loot_crates.png)
+![All the Shulker_Crates](./images/readme_screenshot_shulker_crates.png)
 
 ## Loot Crates
-Loot crates cannot be broken or moved. Instead, they generate loot over time!
+Loot crates cannot be broken or moved. Instead they generate loot over time!
 
 ## Shulker Crates
-Shulker Crates, like their loot crate counterparts, can generate loot.
-Unlike their unbreakable counterparts they can be broken and picked up.
-When unlocked they retain their items and can be used as backpacks.
+Shulker crates, like their loot crate counterparts, can generate loot.
+But unlike their unbreakable counterparts they can be broken and picked up.
+They also retain their items and can be used as backpacks.
 
 ## Keys
 Crates may be locked, requiring a key with matching rarity to unlock.
