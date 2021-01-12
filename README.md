@@ -50,13 +50,10 @@ NBT                       | NBT Type   | Effect
 CustomName                | string     | The name which will be used instead of the containers default name in it's gui
 LootTable                 | loot table | The loot table identifier to be used to fill the crate when it's interacted with
 LootTableSeed             | long       | Seed for generating the loot table. 0 or ommitted uses a random seed. Setting a seed means that the generated loot will always be the same
-LootGenerationTimeInTicks | long       | When the crate is accessed it will take that many ticks until new loot can be generated
-                                         Setting the value to to <= 0 results in generating the content just once - at the time of the first opening
+LootGenerationTimeInTicks | long       | When the crate is accessed it will take that many ticks until new loot can be generated. Setting the value to to <= 0 results in generating the content just once - at the time of the first opening
 Locked                    | boolean    | When true a key with matching rarity will be required to access it's contents
-DoNotConsumeKeyOnUnlock   | boolean    | When true the opening key will be not be removed when unlocking the crate
-                                         "Locked" will have to be true to be effective.
-OncePerPlayer             | boolean    | When true every player can only use the crate once to generate loot.
-                                         If "LootGenerationTimeInTicks" is set to <= 0 loot will be generated once per player
+DoNotConsumeKeyOnUnlock   | boolean    | When true the opening key will be not be removed when unlocking the crate. "Locked" will have to be true to be effective.
+OncePerPlayer             | boolean    | When true every player can only use the crate once to generate loot. If "LootGenerationTimeInTicks" is set to <= 0 loot will be generated once per player
 
 **Warning:**
 Handle some combinations with care. Or do you really want players to have portable shulker boxes, that generate loot every minute?
