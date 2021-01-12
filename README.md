@@ -10,14 +10,14 @@ The loot crates are highly customizable on how they function.
 
 ## Example Usages
 
-- loot crates that can be looted once per player in structures as a reward for exploration
+- Loot crates that can be looted once per player in structures as a reward for exploration
 - Use locked crates as a form of progression, handing out the keys as rewards for quests or advancements
 - Use shulker crates in mob drops for that "loot chest" feel
-- To build upon that: Use locked shulker crates instead, to encourage trading scatter the required keys around the landscape for players to find.
-- Scatter keys around the landscape and place loot crates at the servers central square. To get players to run into each other for socializaton or PvP, fighting each other for their keys
+- To build upon that: Use locked shulker crates instead. To encourage trading scatter the required keys around the landscape for players to find.
+- Place instant regenerating, locked loot crates at the servers central square to get players to run into each other for socializaton or PvP, fighting each other for their keys
 
 ## Rarities
-loot crates, shulker crates and keys all come in all the vanilla rarities, each with their own unique look:
+Loot crates, shulker crates and keys all come in all the vanilla rarities, each with their own unique look:
 - Common
 - Uncommon
 - Rare
@@ -57,7 +57,7 @@ Locked                    | boolean    | When true a key with matching rarity wi
 DoNotConsumeKeyOnUnlock   | boolean    | When true the opening key will be not be removed when unlocking the crate. "Locked" will have to be true to be effective.
 OncePerPlayer             | boolean    | When true every player can only use the crate once to generate loot. If "LootGenerationTimeInTicks" is set to <= 0 loot will be generated once per player
 
-<span style="color:red">**Warning:**</span>
+**Warning:**
 
 Handle some combinations with care. Or do you really want players to have portable containers that generate new loot every minute?
 
