@@ -41,10 +41,10 @@ public class ChestLootCrateBlockEntityRenderer extends BlockEntityRenderer<Chest
     }
 
     @Override
-    public void render(ChestLootCrateBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        World world = entity.getWorld();
+    public void render(ChestLootCrateBlockEntity chestLootCrateBlockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        World world = chestLootCrateBlockEntity.getWorld();
         boolean bl = world != null;
-        BlockState blockState = bl ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
+        BlockState blockState = bl ? chestLootCrateBlockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
         Block block = blockState.getBlock();
 
         if (block instanceof ChestLootCrateBlock) {
@@ -55,18 +55,18 @@ public class ChestLootCrateBlockEntityRenderer extends BlockEntityRenderer<Chest
             matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
             matrices.translate(-0.5D, -0.5D, -0.5D);
 
-            float openFactor = entity.getAnimationProgress(tickDelta);
+            float openFactor = chestLootCrateBlockEntity.getAnimationProgress(tickDelta);
             openFactor = 1.0F - openFactor;
             openFactor = 1.0F - openFactor * openFactor * openFactor;
 
-            SpriteIdentifier spriteIdentifier = entity.getTexture();
+            SpriteIdentifier spriteIdentifier = chestLootCrateBlockEntity.getTexture();
             VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
             this.render(matrices, vertexConsumer, this.singleChestLid, this.singleChestLatch, this.singleChestBase, openFactor, light, overlay);
 
             matrices.pop();
         }
     }
-    
+
     private void render(MatrixStack matrices, VertexConsumer vertices, ModelPart lid, ModelPart latch, ModelPart base, float openFactor, int light, int overlay) {
         lid.pitch = -(openFactor * 1.5707964F);
         latch.pitch = lid.pitch;

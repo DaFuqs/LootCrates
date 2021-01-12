@@ -37,7 +37,7 @@ public class ShulkerLootCrateEntityRenderer extends BlockEntityRenderer<ShulkerL
             }
         }
 
-        DyeColor dyeColor = DyeColor.BLUE;
+        DyeColor dyeColor = shulkerBoxBlockEntity.getDyeColor();
         SpriteIdentifier spriteIdentifier2;
         spriteIdentifier2 = TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.get(dyeColor.getId());
 

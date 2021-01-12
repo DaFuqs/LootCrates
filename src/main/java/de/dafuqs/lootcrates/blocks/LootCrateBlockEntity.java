@@ -17,6 +17,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -102,5 +103,4 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     public CompoundTag getBlockEntityTag() {
         return toTag(new CompoundTag());
     }
-
 }

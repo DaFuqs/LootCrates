@@ -1,11 +1,14 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
+import de.dafuqs.lootcrates.LootCrates;
+import de.dafuqs.lootcrates.LootCratesBlocks;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +23,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
@@ -29,6 +33,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.IntStream;
+
+import static net.minecraft.client.render.TexturedRenderLayers.CHEST_ATLAS_TEXTURE;
 
 public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements Tickable {
 
@@ -214,6 +220,20 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 
     public boolean suffocates() {
         return this.animationStage == net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+    }
+
+    public DyeColor getDyeColor() {
+        Block block = world.getBlockState(pos).getBlock();
+        if (LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE.equals(block)) {
+            return DyeColor.WHITE;
+        } else if (LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE.equals(block)) {
+            return DyeColor.YELLOW;
+        } else if (LootCratesBlocks.RARE_SHULKER_LOOT_CRATE.equals(block)) {
+            return DyeColor.LIGHT_BLUE;
+        } else if (LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE.equals(block)) {
+            return DyeColor.MAGENTA;
+        }
+        return DyeColor.WHITE;
     }
 
 }
