@@ -32,13 +32,6 @@ public class LootCratesBlocks {
         Registry.register(Registry.ITEM, identifier, new LootCrateItem(block, fabricItemSettings));
     }
 
-    private static void registerShulkerCrateBlock(String string, Block block, FabricItemSettings fabricItemSettings) {
-        Identifier identifier = new Identifier(LootCrates.MOD_ID, string);
-
-        Registry.register(Registry.BLOCK, identifier, block);
-        Registry.register(Registry.ITEM, identifier, new LootCrateItem(block, fabricItemSettings));
-    }
-
     public static void register() {
         FabricItemSettings itemSettingsCommon = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.COMMON);
         FabricItemSettings itemSettingsUncommon = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.UNCOMMON);
@@ -50,10 +43,10 @@ public class LootCratesBlocks {
         registerLootCrateBlock("rare_chest_loot_crate", RARE_CHEST_LOOT_CRATE, itemSettingsRare);
         registerLootCrateBlock("epic_chest_loot_crate", EPIC_CHEST_LOOT_CRATE, itemSettingsEpic);
 
-        registerShulkerCrateBlock("common_shulker_loot_crate", COMMON_SHULKER_LOOT_CRATE, itemSettingsCommon);
-        registerShulkerCrateBlock("uncommon_shulker_loot_crate", UNCOMMON_SHULKER_LOOT_CRATE, itemSettingsUncommon);
-        registerShulkerCrateBlock("rare_shulker_loot_crate", RARE_SHULKER_LOOT_CRATE, itemSettingsRare);
-        registerShulkerCrateBlock("epic_shulker_loot_crate", EPIC_SHULKER_LOOT_CRATE, itemSettingsEpic);
+        registerLootCrateBlock("common_shulker_loot_crate", COMMON_SHULKER_LOOT_CRATE, itemSettingsCommon);
+        registerLootCrateBlock("uncommon_shulker_loot_crate", UNCOMMON_SHULKER_LOOT_CRATE, itemSettingsUncommon);
+        registerLootCrateBlock("rare_shulker_loot_crate", RARE_SHULKER_LOOT_CRATE, itemSettingsRare);
+        registerLootCrateBlock("epic_shulker_loot_crate", EPIC_SHULKER_LOOT_CRATE, itemSettingsEpic);
    }
    
 }

@@ -14,7 +14,7 @@ public class LootCrates implements ModInitializer {
 
     public static final ItemGroup ITEM_GROUP = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID, "loot_crates"),
-            () -> new ItemStack(Blocks.COBBLESTONE));
+            () -> new ItemStack(LootCratesBlocks.EPIC_CHEST_LOOT_CRATE));
 
     @Override
     public void onInitialize() {

@@ -52,10 +52,12 @@ public class ChestLootCrateBlock extends LootCrateBlock {
         }
     }
 
+    @Override
     public PistonBehavior getPistonBehavior(BlockState state) {
         return PistonBehavior.BLOCK;
     }
 
+    @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ChestLootCrateBlockEntity) {
@@ -73,27 +75,33 @@ public class ChestLootCrateBlock extends LootCrateBlock {
         return new ChestLootCrateBlockEntity();
     }
 
+    @Override
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
+    @Override
     public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
+    @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
+    @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         Direction direction = ctx.getPlayerFacing().getOpposite();
         return this.getDefaultState().with(FACING, direction);
     }
 
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 
+    @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }

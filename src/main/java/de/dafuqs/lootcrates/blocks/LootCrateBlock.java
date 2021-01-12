@@ -28,10 +28,11 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         super(settings);
     }
 
+    @Override
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
     }
-
+    @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         if (itemStack.hasCustomName()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -41,6 +42,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         }
     }
 
+    @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity) {
@@ -62,6 +64,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         super.onBreak(world, pos, state, player);
     }
 
+    @Override
     public List<ItemStack> getDroppedStacks(BlockState state, net.minecraft.loot.context.LootContext.Builder builder) {
         BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
         if (blockEntity instanceof LootCrateBlockEntity) {
@@ -76,6 +79,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         return super.getDroppedStacks(state, builder);
     }
 
+    @Override
     @Environment(EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         ItemStack itemStack = super.getPickStack(world, pos, state);

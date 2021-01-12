@@ -42,6 +42,7 @@ public class ShulkerLootCrateEntityRenderer extends BlockEntityRenderer<ShulkerL
         spriteIdentifier2 = TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.get(dyeColor.getId());
 
         matrixStack.push();
+
         matrixStack.translate(0.5D, 0.5D, 0.5D);
         matrixStack.scale(0.9995F, 0.9995F, 0.9995F);
         matrixStack.multiply(direction.getRotationQuaternion());
@@ -52,6 +53,7 @@ public class ShulkerLootCrateEntityRenderer extends BlockEntityRenderer<ShulkerL
         matrixStack.translate(0.0D, (-shulkerBoxBlockEntity.getAnimationProgress(tickDelta) * 0.5F), 0.0D);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0F * shulkerBoxBlockEntity.getAnimationProgress(tickDelta)));
         this.model.getTopShell().render(matrixStack, vertexConsumer, light, overlay);
+
         matrixStack.pop();
     }
 

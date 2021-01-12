@@ -5,6 +5,7 @@ import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntityRenderer;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateEntityRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
+import net.minecraft.item.Items;
 
 @net.fabricmc.api.Environment(net.fabricmc.api.EnvType.CLIENT)
 public class LootCratesClient implements ClientModInitializer {

@@ -47,21 +47,16 @@ public class ChestLootCrateBlockEntityRenderer extends BlockEntityRenderer<Chest
         ChestType chestType = blockState.contains(ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
         Block block = blockState.getBlock();
         if (block instanceof ChestLootCrateBlock) {
-            ChestLootCrateBlock chestLootCrateBlock = (ChestLootCrateBlock)block;
-
             matrices.push();
+
             float f = (blockState.get(ChestBlock.FACING)).asRotation();
             matrices.translate(0.5D, 0.5D, 0.5D);
             matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
             matrices.translate(-0.5D, -0.5D, -0.5D);
 
             ChestLootCrateBlockEntity blockEntity = LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY.get(world, entity.getPos());
+
             float openFactor = blockEntity.getAnimationProgress(tickDelta);
-
-            if(openFactor > 0) {
-                int a = 1;
-            }
-
             openFactor = 1.0F - openFactor;
             openFactor = 1.0F - openFactor * openFactor * openFactor;
 

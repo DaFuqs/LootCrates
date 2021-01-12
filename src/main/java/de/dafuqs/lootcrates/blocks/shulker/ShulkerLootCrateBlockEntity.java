@@ -42,14 +42,17 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
         this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
     }
 
+    @Override
     protected Text getContainerName() {
         return new TranslatableText("container.lootcrates.shulker_crate");
     }
 
+    @Override
     protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
         return new ShulkerBoxScreenHandler(syncId, playerInventory, this);
     }
 
+    @Override
     public void tick() {
         this.updateAnimation();
         if (this.animationStage == ShulkerBoxBlockEntity.AnimationStage.OPENING || this.animationStage == ShulkerBoxBlockEntity.AnimationStage.CLOSING) {
@@ -98,6 +101,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
         float f = this.getAnimationProgress(1.0F);
         return VoxelShapes.fullCube().getBoundingBox().stretch((0.5F * f * (float)openDirection.getOffsetX()), (0.5F * f * (float)openDirection.getOffsetY()), (0.5F * f * (float)openDirection.getOffsetZ()));
     }
+
 
     private Box getCollisionBox(Direction facing) {
         Direction direction = facing.getOpposite();
@@ -155,6 +159,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
         }
     }
 
+    @Override
     public boolean onSyncedBlockEvent(int type, int data) {
         if (type == 1) {
             this.viewerCount = data;
@@ -175,6 +180,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
         this.getCachedState().updateNeighbors(this.getWorld(), this.getPos(), 3);
     }
 
+    @Override
     public void onOpen(PlayerEntity player) {
         if (!player.isSpectator()) {
             if (this.viewerCount < 0) {
@@ -190,6 +196,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 
     }
 
+    @Override
     public void onClose(PlayerEntity player) {
         if (!player.isSpectator()) {
             --this.viewerCount;
@@ -201,11 +208,9 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 
     }
 
-
     public float getAnimationProgress(float f) {
         return MathHelper.lerp(f, this.prevAnimationProgress, this.animationProgress);
     }
-
 
     public boolean suffocates() {
         return this.animationStage == net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.CLOSED;

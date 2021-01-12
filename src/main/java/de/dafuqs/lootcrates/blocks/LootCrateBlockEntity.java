@@ -35,6 +35,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         this.inventory = inventory;
     }
 
+    @Override
     public CompoundTag toTag(CompoundTag tag) {
         super.toTag(tag);
         tag.putLong("ReplenishTimeTicks", this.replenishTimeTicks);
@@ -46,6 +47,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         return tag;
     }
 
+    @Override
     public void fromTag(BlockState state, CompoundTag tag) {
         super.fromTag(state, tag);
 
@@ -64,14 +66,17 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
+    @Override
     public int size() {
         return this.inventory.size();
     }
 
+    @Override
     protected DefaultedList<ItemStack> getInvStackList() {
         return this.inventory;
     }
 
+    @Override
     protected void setInvStackList(DefaultedList<ItemStack> list) {
         this.inventory = list;
     }

@@ -39,10 +39,12 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
         super(LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY, DefaultedList.ofSize(27, ItemStack.EMPTY));
     }
 
+    @Override
     protected Text getContainerName() {
         return new TranslatableText("container.lootcrates.loot_crate");
     }
 
+    @Override
     protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
         return GenericContainerScreenHandler.createGeneric9x3(syncId, playerInventory, this);
     }
@@ -76,6 +78,7 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
         }
     }
 
+    @Override
     public void onOpen(PlayerEntity player) {
         if (!player.isSpectator()) {
             if (this.viewerCount < 0) {
@@ -94,7 +97,7 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
         }
     }
 
-
+    @Override
     public boolean onSyncedBlockEvent(int type, int data) {
         if (type == 1) {
             this.viewerCount = data;
@@ -104,6 +107,7 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
         }
     }
 
+    @Override
     public void onClose(PlayerEntity player) {
         if (!player.isSpectator()) {
             --this.viewerCount;
