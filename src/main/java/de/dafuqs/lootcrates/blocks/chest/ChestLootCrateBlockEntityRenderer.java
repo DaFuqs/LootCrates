@@ -44,8 +44,8 @@ public class ChestLootCrateBlockEntityRenderer extends BlockEntityRenderer<Chest
         World world = entity.getWorld();
         boolean bl = world != null;
         BlockState blockState = bl ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
-        ChestType chestType = blockState.contains(ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
         Block block = blockState.getBlock();
+
         if (block instanceof ChestLootCrateBlock) {
             matrices.push();
 
@@ -54,19 +54,19 @@ public class ChestLootCrateBlockEntityRenderer extends BlockEntityRenderer<Chest
             matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
             matrices.translate(-0.5D, -0.5D, -0.5D);
 
-            ChestLootCrateBlockEntity blockEntity = LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY.get(world, entity.getPos());
-
-            float openFactor = blockEntity.getAnimationProgress(tickDelta);
+            float openFactor = entity.getAnimationProgress(tickDelta);
             openFactor = 1.0F - openFactor;
             openFactor = 1.0F - openFactor * openFactor * openFactor;
 
-            SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTexture(entity, chestType, false);
+            SpriteIdentifier spriteIdentifier = entity.getTexture();
             VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
             this.render(matrices, vertexConsumer, this.singleChestLid, this.singleChestLatch, this.singleChestBase, openFactor, light, overlay);
 
             matrices.pop();
         }
     }
+
+
 
     private void render(MatrixStack matrices, VertexConsumer vertices, ModelPart lid, ModelPart latch, ModelPart base, float openFactor, int light, int overlay) {
         lid.pitch = -(openFactor * 1.5707964F);

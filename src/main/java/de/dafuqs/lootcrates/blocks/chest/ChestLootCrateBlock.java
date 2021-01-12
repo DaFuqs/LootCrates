@@ -111,21 +111,4 @@ public class ChestLootCrateBlock extends LootCrateBlock {
         SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
     }
 
-    /*public static Block get(@Nullable Rarity rarity) {
-        if (rarity == null) {
-            return LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE;
-        } else {
-            switch(rarity) {
-                case COMMON:
-                    return LootCratesBlocks.COMMON_LOOT_CRATE;
-                case UNCOMMON:
-                    return LootCratesBlocks.UNCOMMON_LOOT_CRATE;
-                case RARE:
-                    return LootCratesBlocks.RARE_LOOT_CRATE;
-                default:
-                    return LootCratesBlocks.EPIC_LOOT_CRATE;
-            }
-        }
-    }*/
-
 }

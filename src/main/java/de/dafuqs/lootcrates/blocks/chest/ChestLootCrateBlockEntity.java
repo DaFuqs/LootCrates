@@ -5,12 +5,17 @@
 
 package de.dafuqs.lootcrates.blocks.chest;
 
+import de.dafuqs.lootcrates.LootCrates;
+import de.dafuqs.lootcrates.LootCratesBlocks;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.enums.ChestType;
+import net.minecraft.client.render.TexturedRenderLayers;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -28,6 +33,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
+
+import static net.minecraft.client.render.TexturedRenderLayers.CHEST_ATLAS_TEXTURE;
 
 public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements Tickable {
 
@@ -118,6 +125,20 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
     @Environment(EnvType.CLIENT)
     public float getAnimationProgress(float tickDelta) {
         return MathHelper.lerp(tickDelta, this.lastAnimationAngle, this.animationAngle);
+    }
+
+    public SpriteIdentifier getTexture() {
+        Block block = world.getBlockState(pos).getBlock();
+        if (LootCratesBlocks.COMMON_CHEST_LOOT_CRATE.equals(block)) {
+            return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/common_crate"));
+        } else if (LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE.equals(block)) {
+            return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/uncommon_crate"));
+        } else if (LootCratesBlocks.RARE_CHEST_LOOT_CRATE.equals(block)) {
+            return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/rare_crate"));
+        } else if (LootCratesBlocks.EPIC_CHEST_LOOT_CRATE.equals(block)) {
+            return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/epic_crate"));
+        }
+        return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/common_crate"));
     }
 
 }

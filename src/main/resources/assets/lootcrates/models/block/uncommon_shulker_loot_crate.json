@@ -1,5 +1,7 @@
 {
+  "parent": "lootcrates:block/shulker_template",
   "textures": {
-    "particle": "minecraft:block/shulker_box"
+    "0": "lootcrates:entity/shulker/uncommon_shulker",
+    "particle": "lootcrates:block/uncommon_shulker_break"
   }
 }

@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "tutorial:item/epic_crate_key"
+    "layer0": "lootcrates:item/epic_crate_key"
   }
 }

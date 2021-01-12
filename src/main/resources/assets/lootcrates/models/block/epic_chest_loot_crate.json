@@ -1,5 +1,7 @@
 {
+  "parent": "lootcrates:block/crate_template",
   "textures": {
-    "particle": "minecraft:block/oak_planks"
+    "0": "lootcrates:entity/chest/epic_crate",
+    "particle": "lootcrates:block/epic_crate_break"
   }
 }

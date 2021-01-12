@@ -1,6 +1,3 @@
 {
-  "parent": "minecraft:item/template_shulker_box",
-  "textures": {
-    "particle": "minecraft:block/shulker_box"
-  }
+  "parent": "lootcrates:block/epic_shulker_loot_crate"
 }
