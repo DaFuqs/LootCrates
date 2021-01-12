@@ -15,13 +15,6 @@ The container blocks do not generate naturally in the world and are highly custo
 - To build upon that: Use locked shulker crates instead. To encourage trading scatter the required keys around the landscape for players to find.
 - Place instant regenerating, locked loot crates at the servers central square to get players to run into each other for socializaton or PvP, fighting each other for their keys
 
-## Rarities
-All the loot crates, shulker crates and keys come in all the vanilla rarities, each with their own unique look:
-- Common
-- Uncommon
-- Rare
-- Epic
-
 # The blocks
 
 ## Screenshots
@@ -41,6 +34,12 @@ They also retain their items and can be used as backpacks.
 Crates may be locked, requiring a key with matching rarity to unlock.
 Other than that the keys themselves are rather unspectacular.
 
+## Rarities
+All the loot crates, shulker crates and keys come in all vanilla rarities, each with their own unique look:
+- Common
+- Uncommon
+- Rare
+- Epic
 
 # Overview over the available NBT data
 
