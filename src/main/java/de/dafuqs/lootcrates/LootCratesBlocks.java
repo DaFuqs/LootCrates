@@ -2,8 +2,7 @@ package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.blocks.lootcrate.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.shulkercrate.ShulkerLootCrateBlock;
-import de.dafuqs.lootcrates.items.LootCrateItem;
-import de.dafuqs.lootcrates.items.ShulkerCrateItem;
+import de.dafuqs.lootcrates.items.CrateItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -30,14 +29,14 @@ public class LootCratesBlocks {
         Identifier identifier = new Identifier(LootCrates.MOD_ID, string);
 
         Registry.register(Registry.BLOCK, identifier, block);
-        Registry.register(Registry.ITEM, identifier, new LootCrateItem(block, fabricItemSettings));
+        Registry.register(Registry.ITEM, identifier, new CrateItem(block, fabricItemSettings));
     }
 
     private static void registerShulkerCrateBlock(String string, Block block, FabricItemSettings fabricItemSettings) {
         Identifier identifier = new Identifier(LootCrates.MOD_ID, string);
 
         Registry.register(Registry.BLOCK, identifier, block);
-        Registry.register(Registry.ITEM, identifier, new ShulkerCrateItem(block, fabricItemSettings));
+        Registry.register(Registry.ITEM, identifier, new CrateItem(block, fabricItemSettings));
     }
 
     public static void register() {
