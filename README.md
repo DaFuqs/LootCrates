@@ -1,8 +1,8 @@
-# LootCrates
+# Loot Crates
 
 ## About
 
-LootCrates is mod for Minecraft for the fabric mod loader that adds additional chests and shulker boxes with a twist.
+LootCrates is mod for Minecraft for the fabric mod loader that adds additional chests and shulker boxes, but with a twist.
 The container blocks do not generate naturally in the world.
 Instead they are ment to be used by server administrators or modpack makers to distribute loot in structures, add them as drops, or use them as rewards for quests.
 
@@ -17,7 +17,7 @@ The loot crates are highly customizable on how they function.
 - Scatter keys around the landscape and place loot crates at the servers central square. To get players to run into each other for socializaton or PvP, fighting each other for their keys
 
 ## Rarities
-Loot Boxes, Loot Shulker Chests and Keys come in all the vanilla rarities, each with their own unique look:
+loot crates, shulker crates and keys all come in all the vanilla rarities, each with their own unique look:
 - Common
 - Uncommon
 - Rare
@@ -27,8 +27,8 @@ Loot Boxes, Loot Shulker Chests and Keys come in all the vanilla rarities, each 
 
 ## Screenshots
 
-![All the Loot Boxes](./images/readme_screenshot_loot_boxes.png)
-![All the Shulker Loot Boxes](./images/readme_screenshot_shulker_loot_boxes.png)
+![All the Loot Crates](./images/readme_screenshot_loot_crates.png)
+![All the Shulker Loot_Crates](./images/readme_screenshot_shulker_loot_crates.png)
 
 ## Loot Crates
 Loot crates cannot be broken or moved. Instead, they generate loot over time!
@@ -57,6 +57,7 @@ Locked                    | boolean    | When true a key with matching rarity wi
 DoNotConsumeKeyOnUnlock   | boolean    | When true the opening key will be not be removed when unlocking the crate. "Locked" will have to be true to be effective.
 OncePerPlayer             | boolean    | When true every player can only use the crate once to generate loot. If "LootGenerationTimeInTicks" is set to <= 0 loot will be generated once per player
 
-**Warning:**
-Handle some combinations with care. Or do you really want players to have portable shulker boxes, that generate loot every minute?
+<span style="color:red">**Warning:**</span>
+
+Handle some combinations with care. Or do you really want players to have portable containers that generate new loot every minute?
 
