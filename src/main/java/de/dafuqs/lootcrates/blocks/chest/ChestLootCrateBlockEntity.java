@@ -3,25 +3,16 @@
 // (powered by FernFlower decompiler)
 //
 
-package de.dafuqs.lootcrates.blocks.lootcrate;
+package de.dafuqs.lootcrates.blocks.chest;
 
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.block.enums.ChestType;
-import net.minecraft.client.block.ChestAnimationProgress;
-import net.minecraft.client.render.block.entity.ChestBlockEntityRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
@@ -36,13 +27,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
-import net.minecraft.world.World;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.BiPredicate;
-
-public class LootCrateBlockEntity extends LootableContainerBlockEntity implements Tickable {
+public class ChestLootCrateBlockEntity extends LootableContainerBlockEntity implements Tickable {
 
     private DefaultedList<ItemStack> inventory;
     private int viewerCount;
@@ -53,8 +39,8 @@ public class LootCrateBlockEntity extends LootableContainerBlockEntity implement
     private int replenishTimeTicks;
     private int lastReplenishTimeTicks;
 
-    public LootCrateBlockEntity() {
-        super(LootCratesBlockEntityType.LOOT_CRATE_BLOCK_ENTITY);
+    public ChestLootCrateBlockEntity() {
+        super(LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY);
         this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
 
         this.lootTable = LootTables.BASTION_TREASURE_CHEST; // TODO
@@ -113,7 +99,7 @@ public class LootCrateBlockEntity extends LootableContainerBlockEntity implement
 
     protected void onInvOpenOrClose() {
         Block block = this.getCachedState().getBlock();
-        if (block instanceof LootCrateBlock) {
+        if (block instanceof ChestLootCrateBlock) {
             this.world.addSyncedBlockEvent(this.pos, block, 1, this.viewerCount);
         }
     }

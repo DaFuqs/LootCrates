@@ -1,13 +1,10 @@
-package de.dafuqs.lootcrates.blocks.lootcrate;
+package de.dafuqs.lootcrates.blocks.chest;
 
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
-import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
@@ -15,8 +12,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.ChestBlockEntityRenderer;
-import net.minecraft.client.render.block.entity.LightmapCoordinatesRetriever;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -24,13 +19,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class LootCrateBlockEntityRenderer extends BlockEntityRenderer<LootCrateBlockEntity> {
+public class ChestLootCrateBlockEntityRenderer extends BlockEntityRenderer<ChestLootCrateBlockEntity> {
 
     private final ModelPart singleChestLid;
     private final ModelPart singleChestBase;
     private final ModelPart singleChestLatch;
 
-    public LootCrateBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+    public ChestLootCrateBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
         super(blockEntityRenderDispatcher);
 
         this.singleChestBase = new ModelPart(64, 64, 0, 19);
@@ -45,14 +40,14 @@ public class LootCrateBlockEntityRenderer extends BlockEntityRenderer<LootCrateB
     }
 
     @Override
-    public void render(LootCrateBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(ChestLootCrateBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         World world = entity.getWorld();
         boolean bl = world != null;
         BlockState blockState = bl ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
         ChestType chestType = blockState.contains(ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
         Block block = blockState.getBlock();
-        if (block instanceof LootCrateBlock) {
-            LootCrateBlock lootCrateBlock = (LootCrateBlock)block;
+        if (block instanceof ChestLootCrateBlock) {
+            ChestLootCrateBlock chestLootCrateBlock = (ChestLootCrateBlock)block;
 
             matrices.push();
             float f = (blockState.get(ChestBlock.FACING)).asRotation();
@@ -60,7 +55,7 @@ public class LootCrateBlockEntityRenderer extends BlockEntityRenderer<LootCrateB
             matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
             matrices.translate(-0.5D, -0.5D, -0.5D);
 
-            LootCrateBlockEntity blockEntity = LootCratesBlockEntityType.LOOT_CRATE_BLOCK_ENTITY.get(world, entity.getPos());
+            ChestLootCrateBlockEntity blockEntity = LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY.get(world, entity.getPos());
             float openFactor = blockEntity.getAnimationProgress(tickDelta);
 
             if(openFactor > 0) {

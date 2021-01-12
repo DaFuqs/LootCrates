@@ -1,4 +1,4 @@
-package de.dafuqs.lootcrates.blocks.shulkercrate;
+package de.dafuqs.lootcrates.blocks.shulker;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

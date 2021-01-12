@@ -8,10 +8,10 @@
   "item.lootcrates.rare_crate_key.tooltip": "Can be used to open locked §bRare Loot Crates",
   "item.lootcrates.epic_crate_key.tooltip": "Can be used to open locked §dEpic Loot Crates",
 
-  "block.lootcrates.common_loot_crate": "Common Loot Crate",
-  "block.lootcrates.uncommon_loot_crate": "Uncommon Loot Crate",
-  "block.lootcrates.rare_loot_crate": "Rare Loot Crate",
-  "block.lootcrates.epic_loot_crate": "Epic Loot Crate",
+  "block.lootcrates.common_chest_loot_crate": "Common Loot Crate",
+  "block.lootcrates.uncommon_chest_loot_crate": "Uncommon Loot Crate",
+  "block.lootcrates.rare_chest_loot_crate": "Rare Loot Crate",
+  "block.lootcrates.epic_chest_loot_crate": "Epic Loot Crate",
 
   "block.lootcrates.common_shulker_loot_crate": "Common Shulker Loot Crate",
   "block.lootcrates.uncommon_shulker_loot_crate": "Uncommon Shulker Loot Crate",

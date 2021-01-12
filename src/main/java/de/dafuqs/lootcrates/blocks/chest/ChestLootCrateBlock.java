@@ -1,35 +1,17 @@
-package de.dafuqs.lootcrates.blocks.lootcrate;
+package de.dafuqs.lootcrates.blocks.chest;
 
-import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.enums.ChestType;
-import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.DoubleInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -37,20 +19,16 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
 import java.util.Random;
-import java.util.function.BiPredicate;
-import java.util.function.Supplier;
 
-public class LootCrateBlock extends BlockWithEntity {
+public class ChestLootCrateBlock extends BlockWithEntity {
 
     public static final DirectionProperty FACING;
     protected static final VoxelShape SHAPE;
 
-    public LootCrateBlock(AbstractBlock.Settings settings) {
+    public ChestLootCrateBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
     }
@@ -74,8 +52,8 @@ public class LootCrateBlock extends BlockWithEntity {
 
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof LootCrateBlockEntity) {
-            ((LootCrateBlockEntity)blockEntity).tick();
+        if (blockEntity instanceof ChestLootCrateBlockEntity) {
+            ((ChestLootCrateBlockEntity)blockEntity).tick();
         }
     }
 
@@ -90,7 +68,7 @@ public class LootCrateBlock extends BlockWithEntity {
 
     @Nullable
     public BlockEntity createBlockEntity(BlockView world) {
-        return new LootCrateBlockEntity();
+        return new ChestLootCrateBlockEntity();
     }
 
     public BlockRenderType getRenderType(BlockState state) {
@@ -100,8 +78,8 @@ public class LootCrateBlock extends BlockWithEntity {
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         if (itemStack.hasCustomName()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof LootCrateBlockEntity) {
-                ((LootCrateBlockEntity)blockEntity).setCustomName(itemStack.getName());
+            if (blockEntity instanceof ChestLootCrateBlockEntity) {
+                ((ChestLootCrateBlockEntity)blockEntity).setCustomName(itemStack.getName());
             }
         }
     }

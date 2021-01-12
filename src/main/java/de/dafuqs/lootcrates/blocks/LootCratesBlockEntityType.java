@@ -2,8 +2,8 @@ package de.dafuqs.lootcrates.blocks;
 
 import com.mojang.datafixers.types.Type;
 import de.dafuqs.lootcrates.LootCratesBlocks;
-import de.dafuqs.lootcrates.blocks.lootcrate.LootCrateBlockEntity;
-import de.dafuqs.lootcrates.blocks.shulkercrate.ShulkerLootCrateBlockEntity;
+import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
+import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.datafixer.TypeReferences;
@@ -12,7 +12,7 @@ import net.minecraft.util.registry.Registry;
 
 public class LootCratesBlockEntityType<T extends BlockEntity> {
 
-    public static BlockEntityType<LootCrateBlockEntity> LOOT_CRATE_BLOCK_ENTITY;
+    public static BlockEntityType<ChestLootCrateBlockEntity> CHEST_LOOT_CRATE_BLOCK_ENTITY;
     public static BlockEntityType<ShulkerLootCrateBlockEntity> SHULKER_LOOT_CRATE_BLOCK_ENTITY;
 
     private static <T extends BlockEntity> BlockEntityType<T> create(String string, BlockEntityType.Builder<T> builder) {
@@ -21,13 +21,13 @@ public class LootCratesBlockEntityType<T extends BlockEntity> {
     }
 
     public static void register() {
-        LOOT_CRATE_BLOCK_ENTITY = create("lootcrates:loot_crate_block_entity",
+        CHEST_LOOT_CRATE_BLOCK_ENTITY = create("lootcrates:chest_loot_crate_block_entity",
                 BlockEntityType.Builder.create(
-                        LootCrateBlockEntity::new,
-                        LootCratesBlocks.COMMON_LOOT_CRATE,
-                        LootCratesBlocks.UNCOMMON_LOOT_CRATE,
-                        LootCratesBlocks.RARE_LOOT_CRATE,
-                        LootCratesBlocks.EPIC_LOOT_CRATE));
+                        ChestLootCrateBlockEntity::new,
+                        LootCratesBlocks.COMMON_CHEST_LOOT_CRATE,
+                        LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE,
+                        LootCratesBlocks.RARE_CHEST_LOOT_CRATE,
+                        LootCratesBlocks.EPIC_CHEST_LOOT_CRATE));
 
         SHULKER_LOOT_CRATE_BLOCK_ENTITY = create("lootcrates:shulker_loot_crate_block_entity",
                 BlockEntityType.Builder.create(

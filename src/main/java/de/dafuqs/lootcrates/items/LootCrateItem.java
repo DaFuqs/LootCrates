@@ -11,9 +11,9 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class CrateItem extends BlockItem {
+public class LootCrateItem extends BlockItem {
 
-    public CrateItem(Block block, Settings settings) {
+    public LootCrateItem(Block block, Settings settings) {
         super(block, settings);
     }
 
