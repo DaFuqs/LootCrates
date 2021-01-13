@@ -56,7 +56,6 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
         booleans.add(true);
         booleans.add(false);
 
-
         List<Item> allLootCrates = LootCratesBlocks.getLootCrateItems();
         Set<Identifier> allLootTables = LootTables.getAll();
 

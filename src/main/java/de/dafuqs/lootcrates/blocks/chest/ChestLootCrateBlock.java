@@ -37,6 +37,12 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
+        if(actionResult == ActionResult.FAIL) {
+            // TODO: play sound
+            return actionResult;
+        }
+
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {

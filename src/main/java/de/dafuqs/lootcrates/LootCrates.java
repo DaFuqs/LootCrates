@@ -3,6 +3,7 @@ package de.dafuqs.lootcrates;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.event.server.ServerStartCallback;
 import net.fabricmc.fabric.impl.item.group.CreativeGuiExtensions;
 import net.fabricmc.fabric.impl.item.group.FabricCreativeGuiComponents;
 import net.minecraft.block.Blocks;
@@ -10,6 +11,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 
 public class LootCrates implements ModInitializer {
@@ -23,6 +25,9 @@ public class LootCrates implements ModInitializer {
     public static final ItemGroup PREDEFINED_ITEM_GROUP = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID, "predefined_loot_crates"),
             () -> new ItemStack(LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE));
+
+    public static MinecraftServer minecraftServer;
+
 
     @Override
     public void onInitialize() {

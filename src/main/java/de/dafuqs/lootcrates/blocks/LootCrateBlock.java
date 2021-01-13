@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -13,11 +12,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.List;
 
 import static de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock.CONTENTS;
@@ -29,15 +33,46 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     }
 
     @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof LootCrateBlockEntity) {
+            LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) blockEntity;
+            if(lootCrateBlockEntity.isLocked()) {
+                for(ItemStack itemStack : player.getItemsHand()) {
+                    if(lootCrateBlockEntity.doesUnlock(itemStack.getItem())) {
+                        if (lootCrateBlockEntity.doesConsumeKeyOnUnlock()) {
+                            itemStack.decrement(1);
+                        }
+                        lootCrateBlockEntity.unlock();
+                        return ActionResult.PASS;
+                    }
+                }
+                if(!world.isClient()) {
+                    player.sendMessage(new LiteralText("Key needed"), false); // TODO: localize
+                }
+                return ActionResult.FAIL;
+            }
+        }
+        return ActionResult.PASS;
+    }
+
+    @Override
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
     }
+
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        if (itemStack.hasCustomName()) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof LootCrateBlockEntity) {
-                ((LootCrateBlockEntity)blockEntity).setCustomName(itemStack.getName());
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof LootCrateBlockEntity) {
+            if (itemStack.hasCustomName()) {
+                ((LootCrateBlockEntity) blockEntity).setCustomName(itemStack.getName());
+            }
+            if(itemStack.hasTag()) {
+                CompoundTag tag = itemStack.getSubTag("BlockEntityTag");
+                if(tag != null) {
+                    ((LootCrateBlockEntity) blockEntity).setLootCrateBlockTags(tag);
+                }
             }
         }
     }
@@ -50,7 +85,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             if (!world.isClient && player.isCreative() && !lootCrateBlockEntity.isEmpty()) {
                 ItemStack itemStack = new ItemStack(this);
 
-                CompoundTag compoundTag = lootCrateBlockEntity.getBlockEntityTag();
+                CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
                 itemStack.putSubTag("BlockEntityTag", compoundTag);
 
                 ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, itemStack);
@@ -82,9 +117,10 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     @Override
     @Environment(EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-        ItemStack itemStack = super.getPickStack(world, pos, state);
+         ItemStack itemStack = super.getPickStack(world, pos, state);
         LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity)world.getBlockEntity(pos);
-        CompoundTag compoundTag = lootCrateBlockEntity.getBlockEntityTag();
+
+        CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
         if (!compoundTag.isEmpty()) {
             itemStack.putSubTag("BlockEntityTag", compoundTag);
         }

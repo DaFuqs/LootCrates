@@ -1,5 +1,6 @@
 package de.dafuqs.lootcrates.items;
 
+import de.dafuqs.lootcrates.blocks.LootCrateTags;
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BlockItem;
@@ -26,10 +27,10 @@ public class LootCrateItem extends BlockItem {
         if (compoundTag != null) {
             if (compoundTag.contains("CustomName")) {
                 String name = compoundTag.getString("CustomName");
-                tooltip.add(new LiteralText("Name: " + name));
+                tooltip.add(new LiteralText("CustomName: " + name));
             }
-            if (compoundTag.contains("Locked") && compoundTag.getBoolean("Locked")) {
-                if (compoundTag.contains("DoNotConsumeKeyOnUnlock") && compoundTag.getBoolean("DoNotConsumeKeyOnUnlock")) {
+            if (compoundTag.contains(LootCrateTags.TagNames.Locked.toString()) && compoundTag.getBoolean(LootCrateTags.TagNames.Locked.toString())) {
+                if (compoundTag.contains(LootCrateTags.TagNames.DoNotConsumeKeyOnUnlock.toString()) && compoundTag.getBoolean(LootCrateTags.TagNames.DoNotConsumeKeyOnUnlock.toString())) {
                     tooltip.add(new LiteralText("Locked (unlock it with a key of same rarity)"));
                 } else {
                     tooltip.add(new LiteralText("Locked (unlocking will use up a key of the same rarity)"));
@@ -44,15 +45,15 @@ public class LootCrateItem extends BlockItem {
                     String lootTableText = compoundTag.getString("LootTable");
                     tooltip.add(new LiteralText("Loot Table: " + lootTableText));
                 }
-                if (compoundTag.contains("LootGenerationTimeInTicks")) {
-                    long lootGenerationTimeInTicks = compoundTag.getLong("LootGenerationTimeInTicks");
+                if (compoundTag.contains(LootCrateTags.TagNames.ReplenishTimeTicks.toString())) {
+                    long lootGenerationTimeInTicks = compoundTag.getLong(LootCrateTags.TagNames.ReplenishTimeTicks.toString());
                     tooltip.add(new LiteralText("Generates loot every " + lootGenerationTimeInTicks + " ticks"));
                 }
                 if (compoundTag.contains("LootTableSeed")) {
                     long lootTableSeed = compoundTag.getLong("LootTableSeed");
                     tooltip.add(new LiteralText("Fixed seed: " + lootTableSeed));
                 }
-                if (compoundTag.contains("OncePerPlayer") && compoundTag.getBoolean("OncePerPlayer")) {
+                if (compoundTag.contains(LootCrateTags.TagNames.OncePerPlayer.toString()) && compoundTag.getBoolean(LootCrateTags.TagNames.OncePerPlayer.toString())) {
                     tooltip.add(new LiteralText("Once per player"));
                 }
             }
@@ -67,20 +68,20 @@ public class LootCrateItem extends BlockItem {
 
         blockEntityTag.putString("LootTable", lootTable.toString());
         if(locked) {
-            blockEntityTag.putBoolean("Locked", true);
+            blockEntityTag.putBoolean(LootCrateTags.TagNames.Locked.toString(), true);
             if(doNotConsumeKeyOnUnlock) {
-                blockEntityTag.putBoolean("DoNotConsumeKeyOnUnlock", true);
+                blockEntityTag.putBoolean(LootCrateTags.TagNames.DoNotConsumeKeyOnUnlock.toString(), true);
             }
         }
 
         if(lootGenerationTimeInTicks > 0) {
-            blockEntityTag.putLong("LootGenerationTimeInTicks", lootGenerationTimeInTicks);
+            blockEntityTag.putLong(LootCrateTags.TagNames.ReplenishTimeTicks.toString(), lootGenerationTimeInTicks);
         }
         if(lootTableSeed != 0) {
             blockEntityTag.putLong("LootTableSeed", lootTableSeed);
         }
         if(oncePerPlayer) {
-            blockEntityTag.putBoolean("OncePerPlayer", true);
+            blockEntityTag.putBoolean(LootCrateTags.TagNames.OncePerPlayer.toString(), true);
         }
 
         compoundTag.put("BlockEntityTag", blockEntityTag);
