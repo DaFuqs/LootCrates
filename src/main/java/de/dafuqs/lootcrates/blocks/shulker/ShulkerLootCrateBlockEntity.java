@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static net.minecraft.client.render.TexturedRenderLayers.CHEST_ATLAS_TEXTURE;
+import static net.minecraft.client.render.TexturedRenderLayers.*;
 
 public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements Tickable {
 
@@ -220,6 +220,21 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 
     public boolean suffocates() {
         return this.animationStage == net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+    }
+
+
+    public SpriteIdentifier getTexture() {
+        Block block = world.getBlockState(pos).getBlock();
+        if (LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE.equals(block)) {
+            return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/common_shulker"));
+        } else if (LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE.equals(block)) {
+            return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/uncommon_shulker"));
+        } else if (LootCratesBlocks.RARE_SHULKER_LOOT_CRATE.equals(block)) {
+            return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/rare_shulker"));
+        } else if (LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE.equals(block)) {
+            return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/epic_shulker"));
+        }
+        return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/common_shulker"));
     }
 
     public DyeColor getDyeColor() {

@@ -1,3 +1,12 @@
 {
-  "parent": "lootcrates:block/common_shulker_loot_crate"
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "lootcrates:block/common_shulker_side",
+    "north": "lootcrates:block/common_shulker_side",
+    "south": "lootcrates:block/common_shulker_side",
+    "east": "lootcrates:block/common_shulker_side",
+    "west": "lootcrates:block/common_shulker_side",
+    "up": "lootcrates:block/common_shulker_top",
+    "down": "lootcrates:block/common_shulker_bottom"
+  }
 }

@@ -25,5 +25,12 @@ public class LootCratesClient implements ClientModInitializer {
             registry.register(new Identifier(LootCrates.MOD_ID, "entity/chest/rare_crate"));
             registry.register(new Identifier(LootCrates.MOD_ID, "entity/chest/epic_crate"));
         });
+
+        ClientSpriteRegistryCallback.event(TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE).register((texture, registry) -> {
+            registry.register(new Identifier(LootCrates.MOD_ID, "entity/shulker/common_shulker"));
+            registry.register(new Identifier(LootCrates.MOD_ID, "entity/shulker/uncommon_shulker"));
+            registry.register(new Identifier(LootCrates.MOD_ID, "entity/shulker/rare_shulker"));
+            registry.register(new Identifier(LootCrates.MOD_ID, "entity/shulker/epic_shulker"));
+        });
     }
 }

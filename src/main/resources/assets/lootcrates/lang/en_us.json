@@ -1,4 +1,7 @@
 {
+
+  "itemGroup.lootcrates.loot_crates": "Loot Crates",
+
   "item.lootcrates.common_crate_key": "Common Crate Key",
   "item.lootcrates.uncommon_crate_key": "Uncommon Crate Key",
   "item.lootcrates.rare_crate_key": "Rare Crate Key",

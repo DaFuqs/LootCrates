@@ -1,3 +1,12 @@
 {
-  "parent": "lootcrates:block/epic_shulker_loot_crate"
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "lootcrates:block/epic_shulker_side",
+    "north": "lootcrates:block/epic_shulker_side",
+    "south": "lootcrates:block/epic_shulker_side",
+    "east": "lootcrates:block/epic_shulker_side",
+    "west": "lootcrates:block/epic_shulker_side",
+    "up": "lootcrates:block/epic_shulker_top",
+    "down": "lootcrates:block/epic_shulker_bottom"
+  }
 }

@@ -1,3 +1,12 @@
 {
-  "parent": "lootcrates:block/uncommon_shulker_loot_crate"
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "lootcrates:block/rare_shulker_side",
+    "north": "lootcrates:block/rare_shulker_side",
+    "south": "lootcrates:block/rare_shulker_side",
+    "east": "lootcrates:block/rare_shulker_side",
+    "west": "lootcrates:block/rare_shulker_side",
+    "up": "lootcrates:block/rare_shulker_top",
+    "down": "lootcrates:block/rare_shulker_bottom"
+  }
 }

@@ -28,18 +28,20 @@ public class ShulkerLootCrateEntityRenderer extends BlockEntityRenderer<ShulkerL
     }
 
     @Override
-    public void render(ShulkerLootCrateBlockEntity shulkerBoxBlockEntity, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
+    public void render(ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
         Direction direction = Direction.UP;
-        if (shulkerBoxBlockEntity.hasWorld()) {
-            BlockState blockState = shulkerBoxBlockEntity.getWorld().getBlockState(shulkerBoxBlockEntity.getPos());
+        if (shulkerLootCrateBlockEntity.hasWorld()) {
+            BlockState blockState = shulkerLootCrateBlockEntity.getWorld().getBlockState(shulkerLootCrateBlockEntity.getPos());
             if (blockState.getBlock() instanceof ShulkerBoxBlock) {
                 direction = blockState.get(ShulkerBoxBlock.FACING);
             }
         }
 
-        DyeColor dyeColor = shulkerBoxBlockEntity.getDyeColor();
-        SpriteIdentifier spriteIdentifier2;
-        spriteIdentifier2 = TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.get(dyeColor.getId());
+        //DyeColor dyeColor = shulkerLootCrateBlockEntity.getDyeColor();
+
+        //SpriteIdentifier spriteIdentifier2;
+        //spriteIdentifier2 = TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.get(dyeColor.getId());
+        SpriteIdentifier spriteIdentifier2 = shulkerLootCrateBlockEntity.getTexture();
 
         matrixStack.push();
 
@@ -50,8 +52,8 @@ public class ShulkerLootCrateEntityRenderer extends BlockEntityRenderer<ShulkerL
         matrixStack.translate(0.0D, -1.0D, 0.0D);
         VertexConsumer vertexConsumer = spriteIdentifier2.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
         this.model.getBottomShell().render(matrixStack, vertexConsumer, light, overlay);
-        matrixStack.translate(0.0D, (-shulkerBoxBlockEntity.getAnimationProgress(tickDelta) * 0.5F), 0.0D);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0F * shulkerBoxBlockEntity.getAnimationProgress(tickDelta)));
+        matrixStack.translate(0.0D, (-shulkerLootCrateBlockEntity.getAnimationProgress(tickDelta) * 0.5F), 0.0D);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0F * shulkerLootCrateBlockEntity.getAnimationProgress(tickDelta)));
         this.model.getTopShell().render(matrixStack, vertexConsumer, light, overlay);
 
         matrixStack.pop();

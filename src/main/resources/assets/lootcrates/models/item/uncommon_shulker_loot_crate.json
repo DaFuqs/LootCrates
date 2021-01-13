@@ -1,6 +1,12 @@
 {
-  "parent": "minecraft:item/template_shulker_box",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "particle": "minecraft:block/shulker_box"
+    "particle": "lootcrates:block/uncommon_shulker_side",
+    "north": "lootcrates:block/uncommon_shulker_side",
+    "south": "lootcrates:block/uncommon_shulker_side",
+    "east": "lootcrates:block/uncommon_shulker_side",
+    "west": "lootcrates:block/uncommon_shulker_side",
+    "up": "lootcrates:block/uncommon_shulker_top",
+    "down": "lootcrates:block/uncommon_shulker_bottom"
   }
 }
