@@ -7,9 +7,14 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LootCratesBlocks {
 
@@ -25,28 +30,51 @@ public class LootCratesBlocks {
     public static final Block RARE_SHULKER_LOOT_CRATE = new ShulkerLootCrateBlock(blockSettingsShulkerLootCrate);
     public static final Block EPIC_SHULKER_LOOT_CRATE = new ShulkerLootCrateBlock(blockSettingsShulkerLootCrate);
 
-    private static void registerLootCrateBlock(String string, Block block, FabricItemSettings fabricItemSettings) {
+    public static final FabricItemSettings itemSettingsCommon = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.COMMON);
+    public static final FabricItemSettings itemSettingsUncommon = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.UNCOMMON);
+    public static final FabricItemSettings itemSettingsRare = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.RARE);
+    public static final FabricItemSettings itemSettingsEpic = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.EPIC);
+
+    public static final BlockItem COMMON_CHEST_LOOT_CRATE_ITEM = new LootCrateItem(COMMON_CHEST_LOOT_CRATE, itemSettingsCommon);
+    public static final BlockItem UNCOMMON_CHEST_LOOT_CRATE_ITEM = new LootCrateItem(UNCOMMON_CHEST_LOOT_CRATE, itemSettingsUncommon);
+    public static final BlockItem RARE_CHEST_LOOT_CRATE_ITEM = new LootCrateItem(RARE_CHEST_LOOT_CRATE, itemSettingsRare);
+    public static final BlockItem EPIC_CHEST_LOOT_CRATE_ITEM = new LootCrateItem(EPIC_CHEST_LOOT_CRATE, itemSettingsEpic);
+
+    public static final BlockItem COMMON_SHULKER_LOOT_CRATE_ITEM = new LootCrateItem(COMMON_SHULKER_LOOT_CRATE, itemSettingsCommon);
+    public static final BlockItem UNCOMMON_SHULKER_LOOT_CRATE_ITEM = new LootCrateItem(UNCOMMON_SHULKER_LOOT_CRATE, itemSettingsUncommon);
+    public static final BlockItem RARE_SHULKER_LOOT_CRATE_ITEM = new LootCrateItem(RARE_SHULKER_LOOT_CRATE, itemSettingsRare);
+    public static final BlockItem EPIC_SHULKER_LOOT_CRATE_ITEM = new LootCrateItem(EPIC_SHULKER_LOOT_CRATE, itemSettingsEpic);
+
+    private static void registerLootCrateBlock(String string, Block block, BlockItem blockItem) {
         Identifier identifier = new Identifier(LootCrates.MOD_ID, string);
 
         Registry.register(Registry.BLOCK, identifier, block);
-        Registry.register(Registry.ITEM, identifier, new LootCrateItem(block, fabricItemSettings));
+        Registry.register(Registry.ITEM, identifier, blockItem);
     }
 
     public static void register() {
-        FabricItemSettings itemSettingsCommon = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.COMMON);
-        FabricItemSettings itemSettingsUncommon = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.UNCOMMON);
-        FabricItemSettings itemSettingsRare = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.RARE);
-        FabricItemSettings itemSettingsEpic = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.EPIC);
+        registerLootCrateBlock("common_chest_loot_crate", COMMON_CHEST_LOOT_CRATE, COMMON_CHEST_LOOT_CRATE_ITEM);
+        registerLootCrateBlock("uncommon_chest_loot_crate", UNCOMMON_CHEST_LOOT_CRATE, UNCOMMON_CHEST_LOOT_CRATE_ITEM);
+        registerLootCrateBlock("rare_chest_loot_crate", RARE_CHEST_LOOT_CRATE, RARE_CHEST_LOOT_CRATE_ITEM);
+        registerLootCrateBlock("epic_chest_loot_crate", EPIC_CHEST_LOOT_CRATE, EPIC_CHEST_LOOT_CRATE_ITEM);
 
-        registerLootCrateBlock("common_chest_loot_crate", COMMON_CHEST_LOOT_CRATE, itemSettingsCommon);
-        registerLootCrateBlock("uncommon_chest_loot_crate", UNCOMMON_CHEST_LOOT_CRATE, itemSettingsUncommon);
-        registerLootCrateBlock("rare_chest_loot_crate", RARE_CHEST_LOOT_CRATE, itemSettingsRare);
-        registerLootCrateBlock("epic_chest_loot_crate", EPIC_CHEST_LOOT_CRATE, itemSettingsEpic);
+        registerLootCrateBlock("common_shulker_loot_crate", COMMON_SHULKER_LOOT_CRATE, COMMON_SHULKER_LOOT_CRATE_ITEM);
+        registerLootCrateBlock("uncommon_shulker_loot_crate", UNCOMMON_SHULKER_LOOT_CRATE, UNCOMMON_SHULKER_LOOT_CRATE_ITEM);
+        registerLootCrateBlock("rare_shulker_loot_crate", RARE_SHULKER_LOOT_CRATE, RARE_SHULKER_LOOT_CRATE_ITEM);
+        registerLootCrateBlock("epic_shulker_loot_crate", EPIC_SHULKER_LOOT_CRATE, EPIC_SHULKER_LOOT_CRATE_ITEM);
+   }
 
-        registerLootCrateBlock("common_shulker_loot_crate", COMMON_SHULKER_LOOT_CRATE, itemSettingsCommon);
-        registerLootCrateBlock("uncommon_shulker_loot_crate", UNCOMMON_SHULKER_LOOT_CRATE, itemSettingsUncommon);
-        registerLootCrateBlock("rare_shulker_loot_crate", RARE_SHULKER_LOOT_CRATE, itemSettingsRare);
-        registerLootCrateBlock("epic_shulker_loot_crate", EPIC_SHULKER_LOOT_CRATE, itemSettingsEpic);
+   public static List<Item> getLootCrateItems() {
+        ArrayList lootCrates = new ArrayList();
+        lootCrates.add(COMMON_CHEST_LOOT_CRATE_ITEM);
+        lootCrates.add(UNCOMMON_CHEST_LOOT_CRATE_ITEM);
+        lootCrates.add(RARE_CHEST_LOOT_CRATE_ITEM);
+        lootCrates.add(EPIC_CHEST_LOOT_CRATE_ITEM);
+        lootCrates.add(COMMON_SHULKER_LOOT_CRATE_ITEM);
+        lootCrates.add(UNCOMMON_SHULKER_LOOT_CRATE_ITEM);
+        lootCrates.add(RARE_SHULKER_LOOT_CRATE_ITEM);
+        lootCrates.add(EPIC_SHULKER_LOOT_CRATE_ITEM);
+        return lootCrates;
    }
    
 }

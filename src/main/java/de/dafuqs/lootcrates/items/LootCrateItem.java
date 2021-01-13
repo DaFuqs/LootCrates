@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -58,6 +59,32 @@ public class LootCrateItem extends BlockItem {
         } else {
             tooltip.add(new LiteralText("No data set"));
         }
+    }
+
+    public static CompoundTag getLootCrateItemCompoundTag(Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer) {
+        CompoundTag compoundTag = new CompoundTag();
+        CompoundTag blockEntityTag = new CompoundTag();
+
+        blockEntityTag.putString("LootTable", lootTable.toString());
+        if(locked) {
+            blockEntityTag.putBoolean("Locked", true);
+            if(doNotConsumeKeyOnUnlock) {
+                blockEntityTag.putBoolean("DoNotConsumeKeyOnUnlock", true);
+            }
+        }
+
+        if(lootGenerationTimeInTicks > 0) {
+            blockEntityTag.putLong("LootGenerationTimeInTicks", lootGenerationTimeInTicks);
+        }
+        if(lootTableSeed != 0) {
+            blockEntityTag.putLong("LootTableSeed", lootTableSeed);
+        }
+        if(oncePerPlayer) {
+            blockEntityTag.putBoolean("OncePerPlayer", true);
+        }
+
+        compoundTag.put("BlockEntityTag", blockEntityTag);
+        return compoundTag;
     }
 
 }

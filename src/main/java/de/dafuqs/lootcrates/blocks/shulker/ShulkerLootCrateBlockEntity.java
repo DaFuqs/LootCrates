@@ -222,7 +222,6 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
         return this.animationStage == net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.CLOSED;
     }
 
-
     public SpriteIdentifier getTexture() {
         Block block = world.getBlockState(pos).getBlock();
         if (LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE.equals(block)) {
@@ -235,20 +234,6 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
             return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/epic_shulker"));
         }
         return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/common_shulker"));
-    }
-
-    public DyeColor getDyeColor() {
-        Block block = world.getBlockState(pos).getBlock();
-        if (LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE.equals(block)) {
-            return DyeColor.WHITE;
-        } else if (LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE.equals(block)) {
-            return DyeColor.YELLOW;
-        } else if (LootCratesBlocks.RARE_SHULKER_LOOT_CRATE.equals(block)) {
-            return DyeColor.LIGHT_BLUE;
-        } else if (LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE.equals(block)) {
-            return DyeColor.MAGENTA;
-        }
-        return DyeColor.WHITE;
     }
 
 }
