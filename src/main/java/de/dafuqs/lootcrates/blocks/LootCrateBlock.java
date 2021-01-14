@@ -1,7 +1,6 @@
 package de.dafuqs.lootcrates.blocks;
 
 import de.dafuqs.lootcrates.LootCratesBlocks;
-import de.dafuqs.lootcrates.LootCratesItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -160,9 +159,11 @@ public abstract class LootCrateBlock extends BlockWithEntity {
          ItemStack itemStack = super.getPickStack(world, pos, state);
         LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity)world.getBlockEntity(pos);
 
-        CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
-        if (!compoundTag.isEmpty()) {
-            itemStack.putSubTag("BlockEntityTag", compoundTag);
+        if(lootCrateBlockEntity != null) {
+            CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
+            if (!compoundTag.isEmpty()) {
+                itemStack.putSubTag("BlockEntityTag", compoundTag);
+            }
         }
         return itemStack;
     }
