@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="174af527-84ae-4a85-8cee-1f5f4d933900" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Pull.Settings">
+    <option name="BRANCH" value="master" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="D:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2020.2.3\plugins\maven\lib\maven3" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1mvYO9yXFQu6fCpvmqlToKdcKw2" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/src/main/java" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources/assets/lootcrates/models/block" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="show.unlinked.gradle.project.popup" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="LootCrateTags" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="I:\FabricModding\lootcrates\src\main\resources\assets\lootcrates\models\block" />
+      <recent name="I:\FabricModding\lootcrates\src\main\resources\assets\lootcrates\textures\model" />
+      <recent name="I:\FabricModding\lootcrates\src\main\resources\assets\lootcrates\textures\entity\chest" />
+      <recent name="I:\FabricModding\lootcrates\src\main\resources\assets\lootcrates\textures\block" />
+      <recent name="I:\FabricModding\lootcrates\src\main\resources\assets\lootcrates\textures\item" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="de.dafuqs.lootcrates.items" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="I:\FabricModding\lootcrates\src\main\resources\assets\lootcrates\textures\block" />
+      <recent name="I:\FabricModding\lootcrates\src\main\resources\assets\lootcrates\models\block" />
+      <recent name="I:\FabricModding\lootcrates\src\main\resources\assets\lootcrates\textures\entity\shulker" />
+      <recent name="I:\FabricModding\lootcrates\src\main\resources\assets\lootcrates\models\item" />
+      <recent name="I:\FabricModding\lootcrates\src\main\resources\assets\lootcrates\textures\model" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Minecraft Client" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="174af527-84ae-4a85-8cee-1f5f4d933900" name="Default Changelist" comment="" />
+      <created>1610375499748</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1610375499748</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Finished loot and shulker crate models">
+      <created>1610399553318</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1610399553318</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Added tooltips to crate keys">
+      <created>1610462046274</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1610462046274</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Better tooltips for crate block items">
+      <created>1610462478009</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1610462478009</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Renaming stuff">
+      <created>1610462957331</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1610462957331</updated>
+    </task>
+    <task id="LOCAL-00005" summary="More generalizing">
+      <created>1610468503683</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1610468503683</updated>
+    </task>
+    <task id="LOCAL-00006" summary="add override annotations">
+      <created>1610470793825</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1610470793825</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Added a few temporary textures">
+      <created>1610483387170</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1610483387170</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Added a few temporary textures">
+      <created>1610483406654</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1610483406654</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Finished chest rendering">
+      <created>1610484743834</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1610484743834</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Added shulker block rarity colors">
+      <created>1610485136458</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1610485136458</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Added programmer art">
+      <created>1610548204356</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1610548204356</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Shulker break particles">
+      <created>1610548277723</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1610548277723</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Add a second creative tab with lots of common loot crates">
+      <created>1610559612702</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1610559612702</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Unlocking with key &amp; preserving data via tags">
+      <created>1610570536284</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1610570536284</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Finished loot and shulker crate models" />
+    <MESSAGE value="Added tooltips to crate keys" />
+    <MESSAGE value="Better tooltips for crate block items" />
+    <MESSAGE value="Renaming stuff" />
+    <MESSAGE value="More generalizing" />
+    <MESSAGE value="add override annotations" />
+    <MESSAGE value="Added a few temporary textures" />
+    <MESSAGE value="Finished chest rendering" />
+    <MESSAGE value="Added shulker block rarity colors" />
+    <MESSAGE value="Added programmer art" />
+    <MESSAGE value="Shulker break particles" />
+    <MESSAGE value="Add a second creative tab with lots of common loot crates" />
+    <MESSAGE value="Unlocking with key &amp; preserving data via tags" />
+    <option name="LAST_COMMIT_MESSAGE" value="Unlocking with key &amp; preserving data via tags" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2051" y="505" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1610391005410">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="2051" y="505" key="#com.intellij.fileTypes.FileTypeChooser/0.0.3440.1400@0.0.3440.1400" timestamp="1610391005410" />
+    <state x="2097" y="409" key="#com.intellij.ide.util.MemberChooser" timestamp="1610558176934">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="2097" y="409" key="#com.intellij.ide.util.MemberChooser/0.0.3440.1400@0.0.3440.1400" timestamp="1610558176934" />
+    <state x="2143" y="627" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1610563976945">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="2143" y="627" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.0.3440.1400@0.0.3440.1400" timestamp="1610563976945" />
+    <state x="2008" y="521" key="#com.intellij.refactoring.move.moveMembers.MoveMembersDialog" timestamp="1610563990362">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="2008" y="521" key="#com.intellij.refactoring.move.moveMembers.MoveMembersDialog/0.0.3440.1400@0.0.3440.1400" timestamp="1610563990362" />
+    <state x="1857" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1610462553115">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="1857" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.3440.1400@0.0.3440.1400" timestamp="1610462553115" />
+    <state x="1982" y="446" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1610462141032">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="1982" y="446" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.3440.1400@0.0.3440.1400" timestamp="1610462141032" />
+    <state x="1666" y="271" key="CommitChangelistDialog2" timestamp="1610570534828">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="1666" y="271" key="CommitChangelistDialog2/0.0.3440.1400@0.0.3440.1400" timestamp="1610570534828" />
+    <state width="502" height="466" key="DebuggerActiveHint" timestamp="1610484542541">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state width="502" height="466" key="DebuggerActiveHint/0.0.3440.1400@0.0.3440.1400" timestamp="1610484542541" />
+    <state x="2032" y="458" key="FileChooserDialogImpl" timestamp="1610398084308">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="2032" y="458" key="FileChooserDialogImpl/0.0.3440.1400@0.0.3440.1400" timestamp="1610398084308" />
+    <state width="2245" height="510" key="GridCell.Tab.0.bottom" timestamp="1610570443305">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state width="2245" height="510" key="GridCell.Tab.0.bottom/0.0.3440.1400@0.0.3440.1400" timestamp="1610570443305" />
+    <state width="2245" height="510" key="GridCell.Tab.0.center" timestamp="1610570443305">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state width="2245" height="510" key="GridCell.Tab.0.center/0.0.3440.1400@0.0.3440.1400" timestamp="1610570443305" />
+    <state width="2245" height="510" key="GridCell.Tab.0.left" timestamp="1610570443304">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state width="2245" height="510" key="GridCell.Tab.0.left/0.0.3440.1400@0.0.3440.1400" timestamp="1610570443304" />
+    <state width="2245" height="510" key="GridCell.Tab.0.right" timestamp="1610570443305">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state width="2245" height="510" key="GridCell.Tab.0.right/0.0.3440.1400@0.0.3440.1400" timestamp="1610570443305" />
+    <state width="2245" height="510" key="GridCell.Tab.1.bottom" timestamp="1610570474342">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state width="2245" height="510" key="GridCell.Tab.1.bottom/0.0.3440.1400@0.0.3440.1400" timestamp="1610570474342" />
+    <state width="2245" height="510" key="GridCell.Tab.1.center" timestamp="1610570474342">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state width="2245" height="510" key="GridCell.Tab.1.center/0.0.3440.1400@0.0.3440.1400" timestamp="1610570474342" />
+    <state width="2245" height="510" key="GridCell.Tab.1.left" timestamp="1610570474342">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state width="2245" height="510" key="GridCell.Tab.1.left/0.0.3440.1400@0.0.3440.1400" timestamp="1610570474342" />
+    <state width="2245" height="510" key="GridCell.Tab.1.right" timestamp="1610570474342">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state width="2245" height="510" key="GridCell.Tab.1.right/0.0.3440.1400@0.0.3440.1400" timestamp="1610570474342" />
+    <state x="1883" y="436" key="Vcs.Push.Dialog.v2" timestamp="1610570540088">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="1883" y="436" key="Vcs.Push.Dialog.v2/0.0.3440.1400@0.0.3440.1400" timestamp="1610570540088" />
+    <state x="2107" y="481" key="chooseDestDirectoryDialog" timestamp="1610563988042">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="2107" y="481" key="chooseDestDirectoryDialog/0.0.3440.1400@0.0.3440.1400" timestamp="1610563988042" />
+    <state x="2107" y="617" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1610472383600">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="2107" y="617" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.3440.1400@0.0.3440.1400" timestamp="1610472383600" />
+    <state x="1692" y="432" width="1119" height="572" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1610397141725">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="1692" y="432" width="1119" height="572" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.3440.1400@0.0.3440.1400" timestamp="1610397141725" />
+    <state x="2087" y="450" key="refactoring.ChangeSignatureDialog" timestamp="1610392613750">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="2087" y="450" key="refactoring.ChangeSignatureDialog/0.0.3440.1400@0.0.3440.1400" timestamp="1610392613750" />
+    <state x="1945" y="332" key="run.anything.popup" timestamp="1610486498766">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="1945" y="332" key="run.anything.popup/0.0.3440.1400@0.0.3440.1400" timestamp="1610486498766" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="this.lastReplenishTimeTick &gt;= this.world.getTime() + this.replenishTimeTicks" />
+        <watch expression="world.getTime()" />
+        <watch expression="this.replenishTimeTicks" />
+        <watch expression="this.world.getTime() + this.replenishTimeTicks" />
+        <watch expression="this.world.getServer().getLootManager().getTable(this.lootTableId)" />
+        <watch expression="this.world.getServer()" />
+        <watch expression="this.world" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>
