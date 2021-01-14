@@ -3,6 +3,8 @@ package de.dafuqs.lootcrates.blocks;
 import de.dafuqs.lootcrates.LootCratesBlocks;
 import de.dafuqs.lootcrates.LootCratesItems;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
+import de.dafuqs.lootcrates.items.LootCrateItem;
+import de.dafuqs.lootcrates.items.LootKeyItem;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,6 +23,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -198,13 +201,17 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public boolean doesUnlock(Item item) {
+        if(world == null) {
+            return false;
+        }
+
         Block block = world.getBlockState(pos).getBlock();
 
-        if (item.equals(LootCratesItems.COMMON_CRATE_KEY) && (block.equals(LootCratesBlocks.COMMON_CHEST_LOOT_CRATE) || block.equals(LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE))
-                || item.equals(LootCratesItems.UNCOMMON_CRATE_KEY) && (block.equals(LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE) || block.equals(LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE))
-                || item.equals(LootCratesItems.RARE_CRATE_KEY) && (block.equals(LootCratesBlocks.RARE_CHEST_LOOT_CRATE) || block.equals(LootCratesBlocks.RARE_SHULKER_LOOT_CRATE))
-                || item.equals(LootCratesItems.EPIC_CRATE_KEY) && (block.equals(LootCratesBlocks.EPIC_CHEST_LOOT_CRATE) || block.equals(LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE))) {
-            return true;
+        if(item instanceof LootKeyItem && block instanceof LootCrateBlock) {
+            Rarity itemRarity = LootKeyItem.getKeyRarity((LootKeyItem) item);
+            Rarity blockRarity = LootCrateBlock.getCrateRarity(block);
+
+            return itemRarity.equals(blockRarity);
         } else {
             return false;
         }
