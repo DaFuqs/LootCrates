@@ -2,12 +2,12 @@ package de.dafuqs.lootcrates.items;
 
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import net.minecraft.block.Block;
-import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -28,7 +28,6 @@ public class LootCrateItem extends BlockItem {
     @Override
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         super.appendTooltip(itemStack, world, tooltip, tooltipContext);
-
 
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null) {
@@ -57,7 +56,13 @@ public class LootCrateItem extends BlockItem {
                     tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.fixed_seed", lootTableSeed));
                 }
                 if (compoundTag.contains(LootCrateTagNames.OncePerPlayer.toString()) && compoundTag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player"));
+                    if(compoundTag.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
+                        ListTag playerUUIDsTag = compoundTag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
+                        int playerCount = playerUUIDsTag.size();
+                        tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player_with_count", playerCount));
+                    } else {
+                        tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player"));
+                    }
                 }
             }
 

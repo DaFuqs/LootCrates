@@ -6,5 +6,5 @@ public enum LootCrateTagNames {
         Locked,
         DoNotConsumeKeyOnUnlock,
         OncePerPlayer,
-        RegisteredPlayerGUIDs
+    RegisteredPlayerUUIDs
 }

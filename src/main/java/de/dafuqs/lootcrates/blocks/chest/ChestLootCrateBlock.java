@@ -38,15 +38,15 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
-        if(actionResult == ActionResult.FAIL) {
-            playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
-            return actionResult;
-        }
-
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {
+            ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
+            if(actionResult == ActionResult.FAIL) {
+                playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
+                return actionResult;
+            }
+
             if(!hasBlockOnTop(world, pos)) {
                 NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
                 if (namedScreenHandlerFactory != null) {

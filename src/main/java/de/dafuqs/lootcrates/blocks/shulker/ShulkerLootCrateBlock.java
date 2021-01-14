@@ -52,17 +52,17 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
-        if(actionResult == ActionResult.FAIL) {
-            playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
-            return actionResult;
-        }
-
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else if (player.isSpectator()) {
             return ActionResult.CONSUME;
         } else {
+            ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
+            if(actionResult == ActionResult.FAIL) {
+                playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
+                return actionResult;
+            }
+
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof ShulkerLootCrateBlockEntity) {
                 ShulkerLootCrateBlockEntity ShulkerLootCrateBlockEntity = (ShulkerLootCrateBlockEntity)blockEntity;

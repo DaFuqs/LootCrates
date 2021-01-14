@@ -16,10 +16,13 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
@@ -36,7 +39,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     private boolean locked;
     private boolean doNotConsumeKeyOnUnlock;
     private boolean oncePerPlayer;
-    private List<UUID> registeredPlayerGUIDs;
+    private List<UUID> registeredPlayerUUIDs;
 
     private long replenishTimeTicks;
     private long lastReplenishTimeTick;
@@ -44,8 +47,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, DefaultedList<ItemStack> inventory) {
         super(blockEntityType);
         this.inventory = inventory;
-
-        registeredPlayerGUIDs = new ArrayList<>();
+        registeredPlayerUUIDs = new ArrayList<>();
     }
 
     @Override
@@ -97,10 +99,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(hasWorld()) {
             if (lastReplenishTimeTick == 0 || this.world.getTime() > this.lastReplenishTimeTick + this.replenishTimeTicks) {
                 if (this.oncePerPlayer) {
-                    if (this.registeredPlayerGUIDs.contains(player.getUuid())) {
+                    if (this.registeredPlayerUUIDs.contains(player.getUuid())) {
                         return false;
                     } else {
                         this.lastReplenishTimeTick = world.getTime();
+                        this.registeredPlayerUUIDs.add(player.getUuid());
+                        this.markDirty();
                         return true;
                     }
                 } else {
@@ -130,22 +134,21 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
         tag.putLong(LootCrateTagNames.LastReplenishTimeTick.toString(), this.lastReplenishTimeTick);
         tag.putBoolean(LootCrateTagNames.Locked.toString(), this.locked);
+
         if(this.locked) {
             tag.putBoolean(LootCrateTagNames.Locked.toString(), true);
-            if(doNotConsumeKeyOnUnlock) {
+            if(this.doNotConsumeKeyOnUnlock) {
                 tag.putBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString(), true);
             }
         }
-        if(oncePerPlayer) {
+        if(this.oncePerPlayer) {
             tag.putBoolean(LootCrateTagNames.OncePerPlayer.toString(), true);
-            if(registeredPlayerGUIDs.size() > 0) {
-                CompoundTag registeredPlayers = new CompoundTag();
-                int playerCount = 0;
-                for (UUID uuid : this.registeredPlayerGUIDs) {
-                    registeredPlayers.putUuid(String.valueOf(playerCount), uuid);
-                    playerCount++;
+            if(this.registeredPlayerUUIDs.size() > 0) {
+                ListTag registeredPlayers = new ListTag();
+                for (UUID uuid : this.registeredPlayerUUIDs) {
+                    registeredPlayers.add(NbtHelper.fromUuid(uuid));
                 }
-                tag.put(LootCrateTagNames.RegisteredPlayerGUIDs.toString(), registeredPlayers);
+                tag.put(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), registeredPlayers);
             }
         }
         this.serializeLootTable(tag);
@@ -154,7 +157,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public void setLootCrateBlockTags(CompoundTag tag) {
-        this.registeredPlayerGUIDs = new ArrayList<>();
+        this.registeredPlayerUUIDs = new ArrayList<>();
 
         this.deserializeLootTable(tag);
 
@@ -179,19 +182,10 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
         if(tag.contains(LootCrateTagNames.OncePerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
             this.oncePerPlayer = true;
-            if(tag.contains(LootCrateTagNames.RegisteredPlayerGUIDs.toString())) {
-                CompoundTag compoundTag = tag.getCompound(LootCrateTagNames.RegisteredPlayerGUIDs.toString());
-                int counter = 0;
-                while(counter < 100) { // just a safety measure against never ending loops.
-                                       // also implicates:
-                                       // the chest can only store 100 players that way
-                    if (compoundTag.contains(String.valueOf(counter))) {
-                        UUID uuid = compoundTag.getUuid(String.valueOf(counter));
-                        this.registeredPlayerGUIDs.add(uuid);
-                        counter++;
-                    } else {
-                        break;
-                    }
+            if(tag.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
+                ListTag playerUUIDs = tag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
+                for (Tag playerUUID : playerUUIDs) {
+                    this.registeredPlayerUUIDs.add(NbtHelper.toUuid(playerUUID));
                 }
             }
         } else {
@@ -213,7 +207,6 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(item instanceof LootKeyItem && block instanceof LootCrateBlock) {
             Rarity itemRarity = LootKeyItem.getKeyRarity((LootKeyItem) item);
             Rarity blockRarity = LootCrateBlock.getCrateRarity(block);
-
             return itemRarity.equals(blockRarity);
         } else {
             return false;

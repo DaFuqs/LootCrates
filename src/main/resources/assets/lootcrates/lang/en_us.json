@@ -40,5 +40,6 @@
   "item.lootcrates.loot_crate.tooltip.replenish_time_days": "Generates loot every %f days",
   "item.lootcrates.loot_crate.tooltip.fixed_seed": "Fixed seed: %d",
   "item.lootcrates.loot_crate.tooltip.once_per_player": "Once per player",
+  "item.lootcrates.loot_crate.tooltip.once_per_player_with_count": "Once per player (%d opened)",
   "item.lootcrates.loot_crate.tooltip.no_data_set": "No data set"
 }

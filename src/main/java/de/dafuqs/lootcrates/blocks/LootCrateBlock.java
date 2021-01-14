@@ -6,7 +6,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -107,12 +109,12 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             if (itemStack.hasCustomName()) {
                 ((LootCrateBlockEntity) blockEntity).setCustomName(itemStack.getName());
             }
-            if(itemStack.hasTag()) {
+            /*if(itemStack.hasTag()) {
                 CompoundTag tag = itemStack.getSubTag("BlockEntityTag");
                 if(tag != null) {
                     ((LootCrateBlockEntity) blockEntity).setLootCrateBlockTags(tag);
                 }
-            }
+            }*/
         }
     }
 
@@ -126,6 +128,10 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 
                 CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
                 itemStack.putSubTag("BlockEntityTag", compoundTag);
+
+                if (lootCrateBlockEntity.hasCustomName()) {
+                    itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
+                }
 
                 ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, itemStack);
                 itemEntity.setToDefaultPickupDelay();
@@ -156,10 +162,14 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     @Override
     @Environment(EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-         ItemStack itemStack = super.getPickStack(world, pos, state);
+        ItemStack itemStack = super.getPickStack(world, pos, state);
         LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity)world.getBlockEntity(pos);
 
         if(lootCrateBlockEntity != null) {
+            if (lootCrateBlockEntity.hasCustomName()) {
+                itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
+            }
+
             CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
             if (!compoundTag.isEmpty()) {
                 itemStack.putSubTag("BlockEntityTag", compoundTag);
