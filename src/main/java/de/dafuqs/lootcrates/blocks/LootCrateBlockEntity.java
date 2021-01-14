@@ -123,17 +123,17 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public CompoundTag addLootCrateBlockTags(CompoundTag tag) {
-        tag.putLong(LootCrateTags.TagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
-        tag.putLong(LootCrateTags.TagNames.LastReplenishTimeTick.toString(), this.lastReplenishTimeTick);
-        tag.putBoolean(LootCrateTags.TagNames.Locked.toString(), this.locked);
+        tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
+        tag.putLong(LootCrateTagNames.LastReplenishTimeTick.toString(), this.lastReplenishTimeTick);
+        tag.putBoolean(LootCrateTagNames.Locked.toString(), this.locked);
         if(this.locked) {
-            tag.putBoolean(LootCrateTags.TagNames.Locked.toString(), true);
+            tag.putBoolean(LootCrateTagNames.Locked.toString(), true);
             if(doNotConsumeKeyOnUnlock) {
-                tag.putBoolean(LootCrateTags.TagNames.DoNotConsumeKeyOnUnlock.toString(), true);
+                tag.putBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString(), true);
             }
         }
         if(oncePerPlayer) {
-            tag.putBoolean(LootCrateTags.TagNames.OncePerPlayer.toString(), true);
+            tag.putBoolean(LootCrateTagNames.OncePerPlayer.toString(), true);
             if(registeredPlayerGUIDs.size() > 0) {
                 CompoundTag registeredPlayers = new CompoundTag();
                 int playerCount = 0;
@@ -141,7 +141,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
                     registeredPlayers.putUuid(String.valueOf(playerCount), uuid);
                     playerCount++;
                 }
-                tag.put(LootCrateTags.TagNames.RegisteredPlayerGUIDs.toString(), registeredPlayers);
+                tag.put(LootCrateTagNames.RegisteredPlayerGUIDs.toString(), registeredPlayers);
             }
         }
         this.serializeLootTable(tag);
@@ -154,20 +154,20 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
         this.deserializeLootTable(tag);
 
-        if(tag.contains(LootCrateTags.TagNames.ReplenishTimeTicks.toString())) {
-            this.replenishTimeTicks = tag.getLong(LootCrateTags.TagNames.ReplenishTimeTicks.toString());
+        if(tag.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
+            this.replenishTimeTicks = tag.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
         } else {
             this.replenishTimeTicks = 0;
         }
-        if(tag.contains(LootCrateTags.TagNames.LastReplenishTimeTick.toString())) {
-            this.lastReplenishTimeTick = tag.getLong(LootCrateTags.TagNames.LastReplenishTimeTick.toString());
+        if(tag.contains(LootCrateTagNames.LastReplenishTimeTick.toString())) {
+            this.lastReplenishTimeTick = tag.getLong(LootCrateTagNames.LastReplenishTimeTick.toString());
         } else {
             this.lastReplenishTimeTick = 0;
         }
 
-        if(tag.contains(LootCrateTags.TagNames.Locked.toString()) && tag.getBoolean(LootCrateTags.TagNames.Locked.toString())) {
+        if(tag.contains(LootCrateTagNames.Locked.toString()) && tag.getBoolean(LootCrateTagNames.Locked.toString())) {
             this.locked = true;
-            if(tag.contains(LootCrateTags.TagNames.DoNotConsumeKeyOnUnlock.toString())&& tag.getBoolean(LootCrateTags.TagNames.DoNotConsumeKeyOnUnlock.toString())) {
+            if(tag.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString())&& tag.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString())) {
                 this.doNotConsumeKeyOnUnlock = true;
             } else {
                 this.doNotConsumeKeyOnUnlock = false;
@@ -177,10 +177,10 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             this.doNotConsumeKeyOnUnlock = false;
         }
 
-        if(tag.contains(LootCrateTags.TagNames.OncePerPlayer.toString()) && tag.getBoolean(LootCrateTags.TagNames.OncePerPlayer.toString())) {
+        if(tag.contains(LootCrateTagNames.OncePerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
             this.oncePerPlayer = true;
-            if(tag.contains(LootCrateTags.TagNames.RegisteredPlayerGUIDs.toString())) {
-                CompoundTag compoundTag = tag.getCompound(LootCrateTags.TagNames.RegisteredPlayerGUIDs.toString());
+            if(tag.contains(LootCrateTagNames.RegisteredPlayerGUIDs.toString())) {
+                CompoundTag compoundTag = tag.getCompound(LootCrateTagNames.RegisteredPlayerGUIDs.toString());
                 int counter = 0;
                 if(compoundTag.contains(String.valueOf(counter))) {
                     UUID uuid = compoundTag.getUuid(String.valueOf(counter));

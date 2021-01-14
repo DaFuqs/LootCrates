@@ -1,12 +1,10 @@
 package de.dafuqs.lootcrates.blocks;
 
-public class LootCrateTags {
-    public enum TagNames {
+public enum LootCrateTagNames {
         ReplenishTimeTicks,
         LastReplenishTimeTick,
         Locked,
         DoNotConsumeKeyOnUnlock,
         OncePerPlayer,
         RegisteredPlayerGUIDs
-    }
 }
