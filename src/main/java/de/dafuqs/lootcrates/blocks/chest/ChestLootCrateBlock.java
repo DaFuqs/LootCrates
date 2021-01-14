@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.ActionResult;
@@ -39,7 +40,7 @@ public class ChestLootCrateBlock extends LootCrateBlock {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
         if(actionResult == ActionResult.FAIL) {
-            // TODO: play sound
+            playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
             return actionResult;
         }
 

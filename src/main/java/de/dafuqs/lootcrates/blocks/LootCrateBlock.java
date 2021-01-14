@@ -12,6 +12,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -127,6 +129,13 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             itemStack.putSubTag("BlockEntityTag", compoundTag);
         }
         return itemStack;
+    }
+
+    protected void playSound(World world, BlockPos blockPos, SoundEvent soundEvent) {
+        double d = blockPos.getX() + 0.5D;
+        double e = blockPos.getY() + 0.5D;
+        double f = blockPos.getZ() + 0.5D;
+        world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
     }
 
 
