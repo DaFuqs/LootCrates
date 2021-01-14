@@ -25,10 +25,10 @@
   "container.lootcrates.loot_crate": "Loot Crate",
   "container.lootcrates.shulker_crate": "Shulker Loot Crate",
 
-  "message.lootcrates.common_key_needed_to_unlock": "You need a Common Key to unlock this loot crate",
-  "message.lootcrates.uncommon_key_needed_to_unlock": "You need an Uncommon Key to unlock this loot crate",
-  "message.lootcrates.rare_key_needed_to_unlock": "You need a Rare Key to unlock this loot crate",
-  "message.lootcrates.epic_key_needed_to_unlock": "You need a Epic Key to unlock this loot crate",
+  "message.lootcrates.common_key_needed_to_unlock": "You need a §fCommon Crate Key§r to unlock this loot crate",
+  "message.lootcrates.uncommon_key_needed_to_unlock": "You need an §eUncommon Crate Key§r to unlock this loot crate",
+  "message.lootcrates.rare_key_needed_to_unlock": "You need a §bRare Crate Key§r to unlock this loot crate",
+  "message.lootcrates.epic_key_needed_to_unlock": "You need a §dEpic Crate Key§r to unlock this loot crate",
 
   "item.lootcrates.loot_crate.tooltip.locked_use": "Locked (unlock it with a key of same rarity)",
   "item.lootcrates.loot_crate.tooltip.locked_consume": "Locked (unlocking will use up a key of the same rarity)",
