@@ -29,4 +29,13 @@
   "message.lootcrates.uncommon_key_needed_to_unlock": "You need an Uncommon Key to unlock this loot crate",
   "message.lootcrates.rare_key_needed_to_unlock": "You need a Rare Key to unlock this loot crate",
   "message.lootcrates.epic_key_needed_to_unlock": "You need a Epic Key to unlock this loot crate",
+
+  "item.lootcrates.loot_crate.tooltip.locked_use": "Locked (unlock it with a key of same rarity)",
+  "item.lootcrates.loot_crate.tooltip.locked_consume": "Locked (unlocking will use up a key of the same rarity)",
+  "item.lootcrates.loot_crate.tooltip.unlocked": "Unlocked",
+  "item.lootcrates.loot_crate.tooltip.loot_table": "Loot Table: %s",
+  "item.lootcrates.loot_crate.tooltip.replenish_time": "Generates loot every %d ticks",
+  "item.lootcrates.loot_crate.tooltip.fixed_seed": "Fixed seed: %d",
+  "item.lootcrates.loot_crate.tooltip.once_per_player": "Once per player",
+  "item.lootcrates.loot_crate.tooltip.no_data_set": "No data set"
 }
