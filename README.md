@@ -8,10 +8,12 @@ The crates are meant to be used by server administrators or modpack makers to di
 The container blocks do not generate naturally in the world and are highly customizable on how they function.
 
 ## Example Usages
-- Loot crates that can be looted once per player in structures as a reward for exploration
+- Loot crate at spawn, that generates a start loadout once for each player
 - Use locked crates as a form of progression, handing out the keys as rewards for quests or advancements
-- Use shulker crates in mob drops for that "loot chest" feel
+- Loot crates that can be looted once per player in structures as a reward for exploration
+- Use shulker crates in mob drops for that "loot bags" feel
 - To build upon that: Use locked shulker crates instead. To encourage trading scatter the required keys around the landscape for players to find.
+- Make keys drop from special mobs or bosses. Players have to farm them to get access to their collected shulker crates
 - Place instant regenerating, locked loot crates at the servers central square to get players to run into each other for socializaton or PvP, fighting each other for their keys
 
 # The blocks
@@ -20,7 +22,7 @@ The container blocks do not generate naturally in the world and are highly custo
 
 ![All the Loot Crates](./images/readme_screenshot_loot_crates.png)
 ![All the Shulker_Crates](./images/readme_screenshot_shulker_crates.png)
-![All the KEys](./images/readme_screenshot_keys.png)
+![All the Keys](./images/readme_screenshot_keys.png)
 
 ## Loot Crates
 Loot crates cannot be broken or moved. Instead they generate loot over time!
@@ -54,7 +56,7 @@ ReplenishTimeTicks        | long          | When the crate is accessed it will t
 Locked                    | boolean       | When true a key with matching rarity will be required to unlock the crate and access it's contents
 DoNotConsumeKeyOnUnlock   | boolean       | When true opening a locked crate will not consume the key.
 OncePerPlayer             | boolean       | When true every player can only use the crate once to generate loot. If "LootGenerationTimeInTicks" is set to <= 0 loot will be generated once per player
-Inventory                 | list of items | Analog vanilla shulker chests. Defines the items stored in the crate. Can be used to define items that are always present in a unique chest at the first opening. (chest crates can have this set, too. They just don't set it when broken, because they are meant to be unbreakable outside creative)
+Inventory                 | list of items | Analog vanilla shulker chests. Defines the items stored in the crate. Can be used to define items that are always present in a crate at first opening. (chest crates can have this set, too. They just don't set it when broken, because they are meant to be unbreakable outside creative)
 
 **Warning:**
 
