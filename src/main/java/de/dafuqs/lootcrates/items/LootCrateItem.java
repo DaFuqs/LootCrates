@@ -31,30 +31,31 @@ public class LootCrateItem extends BlockItem {
 
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null) {
+
+
+            // lock
             if (compoundTag.contains(LootCrateTagNames.Locked.toString()) && compoundTag.getBoolean(LootCrateTagNames.Locked.toString())) {
                 if (compoundTag.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString()) && compoundTag.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString())) {
                     tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_use"));
                 } else {
                     tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_consume"));
                 }
-            } else {
-                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.unlocked"));
             }
 
             boolean advanced = tooltipContext.isAdvanced();
-            if(advanced) {
-                if (compoundTag.contains("LootTable")) {
-                    String lootTableText = compoundTag.getString("LootTable");
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.loot_table", lootTableText));
-                }
-                if (compoundTag.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
-                    long replenishTimeTicks = compoundTag.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
-                    tooltip.add(getReplenishTimeHumanReadableText(replenishTimeTicks));
-                }
-                if (compoundTag.contains("LootTableSeed")) {
-                    long lootTableSeed = compoundTag.getLong("LootTableSeed");
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.fixed_seed", lootTableSeed));
-                }
+
+
+            long replenishTimeTicks = 0;
+            if (compoundTag.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
+                replenishTimeTicks = compoundTag.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
+            }
+            boolean wasOpened = compoundTag.contains(LootCrateTagNames.LastReplenishTimeTick.toString()) && compoundTag.getLong(LootCrateTagNames.LastReplenishTimeTick.toString()) != 0;
+
+            if (replenishTimeTicks <= 0 && wasOpened) {
+                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.already_looted"));
+            } else {
+                tooltip.add(getReplenishTimeHumanReadableText(replenishTimeTicks));
+
                 if (compoundTag.contains(LootCrateTagNames.OncePerPlayer.toString()) && compoundTag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
                     if(compoundTag.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
                         ListTag playerUUIDsTag = compoundTag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
@@ -62,6 +63,17 @@ public class LootCrateItem extends BlockItem {
                         tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player_with_count", playerCount));
                     } else {
                         tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player"));
+                    }
+                }
+
+                if(advanced) {
+                    if (compoundTag.contains("LootTable")) {
+                        String lootTableText = compoundTag.getString("LootTable");
+                        tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.loot_table", lootTableText));
+                    }
+                    if (compoundTag.contains("LootTableSeed")) {
+                        long lootTableSeed = compoundTag.getLong("LootTableSeed");
+                        tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.fixed_seed", lootTableSeed));
                     }
                 }
             }

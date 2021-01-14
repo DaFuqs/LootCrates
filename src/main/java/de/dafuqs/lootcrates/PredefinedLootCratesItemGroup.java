@@ -41,9 +41,9 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
         ArrayList<ItemStack> stacks = new ArrayList<>();
 
         ArrayList<Long> lootGenerationTimeInTicksValues = new ArrayList<>();
+        lootGenerationTimeInTicksValues.add(-1L);      // once
         lootGenerationTimeInTicksValues.add(20L);      // 1 second
-        lootGenerationTimeInTicksValues.add(12000L);   // 10 minutes
-        lootGenerationTimeInTicksValues.add(288000L);  // 4 hours
+        lootGenerationTimeInTicksValues.add(72000L);   // 1 hour
         lootGenerationTimeInTicksValues.add(1728000L); // 1 day
 
         ArrayList<Boolean> booleans = new ArrayList<>();
@@ -59,12 +59,10 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
                     for (boolean locked : booleans) {
                         for (boolean doNotConsumeKeyOnUnlock : booleans) {
                             for (boolean oncePerPlayer : booleans) {
-
                                 CompoundTag compoundTag = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, lootGenerationTimeInTicks, 0, oncePerPlayer);
                                 ItemStack itemStack = new ItemStack(lootCrateItem);
                                 itemStack.setTag(compoundTag);
                                 stacks.add(itemStack);
-
                             }
                         }
                     }

@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.Item;
@@ -53,8 +54,10 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     @Override
     public CompoundTag toTag(CompoundTag tag) {
         super.toTag(tag);
-        tag = addLootCrateBlockTags(tag);
+
         Inventories.toTag(tag, this.inventory, false);
+        tag = addLootCrateBlockTags(tag);
+
         return tag;
     }
 
@@ -68,7 +71,6 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
 
         setLootCrateBlockTags(tag);
-
     }
 
     @Override
@@ -97,6 +99,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
     public boolean shouldGenerateNewLoot(PlayerEntity player) {
         if(hasWorld()) {
+            // if replenish time is set to -1: just generate loot once
+            if(this.replenishTimeTicks <= 0 && this.lastReplenishTimeTick == 0) {
+                this.lastReplenishTimeTick = world.getTime();
+                return true;
+            }
+            // check if there was enough time since the last opening
             if (lastReplenishTimeTick == 0 || this.world.getTime() > this.lastReplenishTimeTick + this.replenishTimeTicks) {
                 if (this.oncePerPlayer) {
                     if (this.registeredPlayerUUIDs.contains(player.getUuid())) {
@@ -131,10 +139,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public CompoundTag addLootCrateBlockTags(CompoundTag tag) {
-        tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
-        tag.putLong(LootCrateTagNames.LastReplenishTimeTick.toString(), this.lastReplenishTimeTick);
-        tag.putBoolean(LootCrateTagNames.Locked.toString(), this.locked);
-
+        if(this.replenishTimeTicks != 0) {
+            tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
+        }
+        if(this.lastReplenishTimeTick != 0) {
+            tag.putLong(LootCrateTagNames.LastReplenishTimeTick.toString(), this.lastReplenishTimeTick);
+        }
         if(this.locked) {
             tag.putBoolean(LootCrateTagNames.Locked.toString(), true);
             if(this.doNotConsumeKeyOnUnlock) {
