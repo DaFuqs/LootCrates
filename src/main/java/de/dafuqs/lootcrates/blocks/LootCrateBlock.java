@@ -122,7 +122,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         if (blockEntity instanceof LootCrateBlockEntity) {
             LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity)blockEntity;
             if (!world.isClient && player.isCreative() && !lootCrateBlockEntity.isEmpty()) {
-                ItemStack itemStack = new ItemStack(this);
+                ItemStack itemStack = new ItemStack(this); // TODO: only shulker chests should drop as item
 
                 CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
                 itemStack.putSubTag("BlockEntityTag", compoundTag);
@@ -131,7 +131,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 itemEntity.setToDefaultPickupDelay();
                 world.spawnEntity(itemEntity);
             } else {
-                lootCrateBlockEntity.checkLootInteraction(player);
+                lootCrateBlockEntity.checkLootInteraction(player); // TODO: ???
             }
         }
 
@@ -141,7 +141,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     @Override
     public List<ItemStack> getDroppedStacks(BlockState state, net.minecraft.loot.context.LootContext.Builder builder) {
         BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
-        if (blockEntity instanceof LootCrateBlockEntity) {
+        if (blockEntity instanceof LootCrateBlockEntity) { // TODO: only shulker chests should drop as item
             LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity)blockEntity;
             builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
                 for(int i = 0; i < lootCrateBlockEntity.size(); ++i) {
