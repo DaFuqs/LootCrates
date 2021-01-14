@@ -2,15 +2,21 @@ package de.dafuqs.lootcrates.items;
 
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import net.minecraft.block.Block;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class LootCrateItem extends BlockItem {
@@ -22,6 +28,7 @@ public class LootCrateItem extends BlockItem {
     @Override
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         super.appendTooltip(itemStack, world, tooltip, tooltipContext);
+
 
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null) {
@@ -51,6 +58,31 @@ public class LootCrateItem extends BlockItem {
                 }
                 if (compoundTag.contains(LootCrateTagNames.OncePerPlayer.toString()) && compoundTag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
                     tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player"));
+                }
+            }
+
+            if (compoundTag.contains("Items", 9)) {
+                DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
+                Inventories.fromTag(compoundTag, defaultedList);
+                int i = 0;
+                int j = 0;
+                Iterator var9 = defaultedList.iterator();
+
+                while(var9.hasNext()) {
+                    ItemStack is = (ItemStack)var9.next();
+                    if (!is.isEmpty()) {
+                        ++j;
+                        if (i <= 4) {
+                            ++i;
+                            MutableText mutableText = is.getName().shallowCopy();
+                            mutableText.append(" x").append(String.valueOf(is.getCount()));
+                            tooltip.add(mutableText);
+                        }
+                    }
+                }
+
+                if (j - i > 0) {
+                    tooltip.add((new TranslatableText("container.shulkerBox.more", new Object[]{j - i})).formatted(Formatting.ITALIC));
                 }
             }
         } else {
