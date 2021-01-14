@@ -42,8 +42,8 @@ public class LootCrateItem extends BlockItem {
                     tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.loot_table", lootTableText));
                 }
                 if (compoundTag.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
-                    long lootGenerationTimeInTicks = compoundTag.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time", lootGenerationTimeInTicks));
+                    long replenishTimeTicks = compoundTag.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
+                    tooltip.add(getReplenishTimeHumanReadableText(replenishTimeTicks));
                 }
                 if (compoundTag.contains("LootTableSeed")) {
                     long lootTableSeed = compoundTag.getLong("LootTableSeed");
@@ -55,6 +55,18 @@ public class LootCrateItem extends BlockItem {
             }
         } else {
             tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.no_data_set"));
+        }
+    }
+
+    private TranslatableText getReplenishTimeHumanReadableText(long replenishTime) {
+        if(replenishTime >= 1728000) { // 1 day
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_days", replenishTime / 1728000F);
+        } else if(replenishTime >= 72000) { // 1 hour
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_hours", replenishTime / 72000F);
+        } else if(replenishTime >= 1200) { // 1 minute
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_minutes", replenishTime / 1200F);
+        } else { // in ticks
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_ticks", replenishTime);
         }
     }
 

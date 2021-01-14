@@ -34,7 +34,10 @@
   "item.lootcrates.loot_crate.tooltip.locked_consume": "Locked (unlocking will use up a key of the same rarity)",
   "item.lootcrates.loot_crate.tooltip.unlocked": "Unlocked",
   "item.lootcrates.loot_crate.tooltip.loot_table": "Loot Table: %s",
-  "item.lootcrates.loot_crate.tooltip.replenish_time": "Generates loot every %d ticks",
+  "item.lootcrates.loot_crate.tooltip.replenish_time_ticks": "Generates loot every %d ticks",
+  "item.lootcrates.loot_crate.tooltip.replenish_time_minutes": "Generates loot every %f minutes",
+  "item.lootcrates.loot_crate.tooltip.replenish_time_hours": "Generates loot every %f hours",
+  "item.lootcrates.loot_crate.tooltip.replenish_time_days": "Generates loot every %f days",
   "item.lootcrates.loot_crate.tooltip.fixed_seed": "Fixed seed: %d",
   "item.lootcrates.loot_crate.tooltip.once_per_player": "Once per player",
   "item.lootcrates.loot_crate.tooltip.no_data_set": "No data set"
