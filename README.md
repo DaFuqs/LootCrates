@@ -8,7 +8,6 @@ The crates are meant to be used by server administrators or modpack makers to di
 The container blocks do not generate naturally in the world and are highly customizable on how they function.
 
 ## Example Usages
-
 - Loot crates that can be looted once per player in structures as a reward for exploration
 - Use locked crates as a form of progression, handing out the keys as rewards for quests or advancements
 - Use shulker crates in mob drops for that "loot chest" feel
@@ -21,6 +20,7 @@ The container blocks do not generate naturally in the world and are highly custo
 
 ![All the Loot Crates](./images/readme_screenshot_loot_crates.png)
 ![All the Shulker_Crates](./images/readme_screenshot_shulker_crates.png)
+![All the KEys](./images/readme_screenshot_keys.png)
 
 ## Loot Crates
 Loot crates cannot be broken or moved. Instead they generate loot over time!
@@ -41,21 +41,21 @@ All the loot crates, shulker crates and keys come in all vanilla rarities, each 
 - Rare
 - Epic
 
-# Overview over the available NBT data
-
+# Overview over the available Item tag data
+Those have to be set under the tag "BlockEntityTag" to have an effect (analog to vanilla items).
 The data is identical between loot and shulker crates.
 
-NBT                       | NBT Type   | Effect
-------------------------- | ---------- | ------
-CustomName                | string     | The name which will be used instead of the containers default name in it's gui
-LootTable                 | loot table | The loot table identifier to be used to fill the crate when it's interacted with
-LootTableSeed             | long       | Seed for generating the loot table. 0 or ommitted uses a random seed. Setting a seed means that the generated loot will always be the same
-LootGenerationTimeInTicks | long       | When the crate is accessed it will take that many ticks until new loot can be generated. Setting the value to to <= 0 results in generating the content just once - at the time of the first opening
-Locked                    | boolean    | When true a key with matching rarity will be required to unlock the crate and access it's contents
-DoNotConsumeKeyOnUnlock   | boolean    | When true the opening key will be not be removed when unlocking the crate. "Locked" will have to be true to be effective.
-OncePerPlayer             | boolean    | When true every player can only use the crate once to generate loot. If "LootGenerationTimeInTicks" is set to <= 0 loot will be generated once per player
+Tag                       | NBT Type      | Effect
+------------------------- | ------------- | ------
+CustomName                | string        | Analog vanilla. The name which will be used instead of the containers default name in it's gui
+LootTable                 | loot table    | The loot table identifier to be used to fill the crate when it's interacted with
+LootTableSeed             | long          | Seed for generating the loot table. 0 or ommitted uses a random seed. Setting a seed means that the generated loot will always be the same
+ReplenishTimeTicks        | long          | When the crate is accessed it will take that many ticks until new loot can be generated. Setting the value to to <= 0 results in generating the content just once - at the time of the first opening.
+Locked                    | boolean       | When true a key with matching rarity will be required to unlock the crate and access it's contents
+DoNotConsumeKeyOnUnlock   | boolean       | When true opening a locked crate will not consume the key.
+OncePerPlayer             | boolean       | When true every player can only use the crate once to generate loot. If "LootGenerationTimeInTicks" is set to <= 0 loot will be generated once per player
+Inventory                 | list of items | Analog vanilla shulker chests. Defines the items stored in the crate. Can be used to define items that are always present in a unique chest at the first opening. (chest crates can have this set, too. They just don't set it when broken, because they are meant to be unbreakable outside creative)
 
 **Warning:**
 
 Handle some combinations with care. Or do you really want players to have portable containers that generate new loot every minute?
-
