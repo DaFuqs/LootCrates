@@ -1,6 +1,6 @@
 package de.dafuqs.lootcrates.items;
 
-import de.dafuqs.lootcrates.blocks.LootCrateTagNames;
+import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BlockItem;

@@ -1,4 +1,4 @@
-package de.dafuqs.lootcrates.blocks;
+package de.dafuqs.lootcrates.enums;
 
 public enum LootCrateTagNames {
         ReplenishTimeTicks,

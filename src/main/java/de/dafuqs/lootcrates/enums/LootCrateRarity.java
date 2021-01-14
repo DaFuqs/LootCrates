@@ -1,4 +1,4 @@
-package de.dafuqs.lootcrates;
+package de.dafuqs.lootcrates.enums;
 
 public enum LootCrateRarity {
     COMMON,
