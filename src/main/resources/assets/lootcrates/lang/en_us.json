@@ -23,5 +23,10 @@
   "block.lootcrates.epic_shulker_loot_crate": "Epic Shulker Loot Crate",
 
   "container.lootcrates.loot_crate": "Loot Crate",
-  "container.lootcrates.shulker_crate": "Shulker Loot Crate"
+  "container.lootcrates.shulker_crate": "Shulker Loot Crate",
+
+  "message.lootcrates.common_key_needed_to_unlock": "You need a Common Key to unlock this loot crate",
+  "message.lootcrates.uncommon_key_needed_to_unlock": "You need an Uncommon Key to unlock this loot crate",
+  "message.lootcrates.rare_key_needed_to_unlock": "You need a Rare Key to unlock this loot crate",
+  "message.lootcrates.epic_key_needed_to_unlock": "You need a Epic Key to unlock this loot crate",
 }

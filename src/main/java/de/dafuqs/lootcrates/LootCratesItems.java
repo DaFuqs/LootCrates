@@ -1,6 +1,5 @@
 package de.dafuqs.lootcrates;
 
-import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.items.LootKeyItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;

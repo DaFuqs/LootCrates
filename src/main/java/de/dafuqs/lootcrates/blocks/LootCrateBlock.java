@@ -12,7 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -21,7 +21,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.List;
 
 import static de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock.CONTENTS;
@@ -48,7 +47,10 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                     }
                 }
                 if(!world.isClient()) {
-                    player.sendMessage(new LiteralText("Key needed"), false); // TODO: localize
+                    player.sendMessage(new TranslatableText("message.lootcrates.common_key_needed_to_unlock"), false); // TODO: localize
+                    player.sendMessage(new TranslatableText("message.lootcrates.uncommon_key_needed_to_unlock"), false); // TODO: localize
+                    player.sendMessage(new TranslatableText("message.lootcrates.rare_key_needed_to_unlock"), false); // TODO: localize
+                    player.sendMessage(new TranslatableText("message.lootcrates.epic_key_needed_to_unlock"), false); // TODO: localize
                 }
                 return ActionResult.FAIL;
             }

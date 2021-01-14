@@ -2,7 +2,6 @@ package de.dafuqs.lootcrates.blocks;
 
 import de.dafuqs.lootcrates.LootCratesBlocks;
 import de.dafuqs.lootcrates.LootCratesItems;
-import de.dafuqs.lootcrates.items.LootKeyItem;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
