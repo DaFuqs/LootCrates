@@ -1,9 +1,6 @@
 package de.dafuqs.lootcrates.blocks;
 
-import de.dafuqs.lootcrates.LootCratesBlocks;
-import de.dafuqs.lootcrates.LootCratesItems;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
-import de.dafuqs.lootcrates.items.LootCrateItem;
 import de.dafuqs.lootcrates.items.LootKeyItem;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -88,24 +85,28 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     protected void playSound(SoundEvent soundEvent) {
-        double d = (double)this.pos.getX() + 0.5D;
-        double e = (double)this.pos.getY() + 0.5D;
-        double f = (double)this.pos.getZ() + 0.5D;
-        this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+        if(hasWorld()) {
+            double d = (double) this.pos.getX() + 0.5D;
+            double e = (double) this.pos.getY() + 0.5D;
+            double f = (double) this.pos.getZ() + 0.5D;
+            this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+        }
     }
 
     public boolean shouldGenerateNewLoot(PlayerEntity player) {
-        if(lastReplenishTimeTick == 0 || this.world.getTime() > this.lastReplenishTimeTick + this.replenishTimeTicks) {
-            if(this.oncePerPlayer) {
-                if(this.registeredPlayerGUIDs.contains(player.getUuid())) {
-                    return false;
+        if(hasWorld()) {
+            if (lastReplenishTimeTick == 0 || this.world.getTime() > this.lastReplenishTimeTick + this.replenishTimeTicks) {
+                if (this.oncePerPlayer) {
+                    if (this.registeredPlayerGUIDs.contains(player.getUuid())) {
+                        return false;
+                    } else {
+                        this.lastReplenishTimeTick = world.getTime();
+                        return true;
+                    }
                 } else {
                     this.lastReplenishTimeTick = world.getTime();
                     return true;
                 }
-            } else {
-                this.lastReplenishTimeTick = world.getTime();
-                return true;
             }
         }
         return false;
@@ -170,11 +171,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
         if(tag.contains(LootCrateTagNames.Locked.toString()) && tag.getBoolean(LootCrateTagNames.Locked.toString())) {
             this.locked = true;
-            if(tag.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString())&& tag.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString())) {
-                this.doNotConsumeKeyOnUnlock = true;
-            } else {
-                this.doNotConsumeKeyOnUnlock = false;
-            }
+            this.doNotConsumeKeyOnUnlock = tag.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString()) && tag.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString());
         } else {
             this.locked = false;
             this.doNotConsumeKeyOnUnlock = false;
@@ -185,10 +182,16 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             if(tag.contains(LootCrateTagNames.RegisteredPlayerGUIDs.toString())) {
                 CompoundTag compoundTag = tag.getCompound(LootCrateTagNames.RegisteredPlayerGUIDs.toString());
                 int counter = 0;
-                if(compoundTag.contains(String.valueOf(counter))) {
-                    UUID uuid = compoundTag.getUuid(String.valueOf(counter));
-                    this.registeredPlayerGUIDs.add(uuid);
-                    counter++;
+                while(counter < 100) { // just a safety measure against never ending loops.
+                                       // also implicates:
+                                       // the chest can only store 100 players that way
+                    if (compoundTag.contains(String.valueOf(counter))) {
+                        UUID uuid = compoundTag.getUuid(String.valueOf(counter));
+                        this.registeredPlayerGUIDs.add(uuid);
+                        counter++;
+                    } else {
+                        break;
+                    }
                 }
             }
         } else {

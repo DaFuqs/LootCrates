@@ -10,7 +10,7 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
-public class LootCratesBlockEntityType<T extends BlockEntity> {
+public class LootCratesBlockEntityType {
 
     public static BlockEntityType<ChestLootCrateBlockEntity> CHEST_LOOT_CRATE_BLOCK_ENTITY;
     public static BlockEntityType<ShulkerLootCrateBlockEntity> SHULKER_LOOT_CRATE_BLOCK_ENTITY;

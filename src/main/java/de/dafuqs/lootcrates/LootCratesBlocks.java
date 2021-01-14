@@ -65,7 +65,7 @@ public class LootCratesBlocks {
    }
 
    public static List<Item> getLootCrateItems() {
-        ArrayList lootCrates = new ArrayList();
+        ArrayList<Item> lootCrates = new ArrayList<>();
         lootCrates.add(COMMON_CHEST_LOOT_CRATE_ITEM);
         lootCrates.add(UNCOMMON_CHEST_LOOT_CRATE_ITEM);
         lootCrates.add(RARE_CHEST_LOOT_CRATE_ITEM);

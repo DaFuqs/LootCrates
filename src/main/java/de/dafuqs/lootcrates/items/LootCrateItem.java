@@ -1,7 +1,5 @@
 package de.dafuqs.lootcrates.items;
 
-import de.dafuqs.lootcrates.LootCratesBlocks;
-import de.dafuqs.lootcrates.LootCratesItems;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
@@ -11,8 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.List;

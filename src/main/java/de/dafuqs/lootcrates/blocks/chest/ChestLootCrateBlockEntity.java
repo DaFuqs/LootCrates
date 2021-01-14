@@ -91,7 +91,7 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
 
     protected void onInvOpenOrClose() {
         Block block = this.getCachedState().getBlock();
-        if (block instanceof ChestLootCrateBlock) {
+        if (hasWorld() && block instanceof ChestLootCrateBlock) {
             this.world.addSyncedBlockEvent(this.pos, block, 1, this.viewerCount);
         }
     }
@@ -120,15 +120,17 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
     }
 
     public SpriteIdentifier getTexture() {
-        Block block = world.getBlockState(pos).getBlock();
-        if (LootCratesBlocks.COMMON_CHEST_LOOT_CRATE.equals(block)) {
-            return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/common_crate"));
-        } else if (LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE.equals(block)) {
-            return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/uncommon_crate"));
-        } else if (LootCratesBlocks.RARE_CHEST_LOOT_CRATE.equals(block)) {
-            return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/rare_crate"));
-        } else if (LootCratesBlocks.EPIC_CHEST_LOOT_CRATE.equals(block)) {
-            return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/epic_crate"));
+        if(hasWorld()) {
+            Block block = world.getBlockState(pos).getBlock();
+            if (LootCratesBlocks.COMMON_CHEST_LOOT_CRATE.equals(block)) {
+                return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/common_crate"));
+            } else if (LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE.equals(block)) {
+                return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/uncommon_crate"));
+            } else if (LootCratesBlocks.RARE_CHEST_LOOT_CRATE.equals(block)) {
+                return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/rare_crate"));
+            } else if (LootCratesBlocks.EPIC_CHEST_LOOT_CRATE.equals(block)) {
+                return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/epic_crate"));
+            }
         }
         return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/common_crate"));
     }

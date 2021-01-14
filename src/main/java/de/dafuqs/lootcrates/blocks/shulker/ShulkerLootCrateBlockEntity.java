@@ -113,20 +113,23 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     }
 
     private void pushEntities() {
+        if(world == null) {
+            return;
+        }
+
         BlockState blockState = this.world.getBlockState(this.getPos());
         if (blockState.getBlock() instanceof ShulkerBoxBlock) {
             Direction direction = blockState.get(ShulkerBoxBlock.FACING);
             Box box = this.getCollisionBox(direction).offset(this.pos);
             List<Entity> list = this.world.getOtherEntities(null, box);
             if (!list.isEmpty()) {
-                for(int i = 0; i < list.size(); ++i) {
-                    Entity entity = list.get(i);
+                for (Entity entity : list) {
                     if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
                         double d = 0.0D;
                         double e = 0.0D;
                         double f = 0.0D;
                         Box box2 = entity.getBoundingBox();
-                        switch(direction.getAxis()) {
+                        switch (direction.getAxis()) {
                             case X:
                                 if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
                                     d = box.maxX - box2.minX;
@@ -155,7 +158,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
                                 f += 0.01D;
                         }
 
-                        entity.move(MovementType.SHULKER_BOX, new Vec3d(d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ()));
+                        entity.move(MovementType.SHULKER_BOX, new Vec3d(d * (double) direction.getOffsetX(), e * (double) direction.getOffsetY(), f * (double) direction.getOffsetZ()));
                     }
                 }
 
@@ -186,7 +189,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 
     @Override
     public void onOpen(PlayerEntity player) {
-        if (!player.isSpectator()) {
+        if (!player.isSpectator() && hasWorld()) {
             if (this.viewerCount < 0) {
                 this.viewerCount = 0;
             }
@@ -202,7 +205,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 
     @Override
     public void onClose(PlayerEntity player) {
-        if (!player.isSpectator()) {
+        if (!player.isSpectator() && hasWorld()) {
             --this.viewerCount;
             this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount <= 0) {
@@ -216,20 +219,18 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
         return MathHelper.lerp(f, this.prevAnimationProgress, this.animationProgress);
     }
 
-    public boolean suffocates() {
-        return this.animationStage == net.minecraft.block.entity.ShulkerBoxBlockEntity.AnimationStage.CLOSED;
-    }
-
     public SpriteIdentifier getTexture() {
-        Block block = world.getBlockState(pos).getBlock();
-        if (LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE.equals(block)) {
-            return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/common_shulker"));
-        } else if (LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE.equals(block)) {
-            return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/uncommon_shulker"));
-        } else if (LootCratesBlocks.RARE_SHULKER_LOOT_CRATE.equals(block)) {
-            return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/rare_shulker"));
-        } else if (LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE.equals(block)) {
-            return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/epic_shulker"));
+        if(hasWorld()) {
+            Block block = world.getBlockState(pos).getBlock();
+            if (LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE.equals(block)) {
+                return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/common_shulker"));
+            } else if (LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE.equals(block)) {
+                return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/uncommon_shulker"));
+            } else if (LootCratesBlocks.RARE_SHULKER_LOOT_CRATE.equals(block)) {
+                return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/rare_shulker"));
+            } else if (LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE.equals(block)) {
+                return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/epic_shulker"));
+            }
         }
         return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/common_shulker"));
     }

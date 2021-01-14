@@ -34,7 +34,7 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
     }
 
     /**
-     * Genereates a default item for a lot of predefined values of itemStacks
+     * Generates a default item for a lot of predefined values of itemStacks
      * @return All generated ItemStacks
      */
     private ArrayList<ItemStack> getPredefinedLootCrates() {

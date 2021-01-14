@@ -35,10 +35,6 @@ public class ShulkerLootCrateEntityRenderer extends BlockEntityRenderer<ShulkerL
             }
         }
 
-        //DyeColor dyeColor = shulkerLootCrateBlockEntity.getDyeColor();
-
-        //SpriteIdentifier spriteIdentifier2;
-        //spriteIdentifier2 = TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.get(dyeColor.getId());
         SpriteIdentifier spriteIdentifier2 = shulkerLootCrateBlockEntity.getTexture();
 
         matrixStack.push();

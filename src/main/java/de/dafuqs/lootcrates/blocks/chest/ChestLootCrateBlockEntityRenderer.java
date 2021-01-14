@@ -42,8 +42,8 @@ public class ChestLootCrateBlockEntityRenderer extends BlockEntityRenderer<Chest
     @Override
     public void render(ChestLootCrateBlockEntity chestLootCrateBlockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         World world = chestLootCrateBlockEntity.getWorld();
-        boolean bl = world != null;
-        BlockState blockState = bl ? chestLootCrateBlockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
+        boolean hasWorld = world != null;
+        BlockState blockState = hasWorld ? chestLootCrateBlockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
         Block block = blockState.getBlock();
 
         if (block instanceof ChestLootCrateBlock) {
