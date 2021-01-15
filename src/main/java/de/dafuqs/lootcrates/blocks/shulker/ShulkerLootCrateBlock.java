@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
+import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
@@ -49,6 +50,13 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState().with(FACING, ctx.getSide());
     }
+
+    @Override
+    protected BlockBreakAction getBlockBreakAction() {
+        return BlockBreakAction.KEEP_INVENTORY;
+    }
+
+
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {

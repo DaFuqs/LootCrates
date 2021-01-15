@@ -56,6 +56,11 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
         return new ShulkerBoxScreenHandler(syncId, playerInventory, this);
     }
 
+    public boolean suffocates() {
+        return this.animationStage == ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+    }
+
+
     @Override
     public void tick() {
         this.updateAnimation();

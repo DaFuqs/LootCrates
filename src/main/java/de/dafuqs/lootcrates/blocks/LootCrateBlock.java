@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates.blocks;
 
 import de.dafuqs.lootcrates.LootCratesBlocks;
+import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -25,7 +26,9 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -109,41 +112,64 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             if (itemStack.hasCustomName()) {
                 ((LootCrateBlockEntity) blockEntity).setCustomName(itemStack.getName());
             }
-            /*if(itemStack.hasTag()) {
-                CompoundTag tag = itemStack.getSubTag("BlockEntityTag");
-                if(tag != null) {
-                    ((LootCrateBlockEntity) blockEntity).setLootCrateBlockTags(tag);
-                }
-            }*/
         }
     }
 
+    /**
+     * Called when the block is broken
+     * Used to add Block NBT to the item stack
+     * @param world The world, client and server
+     * @param pos BlockPos where the block is
+     * @param state The block state
+     * @param player The player that has broken the block
+     */
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity) {
             LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity)blockEntity;
+
+            // when the block gets broken but was never opened
+            // => fill with loot
+            lootCrateBlockEntity.checkLootInteraction(player);
+
+            // if creative: Add all NBT tags
+            // if there are items in the inventory => add them as tags
             if (!world.isClient && player.isCreative() && !lootCrateBlockEntity.isEmpty()) {
-                ItemStack itemStack = new ItemStack(this); // TODO: only shulker chests should drop as item
+                BlockBreakAction blockBreakAction = getBlockBreakAction();
+                if (blockBreakAction == BlockBreakAction.KEEP_INVENTORY) {
+                    // TODO
+                    ItemStack itemStack = new ItemStack(this);
 
-                CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
-                itemStack.putSubTag("BlockEntityTag", compoundTag);
+                    CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
+                    itemStack.putSubTag("BlockEntityTag", compoundTag);
 
-                if (lootCrateBlockEntity.hasCustomName()) {
-                    itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
+                    if (lootCrateBlockEntity.hasCustomName()) {
+                        itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
+                    }
+
+                    ItemEntity itemEntity = new ItemEntity(world, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
+                    itemEntity.setToDefaultPickupDelay();
+                    world.spawnEntity(itemEntity);
+                } else if(blockBreakAction == BlockBreakAction.DO_NOT_DROP_AND_SCATTER_ITEMS) {
+                    // TODO
+                } else if(blockBreakAction == BlockBreakAction.DROP_AND_SCATTER_ITEMS) {
+                    // TODO
                 }
-
-                ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, itemStack);
-                itemEntity.setToDefaultPickupDelay();
-                world.spawnEntity(itemEntity);
-            } else {
-                lootCrateBlockEntity.checkLootInteraction(player); // TODO: ???
             }
         }
 
         super.onBreak(world, pos, state, player);
     }
 
+    protected abstract BlockBreakAction getBlockBreakAction();
+
+    /**
+     * Add inventory data to dropped item stack
+     * @param state
+     * @param builder
+     * @return
+     */
     @Override
     public List<ItemStack> getDroppedStacks(BlockState state, net.minecraft.loot.context.LootContext.Builder builder) {
         BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);

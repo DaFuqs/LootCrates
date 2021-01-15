@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates.blocks.chest;
 
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
+import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
@@ -57,6 +58,11 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 
             return ActionResult.CONSUME;
         }
+    }
+
+    @Override
+    protected BlockBreakAction getBlockBreakAction() {
+        return BlockBreakAction.DO_NOT_DROP_AND_SCATTER_ITEMS;
     }
 
     @Override

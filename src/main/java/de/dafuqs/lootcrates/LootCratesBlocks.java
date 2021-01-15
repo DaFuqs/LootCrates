@@ -2,13 +2,16 @@ package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock;
+import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlockEntity;
 import de.dafuqs.lootcrates.items.LootCrateItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.Block;
-import net.minecraft.block.Material;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
@@ -18,17 +21,30 @@ import java.util.List;
 
 public class LootCratesBlocks {
 
+    private static ShulkerLootCrateBlock createShulkerLootCrateBlock(AbstractBlock.Settings settings) {
+        AbstractBlock.ContextPredicate contextPredicate = (blockState, blockView, blockPos) -> {
+            BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+            if (!(blockEntity instanceof ShulkerLootCrateBlockEntity)) {
+                return true;
+            } else {
+                ShulkerLootCrateBlockEntity shulkerBoxBlockEntity = (ShulkerLootCrateBlockEntity)blockEntity;
+                return shulkerBoxBlockEntity.suffocates();
+            }
+        };
+        return new ShulkerLootCrateBlock(settings.strength(2.0F).dynamicBounds().nonOpaque().suffocates(contextPredicate).blockVision(contextPredicate));
+    }
+
     private static final FabricBlockSettings blockSettingsChestLootCrate = FabricBlockSettings.of(Material.METAL).requiresTool().strength(-1.0F, 3600000.0F).dropsNothing();
-    private static final FabricBlockSettings blockSettingsShulkerLootCrate = FabricBlockSettings.of(Material.SHULKER_BOX).requiresTool().strength(2.0F).nonOpaque();
+    private static final FabricBlockSettings blockSettingsShulkerLootCrate = FabricBlockSettings.of(Material.SHULKER_BOX);
 
     public static final Block COMMON_CHEST_LOOT_CRATE = new ChestLootCrateBlock(blockSettingsChestLootCrate);
     public static final Block UNCOMMON_CHEST_LOOT_CRATE = new ChestLootCrateBlock(blockSettingsChestLootCrate);
     public static final Block RARE_CHEST_LOOT_CRATE = new ChestLootCrateBlock(blockSettingsChestLootCrate);
     public static final Block EPIC_CHEST_LOOT_CRATE = new ChestLootCrateBlock(blockSettingsChestLootCrate);
-    public static final Block COMMON_SHULKER_LOOT_CRATE = new ShulkerLootCrateBlock(blockSettingsShulkerLootCrate);
-    public static final Block UNCOMMON_SHULKER_LOOT_CRATE = new ShulkerLootCrateBlock(blockSettingsShulkerLootCrate);
-    public static final Block RARE_SHULKER_LOOT_CRATE = new ShulkerLootCrateBlock(blockSettingsShulkerLootCrate);
-    public static final Block EPIC_SHULKER_LOOT_CRATE = new ShulkerLootCrateBlock(blockSettingsShulkerLootCrate);
+    public static final Block COMMON_SHULKER_LOOT_CRATE = createShulkerLootCrateBlock(blockSettingsShulkerLootCrate);
+    public static final Block UNCOMMON_SHULKER_LOOT_CRATE = createShulkerLootCrateBlock(blockSettingsShulkerLootCrate);
+    public static final Block RARE_SHULKER_LOOT_CRATE = createShulkerLootCrateBlock(blockSettingsShulkerLootCrate);
+    public static final Block EPIC_SHULKER_LOOT_CRATE = createShulkerLootCrateBlock(blockSettingsShulkerLootCrate);
 
     public static final FabricItemSettings itemSettingsCommon = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.COMMON);
     public static final FabricItemSettings itemSettingsUncommon = new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(Rarity.UNCOMMON);

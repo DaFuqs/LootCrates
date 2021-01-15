@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "lootcrates:rare_shulker_loot_crate"
+          "name": "lootcrates:uncommon_shulker_loot_crate"
         }
       ],
       "conditions": [
@@ -17,4 +17,3 @@
     }
   ]
 }
-
