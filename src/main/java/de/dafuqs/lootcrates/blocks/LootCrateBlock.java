@@ -4,16 +4,15 @@ import de.dafuqs.lootcrates.LootCratesBlocks;
 import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +21,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -129,38 +129,35 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         if (blockEntity instanceof LootCrateBlockEntity) {
             LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity)blockEntity;
 
-            // when the block gets broken but was never opened
-            // => fill with loot
-            lootCrateBlockEntity.checkLootInteraction(player);
+            // if creative: If there is block data add those and drop a block with all those tags
+            // No tags = No drop. Just like vanilla shulker chests
+            if (!world.isClient && player.isCreative()) {
+                ItemStack itemStack = new ItemStack(this);
 
-            // if creative: Add all NBT tags
-            // if there are items in the inventory => add them as tags
-            if (!world.isClient && player.isCreative() && !lootCrateBlockEntity.isEmpty()) {
-                BlockBreakAction blockBreakAction = getBlockBreakAction();
-                if (blockBreakAction == BlockBreakAction.KEEP_INVENTORY) {
-                    // TODO
-                    ItemStack itemStack = new ItemStack(this);
+                boolean shouldDropItem = false;
 
-                    CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
+                if (lootCrateBlockEntity.hasCustomName()) {
+                    itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
+                    shouldDropItem = true;
+                }
+
+                CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
+                if(!compoundTag.isEmpty()) {
                     itemStack.putSubTag("BlockEntityTag", compoundTag);
+                    shouldDropItem = true;
+                }
 
-                    if (lootCrateBlockEntity.hasCustomName()) {
-                        itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
-                    }
-
+                if(shouldDropItem) {
                     ItemEntity itemEntity = new ItemEntity(world, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
                     itemEntity.setToDefaultPickupDelay();
                     world.spawnEntity(itemEntity);
-                } else if(blockBreakAction == BlockBreakAction.DO_NOT_DROP_AND_SCATTER_ITEMS) {
-                    // TODO
-                } else if(blockBreakAction == BlockBreakAction.DROP_AND_SCATTER_ITEMS) {
-                    // TODO
                 }
             }
         }
 
         super.onBreak(world, pos, state, player);
     }
+
 
     protected abstract BlockBreakAction getBlockBreakAction();
 
@@ -202,6 +199,17 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             }
         }
         return itemStack;
+    }
+
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock())) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof Inventory) {
+                ItemScatterer.spawn(world, pos, (Inventory)blockEntity);
+            }
+
+            super.onStateReplaced(state, world, pos, newState, moved);
+        }
     }
 
     protected void playSound(World world, BlockPos blockPos, SoundEvent soundEvent) {

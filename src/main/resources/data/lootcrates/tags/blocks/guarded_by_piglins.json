@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "lootcrates:common_chest_loot_crate",
+    "lootcrates:uncommon_chest_loot_crate",
+    "lootcrates:rare_chest_loot_crate",
+    "lootcrates:epic_chest_loot_crate",
+    "lootcrates:common_shulker_loot_crate",
+    "lootcrates:uncommon_shulker_loot_crate",
+    "lootcrates:rare_shulker_loot_crate",
+    "lootcrates:epic_shulker_loot_crate"
+  ]
+}

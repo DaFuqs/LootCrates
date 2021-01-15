@@ -6,12 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "lootcrates:epic_shulker_loot_crate"
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
+          "name": "lootcrates:uncommon_shulker_loot_crate"
         }
       ]
     }

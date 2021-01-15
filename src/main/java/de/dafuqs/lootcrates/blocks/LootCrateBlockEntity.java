@@ -125,6 +125,11 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     @Override
+    public boolean isEmpty() {
+        return this.getInvStackList().stream().allMatch(ItemStack::isEmpty);
+    }
+
+    @Override
     public void checkLootInteraction(@Nullable PlayerEntity player) {
         // only players can generate container loot
         if (player != null && this.lootTableId != null && this.world.getServer() != null && shouldGenerateNewLoot(player)) {
