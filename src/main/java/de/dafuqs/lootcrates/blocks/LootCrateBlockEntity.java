@@ -100,25 +100,30 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
     public boolean shouldGenerateNewLoot(PlayerEntity player) {
         if(hasWorld()) {
-            // if replenish time is set to -1: just generate loot once
-            if(this.replenishTimeTicks <= 0 && this.lastReplenishTimeTick == 0) {
-                this.lastReplenishTimeTick = world.getTime();
-                return true;
-            }
-            // check if there was enough time since the last opening
-            if (lastReplenishTimeTick == 0 || this.world.getTime() > this.lastReplenishTimeTick + this.replenishTimeTicks) {
-                if (this.oncePerPlayer) {
-                    if (this.registeredPlayerUUIDs.contains(player.getUuid())) {
-                        return false;
-                    } else {
-                        this.lastReplenishTimeTick = world.getTime();
-                        this.registeredPlayerUUIDs.add(player.getUuid());
-                        this.markDirty();
-                        return true;
-                    }
-                } else {
+            // if replenish time is set to <=0: just generate loot once
+            if(this.replenishTimeTicks <= 0) {
+                if(this.lastReplenishTimeTick == 0) {
                     this.lastReplenishTimeTick = world.getTime();
                     return true;
+                } else {
+                    return false;
+                }
+            } else {
+                // check if there was enough time since the last opening
+                if (lastReplenishTimeTick == 0 || this.world.getTime() > this.lastReplenishTimeTick + this.replenishTimeTicks) {
+                    if (this.oncePerPlayer) {
+                        if (this.registeredPlayerUUIDs.contains(player.getUuid())) {
+                            return false;
+                        } else {
+                            this.lastReplenishTimeTick = world.getTime();
+                            this.registeredPlayerUUIDs.add(player.getUuid());
+                            this.markDirty();
+                            return true;
+                        }
+                    } else {
+                        this.lastReplenishTimeTick = world.getTime();
+                        return true;
+                    }
                 }
             }
         }
