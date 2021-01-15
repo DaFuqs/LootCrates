@@ -62,7 +62,7 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 
     @Override
     protected BlockBreakAction getBlockBreakAction() {
-        return BlockBreakAction.KEEP_INVENTORY;
+        return BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY;
     }
 
     @Override

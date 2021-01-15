@@ -136,7 +136,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
     @Override
     public void checkLootInteraction(@Nullable PlayerEntity player) {
-        // only players can generate container loot
+        // only players can generate container w
         if (player != null && this.lootTableId != null && this.world.getServer() != null && shouldGenerateNewLoot(player)) {
             LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
             if (player instanceof ServerPlayerEntity) {
@@ -149,9 +149,8 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public CompoundTag addLootCrateBlockTags(CompoundTag tag) {
-        if(this.replenishTimeTicks != 0) {
-            tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
-        }
+        tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
+
         if(this.lastReplenishTimeTick != 0) {
             tag.putLong(LootCrateTagNames.LastReplenishTimeTick.toString(), this.lastReplenishTimeTick);
         }
@@ -184,7 +183,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(tag.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
             this.replenishTimeTicks = tag.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
         } else {
-            this.replenishTimeTicks = 0;
+            this.replenishTimeTicks = -1;
         }
         if(tag.contains(LootCrateTagNames.LastReplenishTimeTick.toString())) {
             this.lastReplenishTimeTick = tag.getLong(LootCrateTagNames.LastReplenishTimeTick.toString());

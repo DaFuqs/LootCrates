@@ -40,11 +40,11 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
     private ArrayList<ItemStack> getPredefinedLootCrates() {
         ArrayList<ItemStack> stacks = new ArrayList<>();
 
-        ArrayList<Long> lootGenerationTimeInTicksValues = new ArrayList<>();
-        lootGenerationTimeInTicksValues.add(-1L);      // once
-        lootGenerationTimeInTicksValues.add(20L);      // 1 second
-        lootGenerationTimeInTicksValues.add(72000L);   // 1 hour
-        lootGenerationTimeInTicksValues.add(1728000L); // 1 day
+        ArrayList<Long> replenishTimeTicksValues = new ArrayList<>();
+        replenishTimeTicksValues.add(-1L);      // once
+        replenishTimeTicksValues.add(20L);      // 1 second
+        replenishTimeTicksValues.add(72000L);   // 1 hour
+        replenishTimeTicksValues.add(1728000L); // 1 day
 
         ArrayList<Boolean> booleans = new ArrayList<>();
         booleans.add(true);
@@ -55,14 +55,22 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
 
         for(Item lootCrateItem : allLootCrates) {
             for (Identifier lootTable : allLootTables) {
-                for (Long lootGenerationTimeInTicks : lootGenerationTimeInTicksValues) {
+                for (Long replenishTimeTicks : replenishTimeTicksValues) {
                     for (boolean locked : booleans) {
                         for (boolean doNotConsumeKeyOnUnlock : booleans) {
                             for (boolean oncePerPlayer : booleans) {
-                                CompoundTag compoundTag = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, lootGenerationTimeInTicks, 0, oncePerPlayer);
-                                ItemStack itemStack = new ItemStack(lootCrateItem);
-                                itemStack.setTag(compoundTag);
-                                stacks.add(itemStack);
+                                if(oncePerPlayer && replenishTimeTicks < 0) {
+                                    // oncePerPlayer really is only useful when replenish time is positive
+                                } else {
+                                    if(doNotConsumeKeyOnUnlock && !locked) {
+                                        // no use in that tag when there is no lock, is there?
+                                    } else {
+                                        CompoundTag compoundTag = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, replenishTimeTicks, 0, oncePerPlayer);
+                                        ItemStack itemStack = new ItemStack(lootCrateItem);
+                                        itemStack.setTag(compoundTag);
+                                        stacks.add(itemStack);
+                                    }
+                                }
                             }
                         }
                     }

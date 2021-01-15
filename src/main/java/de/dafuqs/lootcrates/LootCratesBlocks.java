@@ -34,7 +34,7 @@ public class LootCratesBlocks {
         return new ShulkerLootCrateBlock(settings.strength(2.0F).dynamicBounds().nonOpaque().suffocates(contextPredicate).blockVision(contextPredicate));
     }
 
-    private static final FabricBlockSettings blockSettingsChestLootCrate = FabricBlockSettings.of(Material.METAL).requiresTool().strength(-1.0F, 3600000.0F).dropsNothing();
+    private static final FabricBlockSettings blockSettingsChestLootCrate = FabricBlockSettings.of(Material.METAL).requiresTool().strength(-1.0F, 3600000.0F).dropsNothing().nonOpaque();
     private static final FabricBlockSettings blockSettingsShulkerLootCrate = FabricBlockSettings.of(Material.SHULKER_BOX);
 
     public static final Block COMMON_CHEST_LOOT_CRATE = new ChestLootCrateBlock(blockSettingsChestLootCrate);

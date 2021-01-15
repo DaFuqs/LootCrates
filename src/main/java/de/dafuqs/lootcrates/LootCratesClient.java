@@ -4,8 +4,10 @@ import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntityRenderer;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateEntityRenderer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.util.Identifier;
 
@@ -31,5 +33,7 @@ public class LootCratesClient implements ClientModInitializer {
             registry.register(new Identifier(LootCrates.MOD_ID, "entity/shulker/rare_shulker"));
             registry.register(new Identifier(LootCrates.MOD_ID, "entity/shulker/epic_shulker"));
         });
+
+        BlockRenderLayerMap.INSTANCE.putBlock(LootCratesBlocks.RARE_CHEST_LOOT_CRATE, RenderLayer.getTranslucent());
     }
 }
