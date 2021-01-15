@@ -52,7 +52,7 @@ Tag                       | NBT Type      | Effect
 CustomName                | string        | Analog vanilla. The name which will be used instead of the containers default name in it's gui
 LootTable                 | loot table    | The loot table identifier to be used to fill the crate when it's interacted with
 LootTableSeed             | long          | Seed for generating the loot table. 0 or ommitted uses a random seed. Setting a seed means that the generated loot will always be the same
-ReplenishTimeTicks        | long          | When the crate is accessed it will take that many ticks until new loot can be generated. Setting the value to to <= 0 results in generating the content just once - at the time of the first opening.
+ReplenishTimeTicks        | long          | When the crate is accessed it will take that many ticks until new loot can be generated. Setting the value to <= 0 results in generating the content just once - at the time of the first opening.
 Locked                    | boolean       | When true a key with matching rarity will be required to unlock the crate and access it's contents
 DoNotConsumeKeyOnUnlock   | boolean       | When true opening a locked crate will not consume the key.
 OncePerPlayer             | boolean       | When true every player can only use the crate once to generate loot. If "LootGenerationTimeInTicks" is set to <= 0 loot will be generated once per player
