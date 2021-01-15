@@ -124,6 +124,11 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         return false;
     }
 
+    public CompoundTag serializeInventory(CompoundTag tag) {
+        Inventories.toTag(tag, this.inventory, false);
+        return tag;
+    }
+
     @Override
     public boolean isEmpty() {
         return this.getInvStackList().stream().allMatch(ItemStack::isEmpty);

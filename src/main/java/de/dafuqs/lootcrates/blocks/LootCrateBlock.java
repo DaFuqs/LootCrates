@@ -12,6 +12,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameters;
@@ -147,6 +148,11 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                     shouldDropItem = true;
                 }
 
+                if(!lootCrateBlockEntity.isEmpty()) {
+                    lootCrateBlockEntity.serializeInventory(compoundTag);
+                    shouldDropItem = true;
+                }
+
                 if(shouldDropItem) {
                     ItemEntity itemEntity = new ItemEntity(world, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
                     itemEntity.setToDefaultPickupDelay();
@@ -170,14 +176,16 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     @Override
     public List<ItemStack> getDroppedStacks(BlockState state, net.minecraft.loot.context.LootContext.Builder builder) {
         BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
-        if (blockEntity instanceof LootCrateBlockEntity) { // TODO: only shulker chests should drop as item
+        if (blockEntity instanceof LootCrateBlockEntity) {
             LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity)blockEntity;
-            builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
-                for(int i = 0; i < lootCrateBlockEntity.size(); ++i) {
-                    consumer.accept(lootCrateBlockEntity.getStack(i));
-                }
 
-            });
+            if(getBlockBreakAction() == BlockBreakAction.KEEP_INVENTORY) {
+                builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
+                    for (int i = 0; i < lootCrateBlockEntity.size(); ++i) {
+                        consumer.accept(lootCrateBlockEntity.getStack(i));
+                    }
+                });
+            }
         }
         return super.getDroppedStacks(state, builder);
     }
@@ -201,11 +209,15 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         return itemStack;
     }
 
+
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof Inventory) {
-                ItemScatterer.spawn(world, pos, (Inventory)blockEntity);
+            BlockBreakAction blockBreakAction = getBlockBreakAction();
+            if(blockBreakAction == BlockBreakAction.DESTROY_AND_SCATTER_ITEMS || blockBreakAction == BlockBreakAction.DROP_AND_SCATTER_ITEMS) {
+                BlockEntity blockEntity = world.getBlockEntity(pos);
+                if (blockEntity instanceof Inventory) {
+                    ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
+                }
             }
 
             super.onStateReplaced(state, world, pos, newState, moved);
