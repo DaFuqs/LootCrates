@@ -18,6 +18,7 @@ public class LootCratesItems {
     public static final Item UNCOMMON_CRATE_KEY = new LootKeyItem(crateKeyItemSettings.rarity(Rarity.UNCOMMON));
     public static final Item RARE_CRATE_KEY = new LootKeyItem(crateKeyItemSettings.rarity(Rarity.RARE));
     public static final Item EPIC_CRATE_KEY = new LootKeyItem(crateKeyItemSettings.rarity(Rarity.EPIC));
+    public static final Item GHOST_CRATE_KEY = new LootKeyItem(crateKeyItemSettings.rarity(Rarity.UNCOMMON));
 
     private static void register(String string, Item item) {
         Registry.register(Registry.ITEM, new Identifier(LootCrates.MOD_ID, string), item);
@@ -28,5 +29,6 @@ public class LootCratesItems {
         register("uncommon_crate_key", UNCOMMON_CRATE_KEY);
         register("rare_crate_key", RARE_CRATE_KEY);
         register("epic_crate_key", EPIC_CRATE_KEY);
+        register("ghost_crate_key", GHOST_CRATE_KEY);
     }
 }

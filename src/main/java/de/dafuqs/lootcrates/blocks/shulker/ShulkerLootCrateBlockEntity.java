@@ -235,9 +235,19 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
                 return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/rare_shulker"));
             } else if (LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE.equals(block)) {
                 return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/epic_shulker"));
+            } else if (LootCratesBlocks.GHOST_SHULKER_LOOT_CRATE.equals(block)) {
+                return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/ghost_shulker"));
             }
         }
         return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/common_shulker"));
+    }
+
+    public boolean hasTransparency() {
+        if(hasWorld()) {
+            Block block = world.getBlockState(pos).getBlock();
+            return LootCratesBlocks.GHOST_SHULKER_LOOT_CRATE.equals(block);
+        }
+        return false;
     }
 
 }

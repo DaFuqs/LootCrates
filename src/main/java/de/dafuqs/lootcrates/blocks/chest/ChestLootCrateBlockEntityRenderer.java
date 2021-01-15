@@ -2,7 +2,6 @@ package de.dafuqs.lootcrates.blocks.chest;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -60,7 +59,14 @@ public class ChestLootCrateBlockEntityRenderer extends BlockEntityRenderer<Chest
             openFactor = 1.0F - openFactor * openFactor * openFactor;
 
             SpriteIdentifier spriteIdentifier = chestLootCrateBlockEntity.getTexture();
-            VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
+            boolean hasTransparency = chestLootCrateBlockEntity.hasTransparency();
+            VertexConsumer vertexConsumer;
+            if(hasTransparency) {
+                vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityTranslucent);
+            } else {
+                vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutoutNoCull);
+            }
+
             this.render(matrices, vertexConsumer, this.singleChestLid, this.singleChestLatch, this.singleChestBase, openFactor, light, overlay);
 
             matrices.pop();

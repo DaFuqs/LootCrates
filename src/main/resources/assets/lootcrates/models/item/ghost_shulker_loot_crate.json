@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "lootcrates:block/ghost_shulker_side",
+    "north": "lootcrates:block/ghost_shulker_side",
+    "south": "lootcrates:block/ghost_shulker_side",
+    "east": "lootcrates:block/ghost_shulker_side",
+    "west": "lootcrates:block/ghost_shulker_side",
+    "up": "lootcrates:block/ghost_shulker_top",
+    "down": "lootcrates:block/ghost_shulker_bottom"
+  }
+}

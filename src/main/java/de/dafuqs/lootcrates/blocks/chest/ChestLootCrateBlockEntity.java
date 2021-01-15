@@ -130,9 +130,19 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
                 return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/rare_crate"));
             } else if (LootCratesBlocks.EPIC_CHEST_LOOT_CRATE.equals(block)) {
                 return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/epic_crate"));
+            } else if (LootCratesBlocks.GHOST_CHEST_LOOT_CRATE.equals(block)) {
+                return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/ghost_crate"));
             }
         }
         return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/common_crate"));
+    }
+
+    public boolean hasTransparency() {
+        if(hasWorld()) {
+            Block block = world.getBlockState(pos).getBlock();
+            return LootCratesBlocks.GHOST_CHEST_LOOT_CRATE.equals(block);
+        }
+        return false;
     }
 
 }

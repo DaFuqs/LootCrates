@@ -27,7 +27,8 @@ public class LootCratesBlockEntityType {
                         LootCratesBlocks.COMMON_CHEST_LOOT_CRATE,
                         LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE,
                         LootCratesBlocks.RARE_CHEST_LOOT_CRATE,
-                        LootCratesBlocks.EPIC_CHEST_LOOT_CRATE));
+                        LootCratesBlocks.EPIC_CHEST_LOOT_CRATE,
+                        LootCratesBlocks.GHOST_CHEST_LOOT_CRATE));
 
         SHULKER_LOOT_CRATE_BLOCK_ENTITY = create("lootcrates:shulker_loot_crate_block_entity",
                 BlockEntityType.Builder.create(
@@ -35,7 +36,8 @@ public class LootCratesBlockEntityType {
                         LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE,
                         LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE,
                         LootCratesBlocks.RARE_SHULKER_LOOT_CRATE,
-                        LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE));
+                        LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE,
+                        LootCratesBlocks.GHOST_SHULKER_LOOT_CRATE));
     }
 
 }

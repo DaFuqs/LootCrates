@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates.items;
 
 import de.dafuqs.lootcrates.LootCratesBlocks;
+import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
@@ -36,18 +37,14 @@ public class LootCrateItem extends BlockItem {
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null) {
 
-
             // lock
             boolean locked = false;
             if (compoundTag.contains(LootCrateTagNames.Locked.toString()) && compoundTag.getBoolean(LootCrateTagNames.Locked.toString())) {
                 locked = true;
-                Rarity itemRarity = LootCrateItem.getCrateItemRarity((LootCrateItem) (itemStack.getItem()));
+                LootCrateRarity itemRarity = LootCrateItem.getCrateItemRarity((LootCrateItem) (itemStack.getItem()));
 
                 if (compoundTag.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString()) && compoundTag.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString())) {
                     switch (itemRarity) {
-                        case COMMON:
-                            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_use_common"));
-                            break;
                         case UNCOMMON:
                             tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_use_uncommon"));
                             break;
@@ -57,12 +54,15 @@ public class LootCrateItem extends BlockItem {
                         case EPIC:
                             tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_use_epic"));
                             break;
+                        case GHOST:
+                            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_use_ghost"));
+                            break;
+                        default:
+                            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_use_common"));
+                            break;
                     }
                 } else {
                     switch (itemRarity) {
-                        case COMMON:
-                            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_consume_common"));
-                            break;
                         case UNCOMMON:
                             tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_consume_uncommon"));
                             break;
@@ -71,6 +71,12 @@ public class LootCrateItem extends BlockItem {
                             break;
                         case EPIC:
                             tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_consume_epic"));
+                            break;
+                        case GHOST:
+                            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_consume_ghost"));
+                            break;
+                        default:
+                            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_consume_common"));
                             break;
                     }
                 }
@@ -186,17 +192,17 @@ public class LootCrateItem extends BlockItem {
         return compoundTag;
     }
 
-    protected static Rarity getCrateItemRarity(LootCrateItem item) {
-        if (item.equals(LootCratesBlocks.COMMON_CHEST_LOOT_CRATE_ITEM) || item.equals(LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE_ITEM)) {
-            return Rarity.COMMON;
-        } else if (item.equals(LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE_ITEM) || item.equals(LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE_ITEM)) {
-            return Rarity.UNCOMMON;
+    protected static LootCrateRarity getCrateItemRarity(LootCrateItem item) {
+        if (item.equals(LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE_ITEM) || item.equals(LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE_ITEM)) {
+            return LootCrateRarity.UNCOMMON;
         } else if (item.equals(LootCratesBlocks.RARE_CHEST_LOOT_CRATE_ITEM) || item.equals(LootCratesBlocks.RARE_SHULKER_LOOT_CRATE_ITEM)) {
-            return Rarity.RARE;
+            return LootCrateRarity.RARE;
         } else if (item.equals(LootCratesBlocks.EPIC_CHEST_LOOT_CRATE_ITEM) || item.equals(LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE_ITEM)) {
-            return Rarity.EPIC;
+            return LootCrateRarity.EPIC;
+        } else if (item.equals(LootCratesBlocks.GHOST_CHEST_LOOT_CRATE_ITEM) || item.equals(LootCratesBlocks.GHOST_SHULKER_LOOT_CRATE_ITEM)) {
+            return LootCrateRarity.GHOST;
         } else {
-            return Rarity.COMMON;
+            return LootCrateRarity.COMMON;
         }
     }
 

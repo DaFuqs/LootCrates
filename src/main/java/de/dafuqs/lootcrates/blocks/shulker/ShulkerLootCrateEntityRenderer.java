@@ -44,7 +44,15 @@ public class ShulkerLootCrateEntityRenderer extends BlockEntityRenderer<ShulkerL
         matrixStack.multiply(direction.getRotationQuaternion());
         matrixStack.scale(1.0F, -1.0F, -1.0F);
         matrixStack.translate(0.0D, -1.0D, 0.0D);
-        VertexConsumer vertexConsumer = spriteIdentifier2.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
+
+        boolean hasTransparency = shulkerLootCrateBlockEntity.hasTransparency();
+        VertexConsumer vertexConsumer;
+        if(hasTransparency) {
+            vertexConsumer = spriteIdentifier2.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityTranslucent);
+        } else {
+            vertexConsumer = spriteIdentifier2.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
+        }
+
         this.model.getBottomShell().render(matrixStack, vertexConsumer, light, overlay);
         matrixStack.translate(0.0D, (-shulkerLootCrateBlockEntity.getAnimationProgress(tickDelta) * 0.5F), 0.0D);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0F * shulkerLootCrateBlockEntity.getAnimationProgress(tickDelta)));

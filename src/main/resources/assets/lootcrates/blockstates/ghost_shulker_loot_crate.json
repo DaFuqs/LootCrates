@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "lootcrates:block/ghost_shulker_loot_crate" }
+  }
+}

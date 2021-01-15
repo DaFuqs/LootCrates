@@ -25,6 +25,7 @@ public class LootCratesClient implements ClientModInitializer {
             registry.register(new Identifier(LootCrates.MOD_ID, "entity/chest/uncommon_crate"));
             registry.register(new Identifier(LootCrates.MOD_ID, "entity/chest/rare_crate"));
             registry.register(new Identifier(LootCrates.MOD_ID, "entity/chest/epic_crate"));
+            registry.register(new Identifier(LootCrates.MOD_ID, "entity/chest/ghost_crate"));
         });
 
         ClientSpriteRegistryCallback.event(TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE).register((texture, registry) -> {
@@ -32,8 +33,10 @@ public class LootCratesClient implements ClientModInitializer {
             registry.register(new Identifier(LootCrates.MOD_ID, "entity/shulker/uncommon_shulker"));
             registry.register(new Identifier(LootCrates.MOD_ID, "entity/shulker/rare_shulker"));
             registry.register(new Identifier(LootCrates.MOD_ID, "entity/shulker/epic_shulker"));
+            registry.register(new Identifier(LootCrates.MOD_ID, "entity/shulker/ghost_shulker"));
         });
 
-        BlockRenderLayerMap.INSTANCE.putBlock(LootCratesBlocks.RARE_CHEST_LOOT_CRATE, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(LootCratesBlocks.GHOST_CHEST_LOOT_CRATE, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(LootCratesBlocks.GHOST_SHULKER_LOOT_CRATE, RenderLayer.getTranslucent());
     }
 }
