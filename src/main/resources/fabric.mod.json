@@ -12,7 +12,7 @@
     "repo": "github.com/DaFuqs/LootCrates"
   },
   "license": "MIT",
-  "icon": "assets/lootcrates/icon.png",
+  "icon": "assets/lootcrates/textures/item/epic_crate_key.png",
   "environment": "*",
   "entrypoints": {
     "client": [
