@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "lootcrates:block/blaze_shulker_side",
+    "north": "lootcrates:block/blaze_shulker_side",
+    "south": "lootcrates:block/blaze_shulker_side",
+    "east": "lootcrates:block/blaze_shulker_side",
+    "west": "lootcrates:block/blaze_shulker_side",
+    "up": "lootcrates:block/blaze_shulker_top",
+    "down": "lootcrates:block/blaze_shulker_bottom"
+  }
+}

@@ -1,5 +1,6 @@
 package de.dafuqs.lootcrates;
 
+import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.items.LootCrateItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,7 +25,7 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
     @Environment(EnvType.CLIENT)
     @Override
     public ItemStack createIcon() {
-        return new ItemStack(LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE);
+        return new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.EPIC));
     }
 
     @Environment(EnvType.CLIENT)
@@ -50,7 +51,7 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
         booleans.add(true);
         booleans.add(false);
 
-        List<Item> allLootCrates = LootCratesBlocks.getLootCrateItems();
+        List<Item> allLootCrates = LootCrateAtlas.getAllCrateItems();
         Set<Identifier> allLootTables = LootTables.getAll();
 
         for(Item lootCrateItem : allLootCrates) {

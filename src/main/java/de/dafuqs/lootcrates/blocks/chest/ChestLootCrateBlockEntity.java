@@ -5,8 +5,7 @@
 
 package de.dafuqs.lootcrates.blocks.chest;
 
-import de.dafuqs.lootcrates.LootCrates;
-import de.dafuqs.lootcrates.LootCratesBlocks;
+import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import net.fabricmc.api.EnvType;
@@ -21,12 +20,9 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
-
-import static net.minecraft.client.render.TexturedRenderLayers.CHEST_ATLAS_TEXTURE;
 
 public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements Tickable {
 
@@ -120,29 +116,11 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
     }
 
     public SpriteIdentifier getTexture() {
-        if(hasWorld()) {
-            Block block = world.getBlockState(pos).getBlock();
-            if (LootCratesBlocks.COMMON_CHEST_LOOT_CRATE.equals(block)) {
-                return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/common_crate"));
-            } else if (LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE.equals(block)) {
-                return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/uncommon_crate"));
-            } else if (LootCratesBlocks.RARE_CHEST_LOOT_CRATE.equals(block)) {
-                return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/rare_crate"));
-            } else if (LootCratesBlocks.EPIC_CHEST_LOOT_CRATE.equals(block)) {
-                return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/epic_crate"));
-            } else if (LootCratesBlocks.GHOST_CHEST_LOOT_CRATE.equals(block)) {
-                return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/ghost_crate"));
-            }
-        }
-        return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/common_crate"));
+        return LootCrateAtlas.getChestTexture(this);
     }
 
     public boolean hasTransparency() {
-        if(hasWorld()) {
-            Block block = world.getBlockState(pos).getBlock();
-            return LootCratesBlocks.GHOST_CHEST_LOOT_CRATE.equals(block);
-        }
-        return false;
+        return LootCrateAtlas.hasTransparency(this);
     }
 
 }

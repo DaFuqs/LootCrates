@@ -1,13 +1,11 @@
 package de.dafuqs.lootcrates.items;
 
-import de.dafuqs.lootcrates.LootCratesItems;
-import de.dafuqs.lootcrates.enums.LootCrateRarity;
+import de.dafuqs.lootcrates.LootCrateAtlas;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -22,31 +20,7 @@ public class LootKeyItem extends Item {
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         super.appendTooltip(itemStack, world, tooltip, tooltipContext);
 
-        if (LootCratesItems.UNCOMMON_CRATE_KEY.equals(itemStack.getItem())) {
-            tooltip.add(new TranslatableText("item.lootcrates.uncommon_crate_key.tooltip"));
-        } else if (LootCratesItems.RARE_CRATE_KEY.equals(itemStack.getItem())) {
-            tooltip.add(new TranslatableText("item.lootcrates.rare_crate_key.tooltip"));
-        } else if (LootCratesItems.EPIC_CRATE_KEY.equals(itemStack.getItem())) {
-            tooltip.add(new TranslatableText("item.lootcrates.epic_crate_key.tooltip"));
-        } else if (LootCratesItems.GHOST_CRATE_KEY.equals(itemStack.getItem())) {
-            tooltip.add(new TranslatableText("item.lootcrates.ghost_crate_key.tooltip"));
-        } else {
-            tooltip.add(new TranslatableText("item.lootcrates.common_crate_key.tooltip"));
-        }
-    }
-
-    public static LootCrateRarity getKeyRarity(LootKeyItem item) {
-        if (item.equals(LootCratesItems.UNCOMMON_CRATE_KEY)) {
-            return LootCrateRarity.UNCOMMON;
-        } else if (item.equals(LootCratesItems.RARE_CRATE_KEY)) {
-            return LootCrateRarity.RARE;
-        } else if (item.equals(LootCratesItems.EPIC_CRATE_KEY)) {
-            return LootCrateRarity.EPIC;
-        } else if (item.equals(LootCratesItems.GHOST_CRATE_KEY)) {
-            return LootCrateRarity.GHOST;
-        } else {
-            return LootCrateRarity.COMMON;
-        }
+        tooltip.add(LootCrateAtlas.getLootKeyItemToolTip(itemStack));
     }
 
 }

@@ -5,5 +5,6 @@ public enum LootCrateRarity {
     UNCOMMON,
     RARE,
     EPIC,
-    GHOST
+    GHOST,
+    BLAZE
 }

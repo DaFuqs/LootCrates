@@ -8,24 +8,28 @@
   "item.lootcrates.rare_crate_key": "Rare Crate Key",
   "item.lootcrates.epic_crate_key": "Epic Crate Key",
   "item.lootcrates.ghost_crate_key": "Ghost Crate Key",
+  "item.lootcrates.blaze_crate_key": "Blazing Crate Key",
 
   "item.lootcrates.common_crate_key.tooltip": "Can be used to open locked §fCommon Loot Crates",
   "item.lootcrates.uncommon_crate_key.tooltip": "Can be used to open locked §eUncommon Loot Crates",
   "item.lootcrates.rare_crate_key.tooltip": "Can be used to open locked §bRare Loot Crates",
   "item.lootcrates.epic_crate_key.tooltip": "Can be used to open locked §dEpic Loot Crates",
   "item.lootcrates.ghost_crate_key.tooltip": "Can be used to open locked §aGhost Loot Crates",
+  "item.lootcrates.blaze_crate_key.tooltip": "Can be used to open locked §6Blazing Loot Crates",
 
   "block.lootcrates.common_chest_loot_crate": "Common Loot Crate",
   "block.lootcrates.uncommon_chest_loot_crate": "Uncommon Loot Crate",
   "block.lootcrates.rare_chest_loot_crate": "Rare Loot Crate",
   "block.lootcrates.epic_chest_loot_crate": "Epic Loot Crate",
   "block.lootcrates.ghost_chest_loot_crate": "Ghost Loot Crate",
+  "block.lootcrates.blaze_chest_loot_crate": "Blazing Loot Crate",
 
   "block.lootcrates.common_shulker_loot_crate": "Common Shulker Loot Crate",
   "block.lootcrates.uncommon_shulker_loot_crate": "Uncommon Shulker Loot Crate",
   "block.lootcrates.rare_shulker_loot_crate": "Rare Shulker Loot Crate",
   "block.lootcrates.epic_shulker_loot_crate": "Epic Shulker Loot Crate",
   "block.lootcrates.ghost_shulker_loot_crate": "Ghost Shulker Loot Crate",
+  "block.lootcrates.blaze_shulker_loot_crate": "Blazing Shulker Loot Crate",
 
   "container.lootcrates.loot_crate": "Loot Crate",
   "container.lootcrates.shulker_crate": "Shulker Loot Crate",
@@ -35,6 +39,7 @@
   "message.lootcrates.rare_key_needed_to_unlock": "You need a §bRare Crate Key§r to unlock this loot crate",
   "message.lootcrates.epic_key_needed_to_unlock": "You need a §dEpic Crate Key§r to unlock this loot crate",
   "message.lootcrates.ghost_key_needed_to_unlock": "You need a §aGhost Crate Key§r to unlock this loot crate",
+  "message.lootcrates.blaze_key_needed_to_unlock": "You need a §6Blazing Crate Key§r to unlock this loot crate",
 
   "item.lootcrates.loot_crate.tooltip.locked_use_common": "Locked (unlock it with a §fCommon Crate Key§r)",
   "item.lootcrates.loot_crate.tooltip.locked_use_uncommon": "Locked (unlock it with a §eUncommon Crate Key§r)",

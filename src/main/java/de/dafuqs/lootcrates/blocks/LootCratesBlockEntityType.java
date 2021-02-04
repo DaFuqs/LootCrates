@@ -1,7 +1,7 @@
 package de.dafuqs.lootcrates.blocks;
 
 import com.mojang.datafixers.types.Type;
-import de.dafuqs.lootcrates.LootCratesBlocks;
+import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -22,22 +22,10 @@ public class LootCratesBlockEntityType {
 
     public static void register() {
         CHEST_LOOT_CRATE_BLOCK_ENTITY = create("lootcrates:chest_loot_crate_block_entity",
-                BlockEntityType.Builder.create(
-                        ChestLootCrateBlockEntity::new,
-                        LootCratesBlocks.COMMON_CHEST_LOOT_CRATE,
-                        LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE,
-                        LootCratesBlocks.RARE_CHEST_LOOT_CRATE,
-                        LootCratesBlocks.EPIC_CHEST_LOOT_CRATE,
-                        LootCratesBlocks.GHOST_CHEST_LOOT_CRATE));
+                BlockEntityType.Builder.create(ChestLootCrateBlockEntity::new, LootCrateAtlas.getChestCrates()));
 
         SHULKER_LOOT_CRATE_BLOCK_ENTITY = create("lootcrates:shulker_loot_crate_block_entity",
-                BlockEntityType.Builder.create(
-                        ShulkerLootCrateBlockEntity::new,
-                        LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE,
-                        LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE,
-                        LootCratesBlocks.RARE_SHULKER_LOOT_CRATE,
-                        LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE,
-                        LootCratesBlocks.GHOST_SHULKER_LOOT_CRATE));
+                BlockEntityType.Builder.create(ShulkerLootCrateBlockEntity::new, LootCrateAtlas.getShulkerCrates()));
     }
 
 }

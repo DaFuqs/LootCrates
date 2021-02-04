@@ -1,0 +1,7 @@
+{
+  "parent": "lootcrates:block/crate_template",
+  "textures": {
+    "0": "lootcrates:entity/chest/blaze_crate",
+    "particle": "lootcrates:block/blaze_crate_break"
+  }
+}

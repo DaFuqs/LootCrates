@@ -1,5 +1,6 @@
 package de.dafuqs.lootcrates.blocks;
 
+import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import de.dafuqs.lootcrates.items.LootKeyItem;
@@ -230,7 +231,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         Block block = world.getBlockState(pos).getBlock();
 
         if(item instanceof LootKeyItem && block instanceof LootCrateBlock) {
-            LootCrateRarity itemRarity = LootKeyItem.getKeyRarity((LootKeyItem) item);
+            LootCrateRarity itemRarity = LootCrateAtlas.getKeyRarity((LootKeyItem) item);
             LootCrateRarity blockRarity = LootCrateBlock.getCrateRarity(block);
             return itemRarity.equals(blockRarity);
         } else {

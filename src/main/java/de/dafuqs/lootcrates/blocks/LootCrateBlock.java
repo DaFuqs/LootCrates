@@ -1,6 +1,6 @@
 package de.dafuqs.lootcrates.blocks;
 
-import de.dafuqs.lootcrates.LootCratesBlocks;
+import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import net.fabricmc.api.EnvType;
@@ -51,25 +51,8 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 }
                 if(!world.isClient()) {
                     LootCrateRarity rarity = getCrateRarity(world, pos);
-                    String translatableMessageString;
-                    switch (rarity) {
-                        case UNCOMMON:
-                            translatableMessageString = "message.lootcrates.uncommon_key_needed_to_unlock";
-                            break;
-                        case RARE:
-                            translatableMessageString = "message.lootcrates.rare_key_needed_to_unlock";
-                            break;
-                        case EPIC:
-                            translatableMessageString = "message.lootcrates.epic_key_needed_to_unlock";
-                            break;
-                        case GHOST:
-                            translatableMessageString = "message.lootcrates.ghost_key_needed_to_unlock";
-                            break;
-                        default:
-                            translatableMessageString = "message.lootcrates.common_key_needed_to_unlock";
-                            break;
-                    }
-                    player.sendMessage(new TranslatableText(translatableMessageString), false);
+                    TranslatableText translatableText = LootCrateAtlas.getKeyNeededTooltip(rarity);
+                    player.sendMessage(translatableText, false);
                 }
                 return ActionResult.FAIL;
             }
@@ -83,19 +66,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     }
 
     protected static LootCrateRarity getCrateRarity(Block block) {
-        if (block.equals(LootCratesBlocks.COMMON_CHEST_LOOT_CRATE) || block.equals(LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE)) {
-            return LootCrateRarity.COMMON;
-        } else if (block.equals(LootCratesBlocks.UNCOMMON_CHEST_LOOT_CRATE) || block.equals(LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE)) {
-            return LootCrateRarity.UNCOMMON;
-        } else if (block.equals(LootCratesBlocks.RARE_CHEST_LOOT_CRATE) || block.equals(LootCratesBlocks.RARE_SHULKER_LOOT_CRATE)) {
-            return LootCrateRarity.RARE;
-        } else if (block.equals(LootCratesBlocks.EPIC_CHEST_LOOT_CRATE) || block.equals(LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE)) {
-            return LootCrateRarity.EPIC;
-        } else if (block.equals(LootCratesBlocks.GHOST_CHEST_LOOT_CRATE) || block.equals(LootCratesBlocks.GHOST_SHULKER_LOOT_CRATE)) {
-            return LootCrateRarity.GHOST;
-        } else {
-            return LootCrateRarity.COMMON;
-        }
+        return LootCrateAtlas.getCrateRarity(block);
     }
 
     @Override

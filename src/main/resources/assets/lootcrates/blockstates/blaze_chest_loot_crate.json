@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "lootcrates:block/blaze_chest_loot_crate" },
+    "facing=east":  { "model": "lootcrates:block/blaze_chest_loot_crate", "y":  90},
+    "facing=south": { "model": "lootcrates:block/blaze_chest_loot_crate", "y": 180 },
+    "facing=west":  { "model": "lootcrates:block/blaze_chest_loot_crate", "y": 270 }
+  }
+}

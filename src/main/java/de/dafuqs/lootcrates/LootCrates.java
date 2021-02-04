@@ -1,12 +1,14 @@
 package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
+import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.minecraft.block.MaterialColor;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import net.minecraft.util.Rarity;
 
 public class LootCrates implements ModInitializer {
 
@@ -14,16 +16,21 @@ public class LootCrates implements ModInitializer {
 
     public static final ItemGroup ITEM_GROUP = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID, "loot_crates"),
-            () -> new ItemStack(LootCratesBlocks.EPIC_CHEST_LOOT_CRATE));
+            () -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.EPIC)));
 
     public static final ItemGroup PREDEFINED_ITEM_GROUP = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID, "predefined_loot_crates"),
-            () -> new ItemStack(LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE));
+            () -> new ItemStack(LootCrateAtlas.getShulkerCrate(LootCrateRarity.EPIC)));
 
     @Override
     public void onInitialize() {
-        LootCratesBlocks.register();
-        LootCratesItems.register();
+        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.COMMON, Rarity.COMMON, MaterialColor.WHITE, 0, false, false, false);
+        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.UNCOMMON, Rarity.UNCOMMON, MaterialColor.YELLOW, 0, false, false, false);
+        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.RARE, Rarity.RARE, MaterialColor.BLUE, 0, false, false, false);
+        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.EPIC, Rarity.EPIC, MaterialColor.PURPLE, 0,false, false, false);
+        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.GHOST, Rarity.UNCOMMON, MaterialColor.GREEN, 0, true, false, false);
+        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.BLAZE, Rarity.RARE, MaterialColor.LAVA, 15, false, true, true);
+
         LootCratesBlockEntityType.register();
 
         new PredefinedLootCratesItemGroup(); // add it to creative menu

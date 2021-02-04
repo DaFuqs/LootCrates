@@ -1,7 +1,6 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
-import de.dafuqs.lootcrates.LootCrates;
-import de.dafuqs.lootcrates.LootCratesBlocks;
+import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import net.minecraft.block.Block;
@@ -20,7 +19,6 @@ import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Box;
@@ -30,9 +28,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
 
 import java.util.List;
-
-import static net.minecraft.client.render.TexturedRenderLayers.CHEST_ATLAS_TEXTURE;
-import static net.minecraft.client.render.TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE;
 
 public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements Tickable {
 
@@ -225,27 +220,13 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     }
 
     public SpriteIdentifier getTexture() {
-        if(hasWorld()) {
-            Block block = world.getBlockState(pos).getBlock();
-            if (LootCratesBlocks.COMMON_SHULKER_LOOT_CRATE.equals(block)) {
-                return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/common_shulker"));
-            } else if (LootCratesBlocks.UNCOMMON_SHULKER_LOOT_CRATE.equals(block)) {
-                return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/uncommon_shulker"));
-            } else if (LootCratesBlocks.RARE_SHULKER_LOOT_CRATE.equals(block)) {
-                return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/rare_shulker"));
-            } else if (LootCratesBlocks.EPIC_SHULKER_LOOT_CRATE.equals(block)) {
-                return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/epic_shulker"));
-            } else if (LootCratesBlocks.GHOST_SHULKER_LOOT_CRATE.equals(block)) {
-                return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/ghost_shulker"));
-            }
-        }
-        return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/shulker/common_shulker"));
+        return LootCrateAtlas.getShulkerTexture(this);
     }
 
     public boolean hasTransparency() {
         if(hasWorld()) {
             Block block = world.getBlockState(pos).getBlock();
-            return LootCratesBlocks.GHOST_SHULKER_LOOT_CRATE.equals(block);
+            return block.isTranslucent(world.getBlockState(pos), world, pos);
         }
         return false;
     }

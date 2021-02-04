@@ -8,6 +8,10 @@
     "lootcrates:common_shulker_loot_crate",
     "lootcrates:uncommon_shulker_loot_crate",
     "lootcrates:rare_shulker_loot_crate",
-    "lootcrates:epic_shulker_loot_crate"
+    "lootcrates:epic_shulker_loot_crate",
+    "lootcrates:ghost_chest_loot_crate",
+    "lootcrates:ghost_shulker_loot_crate",
+    "lootcrates:blaze_chest_loot_crate",
+    "lootcrates:blaze_shulker_loot_crate"
   ]
 }
