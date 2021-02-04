@@ -12,6 +12,7 @@ import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import de.dafuqs.lootcrates.items.LootCrateItem;
 import de.dafuqs.lootcrates.items.LootKeyItem;
+import de.dafuqs.lootcrates.items.TickingLootCrateItem;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -157,8 +158,16 @@ public class LootCrateAtlas {
 
         // create & register block items
         FabricItemSettings blockItemSettings = lootCrateDefinition.getBlockItemSettings();
-        BlockItem loot_crate_block_item = new LootCrateItem(loot_crate_block, blockItemSettings);
-        BlockItem shulker_crate_block_item = new LootCrateItem(shulker_crate_block, blockItemSettings);
+
+        BlockItem loot_crate_block_item;
+        BlockItem shulker_crate_block_item;
+        if(lootCrateDefinition.scheduledTickEvent == ScheduledTickEvent.NONE) {
+            loot_crate_block_item = new LootCrateItem(loot_crate_block, blockItemSettings);
+            shulker_crate_block_item = new LootCrateItem(shulker_crate_block, blockItemSettings);
+        } else {
+            loot_crate_block_item = new TickingLootCrateItem(loot_crate_block, blockItemSettings);
+            shulker_crate_block_item = new TickingLootCrateItem(shulker_crate_block, blockItemSettings);
+        }
         Registry.register(Registry.ITEM, loot_crate_identifier, loot_crate_block_item);
         Registry.register(Registry.ITEM, shulker_crate_identifier, shulker_crate_block_item);
 
