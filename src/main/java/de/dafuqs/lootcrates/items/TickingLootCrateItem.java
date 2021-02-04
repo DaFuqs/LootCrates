@@ -50,7 +50,7 @@ public class TickingLootCrateItem extends LootCrateItem {
                         entity.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.4F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.2F);
                     }
                 } else {
-                    int r = world.getRandom().nextInt(100);
+                    int r = world.getRandom().nextInt(120);
                     if (r == 0) {
                         entity.setFireTicks(25);
                     } else if (r < 3) {
