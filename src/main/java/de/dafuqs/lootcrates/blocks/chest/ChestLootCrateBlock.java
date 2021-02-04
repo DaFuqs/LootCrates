@@ -72,6 +72,7 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        super.scheduledTick(state, world, pos, random);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ChestLootCrateBlockEntity) {
             ((ChestLootCrateBlockEntity)blockEntity).tick();

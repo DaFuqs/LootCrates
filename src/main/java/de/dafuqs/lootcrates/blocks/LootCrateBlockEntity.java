@@ -3,13 +3,13 @@ package de.dafuqs.lootcrates.blocks;
 import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
+import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import de.dafuqs.lootcrates.items.LootKeyItem;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.Item;
@@ -26,7 +26,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.nbt.Tag;
-import net.minecraft.util.Rarity;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +42,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     private boolean doNotConsumeKeyOnUnlock;
     private boolean oncePerPlayer;
     private List<UUID> registeredPlayerUUIDs;
+    ScheduledTickEvent scheduledTickEvent;
 
     private long replenishTimeTicks;
     private long lastReplenishTimeTick;
@@ -143,7 +143,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
     @Override
     public void checkLootInteraction(@Nullable PlayerEntity player) {
-        // only players can generate container w
+        // only players can generate container loot
         if (player != null && this.lootTableId != null && this.world.getServer() != null && shouldGenerateNewLoot(player)) {
             LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
             if (player instanceof ServerPlayerEntity) {
@@ -158,7 +158,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     public CompoundTag addLootCrateBlockTags(CompoundTag tag) {
         tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
 
-        if(this.lastReplenishTimeTick != 0) {
+        if(this.lastReplenishTimeTick > 0) {
             tag.putLong(LootCrateTagNames.LastReplenishTimeTick.toString(), this.lastReplenishTimeTick);
         }
         if(this.locked) {
@@ -247,4 +247,10 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         this.locked = false;
     }
 
+    public ScheduledTickEvent getRandomTickEvent() {
+        if(this.scheduledTickEvent == null) {
+            scheduledTickEvent = LootCrateAtlas.getRandomTickEvent((LootCrateBlock) world.getBlockState(pos).getBlock());
+        }
+        return this.scheduledTickEvent;
+    }
 }

@@ -3,11 +3,10 @@ package de.dafuqs.lootcrates.blocks;
 import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
+import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -16,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.TranslatableText;
@@ -27,6 +27,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Random;
 
 public abstract class LootCrateBlock extends BlockWithEntity {
 
@@ -82,6 +84,46 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 ((LootCrateBlockEntity) blockEntity).setCustomName(itemStack.getName());
             }
         }
+    }
+
+    @Override
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        world.getBlockTickScheduler().schedule(pos, this, getRandomTickTime(world.random));
+
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof LootCrateBlockEntity) {
+            ScheduledTickEvent scheduledTickEvent = ((LootCrateBlockEntity) blockEntity).getRandomTickEvent();
+
+            if (scheduledTickEvent == ScheduledTickEvent.FIRE) {
+                int xOffset = 2 - random.nextInt(5);
+                int yOffset = 1 - random.nextInt(3);
+                int zOffset = 2 - random.nextInt(5);
+
+                BlockPos targetPos = pos.add(xOffset, yOffset, zOffset);
+                if (world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.down()).getMaterial().isSolid()) {
+                    world.setBlockState(targetPos, Blocks.FIRE.getDefaultState());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+        super.onBlockAdded(state, world, pos, oldState, notify);
+
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof LootCrateBlockEntity) {
+            ScheduledTickEvent scheduledTickEvent = ((LootCrateBlockEntity) blockEntity).getRandomTickEvent();
+
+            if(scheduledTickEvent != ScheduledTickEvent.NONE) {
+                world.getBlockTickScheduler().schedule(pos, this, getRandomTickTime(world.random));
+            }
+        }
+    }
+
+    // faster than fire (30+ 0-10)
+    private static int getRandomTickTime(Random random) {
+        return 20 + random.nextInt(10);
     }
 
     /**

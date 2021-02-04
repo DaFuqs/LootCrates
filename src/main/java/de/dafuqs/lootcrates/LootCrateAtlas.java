@@ -2,12 +2,14 @@ package de.dafuqs.lootcrates;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.EnumHashBiMap;
+import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlockEntity;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
+import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import de.dafuqs.lootcrates.items.LootCrateItem;
 import de.dafuqs.lootcrates.items.LootKeyItem;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -51,7 +53,7 @@ public class LootCrateAtlas {
         public SpriteIdentifier shulkerTexture;
         public MaterialColor materialColor;
         public boolean hasTransparency;
-        public boolean doesTick;
+        public ScheduledTickEvent scheduledTickEvent;
         public boolean fireProof;
         public int luminance;
         public Rarity rarity;
@@ -60,7 +62,7 @@ public class LootCrateAtlas {
         public TranslatableText lootKeyTooltip;
         public TranslatableText keyNeededTooltip;
 
-        public LootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MaterialColor materialColor, int luminance, boolean hasTransparency, boolean fireProof, boolean doesTick) {
+        public LootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MaterialColor materialColor, int luminance, boolean hasTransparency, boolean fireProof, ScheduledTickEvent scheduledTickEvent) {
             this.identifier = lootCrateRarity.toString().toLowerCase();
             this.chestTextureIdentifier = new Identifier(LootCrates.MOD_ID, "entity/chest/" + this.identifier + "_crate");
             this.chestTexture =  new SpriteIdentifier(CHEST_ATLAS_TEXTURE, this.chestTextureIdentifier);
@@ -68,7 +70,7 @@ public class LootCrateAtlas {
             this.shulkerTexture =  new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, this.shulkerTextureIdentifier);
             this.hasTransparency = hasTransparency;
             this.materialColor = materialColor;
-            this.doesTick = doesTick;
+            this.scheduledTickEvent = scheduledTickEvent;
             this.fireProof = fireProof;
             this.luminance = luminance;
             this.rarity = rarity;
@@ -105,7 +107,7 @@ public class LootCrateAtlas {
         }
 
         public FabricBlockSettings getShulkerBlockSettings() {
-            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, materialColor);
+            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, materialColor).luminance(luminance);
 
             if(hasTransparency) {
                 blockSettings = blockSettings.nonOpaque();
@@ -129,8 +131,8 @@ public class LootCrateAtlas {
         return new ShulkerLootCrateBlock(settings.strength(2.0F).dynamicBounds().nonOpaque().suffocates(contextPredicate).blockVision(contextPredicate));
     }
 
-    public static void registerLootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MaterialColor materialColor, int luminance, boolean hasTransparency, boolean fireProof, boolean doesTick) {
-        LootCrateDefinition lootCrateDefinition = new LootCrateDefinition(lootCrateRarity, rarity, materialColor, luminance, hasTransparency, fireProof, doesTick);
+    public static void registerLootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MaterialColor materialColor, int luminance, boolean hasTransparency, boolean fireProof, ScheduledTickEvent scheduledTickEvent) {
+        LootCrateDefinition lootCrateDefinition = new LootCrateDefinition(lootCrateRarity, rarity, materialColor, luminance, hasTransparency, fireProof, scheduledTickEvent);
         lootCrateDefinitions.put(lootCrateRarity, lootCrateDefinition);
 
         // create & register key item
@@ -167,7 +169,7 @@ public class LootCrateAtlas {
     public static SpriteIdentifier getChestTexture(LootCrateBlockEntity lootCrateBlockEntity) {
         if(lootCrateBlockEntity.hasWorld()) {
             Block block = lootCrateBlockEntity.getWorld().getBlockState(lootCrateBlockEntity.getPos()).getBlock();
-            LootCrateDefinition lootCrateDefinition = lootCrateDefinitions.get(getBlockRarity(block));
+            LootCrateDefinition lootCrateDefinition = lootCrateDefinitions.get(getCrateRarity(block));
             if(lootCrateDefinition != null) {
                 return lootCrateDefinition.chestTexture;
             }
@@ -257,11 +259,11 @@ public class LootCrateAtlas {
     }
 
     public static LootCrateRarity getCrateRarity(Block block) {
-        return lootCrateBlocks.inverse().get(block);
-    }
-
-    private static LootCrateRarity getBlockRarity(Block block) {
-        return lootCrateBlocks.inverse().get(block);
+        if(lootCrateBlocks.containsValue(block)) {
+            return lootCrateBlocks.inverse().get(block);
+        } else {
+            return shulkerCrateBlocks.inverse().get(block);
+        }
     }
 
     private static LootCrateRarity getShulkerRarity(Block block) {
@@ -285,6 +287,9 @@ public class LootCrateAtlas {
         return lootCrateDefinitions.get(lootCrateKeys.inverse().get(item)).lootKeyTooltip;
     }
 
-
+    public static ScheduledTickEvent getRandomTickEvent(LootCrateBlock lootCrateBlock) {
+        LootCrateRarity lootCrateRarity = getCrateRarity(lootCrateBlock);
+        return lootCrateDefinitions.get(lootCrateRarity).scheduledTickEvent;
+    }
 
 }
