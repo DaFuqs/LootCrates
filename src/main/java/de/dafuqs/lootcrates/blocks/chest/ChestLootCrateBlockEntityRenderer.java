@@ -29,7 +29,7 @@ public class ChestLootCrateBlockEntityRenderer extends BlockEntityRenderer<Chest
         super(blockEntityRenderDispatcher);
 
         this.singleChestBase = new ModelPart(64, 64, 0, 19);
-        this.singleChestBase.addCuboid(1.0F, 0.0F, 1.0F, 14.0F, 10.0F, 14.0F, 0.0F);
+        this.singleChestBase.addCuboid(1.0F, 0.01F, 1.0F, 14.0F, 9.99F, 14.0F, 0.0F); // why 0.01 and 9.99? Against Z-fighting for transparent blocks that is!
         this.singleChestLid = new ModelPart(64, 64, 0, 0);
         this.singleChestLid.addCuboid(1.0F, 0.0F, 0.0F, 14.0F, 5.0F, 14.0F, 0.0F);
         this.singleChestLid.pivotY = 9.0F;

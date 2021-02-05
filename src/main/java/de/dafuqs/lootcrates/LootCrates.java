@@ -29,8 +29,8 @@ public class LootCrates implements ModInitializer {
         LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.UNCOMMON, Rarity.UNCOMMON, MaterialColor.YELLOW, 0, false, false, ScheduledTickEvent.NONE);
         LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.RARE, Rarity.RARE, MaterialColor.BLUE, 0, false, false, ScheduledTickEvent.NONE);
         LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.EPIC, Rarity.EPIC, MaterialColor.PURPLE, 0,false, false, ScheduledTickEvent.NONE);
-        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.GHOST, Rarity.UNCOMMON, MaterialColor.GREEN, 0, true, false, ScheduledTickEvent.NONE);
-        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.BLAZE, Rarity.RARE, MaterialColor.LAVA, 15, false, true, ScheduledTickEvent.FIRE);
+        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.GHOST, Rarity.EPIC, MaterialColor.GREEN, 0, true, false, ScheduledTickEvent.NONE);
+        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.BLAZE, Rarity.EPIC, MaterialColor.LAVA, 15, false, true, ScheduledTickEvent.FIRE);
 
         LootCratesBlockEntityType.register();
 

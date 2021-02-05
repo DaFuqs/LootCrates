@@ -248,7 +248,6 @@ public class LootCrateAtlas {
     }
 
     public static void registerTextureAtlas() {
-
         //Register textures in chest atlas
         ClientSpriteRegistryCallback.event(TexturedRenderLayers.CHEST_ATLAS_TEXTURE).register((texture, registry) -> {
             for(LootCrateDefinition lootCrateDefinition : lootCrateDefinitions.values()) {
