@@ -25,7 +25,7 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
     @Environment(EnvType.CLIENT)
     @Override
     public ItemStack createIcon() {
-        return new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.EPIC));
+        return new ItemStack(LootCrateAtlas.getShulkerCrate(LootCrateRarity.EPIC));
     }
 
     @Environment(EnvType.CLIENT)
