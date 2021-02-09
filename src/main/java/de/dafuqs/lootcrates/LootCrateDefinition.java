@@ -42,7 +42,6 @@ public class LootCrateDefinition {
             this.shulkerTexture =  new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, this.shulkerTextureIdentifier);
             this.hasTransparency = hasTransparency;
             this.materialColor = materialColor;
-            this.scheduledTickEvent = scheduledTickEvent;
             this.fireProof = fireProof;
             this.luminance = luminance;
             this.rarity = rarity;
@@ -56,15 +55,13 @@ public class LootCrateDefinition {
             this.scheduledTickEvent = ScheduledTickEvent.NONE;
         }
 
-        public LootCrateDefinition setCustomSounds(SoundEvent customOpenSoundEvent, SoundEvent customCloseSoundEvent) {
+        public void setCustomSounds(SoundEvent customOpenSoundEvent, SoundEvent customCloseSoundEvent) {
             this.customOpenSoundEvent = customOpenSoundEvent;
             this.customCloseSoundEvent = customCloseSoundEvent;
-            return this;
         }
 
-        public LootCrateDefinition setScheduledTickEvent(ScheduledTickEvent scheduledTickEvent) {
+        public void setScheduledTickEvent(ScheduledTickEvent scheduledTickEvent) {
             this.scheduledTickEvent = scheduledTickEvent;
-            return this;
         }
 
         public FabricItemSettings getKeyItemSettings() {

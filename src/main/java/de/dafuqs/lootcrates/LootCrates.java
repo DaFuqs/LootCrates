@@ -35,7 +35,7 @@ public class LootCrates implements ModInitializer {
         LootCrateDefinition blazeLootCrate = new LootCrateDefinition(LootCrateRarity.BLAZE, Rarity.EPIC, MaterialColor.LAVA, 15, false, true);
 
         epicLootCrate.setCustomSounds(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundEvents.ENTITY_ENDER_DRAGON_FLAP);
-        ghostLootCrate.setCustomSounds(SoundEvents.ENTITY_GHAST_SHOOT, SoundEvents.ENTITY_GHAST_AMBIENT);
+        ghostLootCrate.setCustomSounds(SoundEvents.ENTITY_GHAST_AMBIENT, SoundEvents.ENTITY_GHAST_AMBIENT);
         blazeLootCrate.setCustomSounds(SoundEvents.ENTITY_BLAZE_AMBIENT, SoundEvents.ENTITY_BLAZE_SHOOT);
         blazeLootCrate.setScheduledTickEvent(ScheduledTickEvent.FIRE);
 

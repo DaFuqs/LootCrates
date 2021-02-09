@@ -16,6 +16,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ShulkerBoxScreenHandler;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -197,10 +198,9 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
             ++this.viewerCount;
             this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount == 1) {
-                playSound(SoundEvents.BLOCK_SHULKER_BOX_OPEN);
+                playOpenSoundEffect();
             }
         }
-
     }
 
     @Override
@@ -209,10 +209,9 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
             --this.viewerCount;
             this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount <= 0) {
-                playSound(SoundEvents.BLOCK_SHULKER_BOX_CLOSE);
+                playCloseSoundEffect();
             }
         }
-
     }
 
     public float getAnimationProgress(float f) {

@@ -48,7 +48,7 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
     public void tick() {
         this.lastAnimationAngle = this.animationAngle;
         if (this.viewerCount > 0 && this.animationAngle == 0.0F) {
-            playSound(SoundEvents.BLOCK_CHEST_OPEN);
+            playOpenSoundEffect();
         }
 
         if (this.viewerCount == 0 && this.animationAngle > 0.0F || this.viewerCount > 0 && this.animationAngle < 1.0F) {
@@ -64,7 +64,7 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
             }
 
             if (this.animationAngle < 0.5F && g >= 0.5F) {
-                playSound(SoundEvents.BLOCK_CHEST_CLOSE);
+                playCloseSoundEffect();
             }
 
             if (this.animationAngle < 0.0F) {

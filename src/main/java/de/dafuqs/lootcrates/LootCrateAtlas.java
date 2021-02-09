@@ -5,6 +5,7 @@ import com.google.common.collect.EnumHashBiMap;
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
+import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlockEntity;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
@@ -16,8 +17,9 @@ import de.dafuqs.lootcrates.items.TickingLootCrateItem;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
@@ -27,13 +29,16 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static net.minecraft.client.render.TexturedRenderLayers.CHEST_ATLAS_TEXTURE;
 import static net.minecraft.client.render.TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE;
@@ -46,9 +51,6 @@ public class LootCrateAtlas {
     private static final BiMap<LootCrateRarity, BlockItem> shulkerCrateItems = EnumHashBiMap.create(LootCrateRarity.class);
     private static final BiMap<LootCrateRarity, Block> lootCrateBlocks = EnumHashBiMap.create(LootCrateRarity.class);
     private static final BiMap<LootCrateRarity, Block> shulkerCrateBlocks = EnumHashBiMap.create(LootCrateRarity.class);
-
-
-
 
     private static ShulkerLootCrateBlock createShulkerLootCrateBlock(AbstractBlock.Settings settings) {
         AbstractBlock.ContextPredicate contextPredicate = (blockState, blockView, blockPos) -> {
@@ -230,4 +232,23 @@ public class LootCrateAtlas {
         return lootCrateDefinitions.get(lootCrateRarity).scheduledTickEvent;
     }
 
+    public static SoundEvent getCustomOpenSoundEvent(LootCrateBlock lootCrateBlock) {
+        LootCrateRarity lootCrateRarity;
+        if(lootCrateBlock instanceof ChestLootCrateBlock) {
+            lootCrateRarity = getCrateRarity(lootCrateBlock);
+        } else {
+            lootCrateRarity = getShulkerRarity(lootCrateBlock);
+        }
+        return lootCrateDefinitions.get(lootCrateRarity).customOpenSoundEvent;
+    }
+
+    public static SoundEvent getCustomCloseSoundEvent(LootCrateBlock lootCrateBlock) {
+        LootCrateRarity lootCrateRarity;
+        if(lootCrateBlock instanceof ChestLootCrateBlock) {
+            lootCrateRarity = getCrateRarity(lootCrateBlock);
+        } else {
+            lootCrateRarity = getShulkerRarity(lootCrateBlock);
+        }
+        return lootCrateDefinitions.get(lootCrateRarity).customCloseSoundEvent;
+    }
 }

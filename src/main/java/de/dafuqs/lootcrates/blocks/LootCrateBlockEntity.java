@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates.blocks;
 
 import de.dafuqs.lootcrates.LootCrateAtlas;
+import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
@@ -26,6 +27,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.nbt.Tag;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -227,10 +229,9 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(world == null) {
             return false;
         }
+        Block block = getBlock();
 
-        Block block = world.getBlockState(pos).getBlock();
-
-        if(item instanceof LootKeyItem && block instanceof LootCrateBlock) {
+        if(item instanceof LootKeyItem) {
             LootCrateRarity itemRarity = LootCrateAtlas.getKeyRarity((LootKeyItem) item);
             LootCrateRarity blockRarity = LootCrateBlock.getCrateRarity(block);
             return itemRarity.equals(blockRarity);
@@ -247,10 +248,45 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         this.locked = false;
     }
 
+    public LootCrateBlock getBlock() {
+        return (LootCrateBlock) this.world.getBlockState(this.pos).getBlock();
+    }
+
     public ScheduledTickEvent getRandomTickEvent() {
         if(this.scheduledTickEvent == null) {
-            scheduledTickEvent = LootCrateAtlas.getRandomTickEvent((LootCrateBlock) world.getBlockState(pos).getBlock());
+            scheduledTickEvent = LootCrateAtlas.getRandomTickEvent(getBlock());
         }
         return this.scheduledTickEvent;
     }
+
+    public void playOpenSoundEffect() {
+        // play default sound
+        if(this instanceof ChestLootCrateBlockEntity) {
+            playSound(SoundEvents.BLOCK_CHEST_OPEN);
+        } else {
+            playSound(SoundEvents.BLOCK_SHULKER_BOX_OPEN);
+        }
+
+        // also play custom sound, if set
+        SoundEvent customSoundEvent = LootCrateAtlas.getCustomOpenSoundEvent(getBlock());
+        if(customSoundEvent != null) {
+            playSound(customSoundEvent);
+        }
+    }
+
+    public void playCloseSoundEffect() {
+        // play default sound
+        if(this instanceof ChestLootCrateBlockEntity) {
+            playSound(SoundEvents.BLOCK_CHEST_CLOSE);
+        } else {
+            playSound(SoundEvents.BLOCK_SHULKER_BOX_CLOSE);
+        }
+
+        // also play custom sound, if set
+        SoundEvent customSoundEvent = LootCrateAtlas.getCustomCloseSoundEvent(getBlock());
+        if(customSoundEvent != null) {
+            playSound(customSoundEvent);
+        }
+    }
+
 }
