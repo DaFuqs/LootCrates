@@ -26,6 +26,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -46,6 +47,7 @@ public class LootCrateAtlas {
     private static final BiMap<LootCrateRarity, Block> lootCrateBlocks = EnumHashBiMap.create(LootCrateRarity.class);
     private static final BiMap<LootCrateRarity, Block> shulkerCrateBlocks = EnumHashBiMap.create(LootCrateRarity.class);
 
+
     private static class LootCrateDefinition {
         public String identifier;
         public Identifier chestTextureIdentifier;
@@ -62,6 +64,8 @@ public class LootCrateAtlas {
         public TranslatableText lockedConsumeTooltip;
         public TranslatableText lootKeyTooltip;
         public TranslatableText keyNeededTooltip;
+        SoundEvent customOpenSoundEvent;
+        SoundEvent customCloseSoundEvent;
 
         public LootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MaterialColor materialColor, int luminance, boolean hasTransparency, boolean fireProof, ScheduledTickEvent scheduledTickEvent) {
             this.identifier = lootCrateRarity.toString().toLowerCase();
@@ -79,6 +83,12 @@ public class LootCrateAtlas {
             this.lockedConsumeTooltip = new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_consume_" + this.identifier);
             this.lootKeyTooltip = new TranslatableText("item.lootcrates." + this.identifier + "_crate_key.tooltip");
             this.keyNeededTooltip = new TranslatableText("message.lootcrates." + this.identifier + "_key_needed_to_unlock");
+        }
+
+        public LootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MaterialColor materialColor, int luminance, boolean hasTransparency, boolean fireProof, ScheduledTickEvent scheduledTickEvent, SoundEvent customOpenSoundEvent, SoundEvent customCloseSoundEvent) {
+            this.customOpenSoundEvent = customOpenSoundEvent;
+            this.customCloseSoundEvent = customCloseSoundEvent;
+            LootCrateDefinition(lootCrateRarity, rarity, materialColor, luminance, hasTransparency, fireProof, scheduledTickEvent);
         }
 
         public FabricItemSettings getKeyItemSettings() {

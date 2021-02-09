@@ -8,6 +8,8 @@ import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
@@ -28,9 +30,9 @@ public class LootCrates implements ModInitializer {
         LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.COMMON, Rarity.COMMON, MaterialColor.WHITE, 0, false, false, ScheduledTickEvent.NONE);
         LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.UNCOMMON, Rarity.UNCOMMON, MaterialColor.YELLOW, 0, false, false, ScheduledTickEvent.NONE);
         LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.RARE, Rarity.RARE, MaterialColor.BLUE, 0, false, false, ScheduledTickEvent.NONE);
-        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.EPIC, Rarity.EPIC, MaterialColor.PURPLE, 0,false, false, ScheduledTickEvent.NONE);
+        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.EPIC, Rarity.EPIC, MaterialColor.PURPLE, 6,false, false, ScheduledTickEvent.NONE, SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundEvents.ENTITY_ENDER_DRAGON_FLAP);
         LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.GHOST, Rarity.EPIC, MaterialColor.GREEN, 0, true, false, ScheduledTickEvent.NONE);
-        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.BLAZE, Rarity.EPIC, MaterialColor.LAVA, 15, false, true, ScheduledTickEvent.FIRE);
+        LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.BLAZE, Rarity.EPIC, MaterialColor.LAVA, 15, false, true, ScheduledTickEvent.FIRE, SoundEvents.ENTITY_BLAZE_AMBIENT, SoundEvents.ENTITY_BLAZE_SHOOT);
 
         LootCratesBlockEntityType.register();
 
