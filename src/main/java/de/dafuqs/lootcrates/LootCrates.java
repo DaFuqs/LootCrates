@@ -55,9 +55,6 @@ public class LootCrates implements ModInitializer {
         // The block entity type
         LootCratesBlockEntityType.register();
 
-        // Add the item group to the creative menu
-        new PredefinedLootCratesItemGroup();
-
         Registry.register(Registry.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
     }
 

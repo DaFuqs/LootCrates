@@ -14,6 +14,8 @@ import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import de.dafuqs.lootcrates.items.LootCrateItem;
 import de.dafuqs.lootcrates.items.LootKeyItem;
 import de.dafuqs.lootcrates.items.TickingLootCrateItem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -248,4 +250,12 @@ public class LootCrateAtlas {
         }
         return lootCrateDefinitions.get(lootCrateRarity).customCloseSoundEvent;
     }
+
+    @Environment(EnvType.CLIENT)
+    public static void setupTextures() {
+        for(LootCrateDefinition lootCrateDefinition : lootCrateDefinitions.values()) {
+            lootCrateDefinition.setupTextures();
+        }
+    }
+
 }

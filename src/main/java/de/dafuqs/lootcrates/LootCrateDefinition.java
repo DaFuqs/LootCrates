@@ -2,10 +2,13 @@ package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Material;
 import net.minecraft.block.MaterialColor;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.TranslatableText;
@@ -36,10 +39,7 @@ public class LootCrateDefinition {
 
         public LootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MaterialColor materialColor, int luminance, boolean hasTransparency, boolean fireProof) {
             this.identifier = lootCrateRarity.toString().toLowerCase();
-            this.chestTextureIdentifier = new Identifier(LootCrates.MOD_ID, "entity/chest/" + this.identifier + "_crate");
-            this.chestTexture =  new SpriteIdentifier(CHEST_ATLAS_TEXTURE, this.chestTextureIdentifier);
-            this.shulkerTextureIdentifier = new Identifier(LootCrates.MOD_ID, "entity/shulker/" + this.identifier + "_shulker");
-            this.shulkerTexture =  new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, this.shulkerTextureIdentifier);
+
             this.hasTransparency = hasTransparency;
             this.materialColor = materialColor;
             this.fireProof = fireProof;
@@ -94,6 +94,14 @@ public class LootCrateDefinition {
             FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, materialColor).luminance(luminance);
             // shulker blocks are always opaque
             return blockSettings;
+        }
+
+        @Environment(EnvType.CLIENT)
+        public void setupTextures() {
+            this.chestTextureIdentifier = new Identifier(LootCrates.MOD_ID, "entity/chest/" + this.identifier + "_crate");
+            this.chestTexture = new SpriteIdentifier(CHEST_ATLAS_TEXTURE, this.chestTextureIdentifier);
+            this.shulkerTextureIdentifier = new Identifier(LootCrates.MOD_ID, "entity/shulker/" + this.identifier + "_shulker");
+            this.shulkerTexture = new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, this.shulkerTextureIdentifier);
         }
 
     }
