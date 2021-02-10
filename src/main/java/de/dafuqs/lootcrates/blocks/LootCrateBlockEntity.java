@@ -93,11 +93,15 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     protected void playSound(SoundEvent soundEvent) {
+        playSound(soundEvent, 1.0F);
+    }
+
+    protected void playSound(SoundEvent soundEvent, float volume) {
         if(hasWorld()) {
             double d = (double) this.pos.getX() + 0.5D;
             double e = (double) this.pos.getY() + 0.5D;
             double f = (double) this.pos.getZ() + 0.5D;
-            this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+            this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F * volume, this.world.random.nextFloat() * 0.1F + 0.9F);
         }
     }
 
@@ -270,7 +274,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         // also play custom sound, if set
         SoundEvent customSoundEvent = LootCrateAtlas.getCustomOpenSoundEvent(getBlock());
         if(customSoundEvent != null) {
-            playSound(customSoundEvent);
+            playSound(customSoundEvent, 0.4F);
         }
     }
 
@@ -285,7 +289,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         // also play custom sound, if set
         SoundEvent customSoundEvent = LootCrateAtlas.getCustomCloseSoundEvent(getBlock());
         if(customSoundEvent != null) {
-            playSound(customSoundEvent);
+            playSound(customSoundEvent, 0.4F);
         }
     }
 
