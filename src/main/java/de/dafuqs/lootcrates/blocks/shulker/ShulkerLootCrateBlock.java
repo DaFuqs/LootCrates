@@ -66,32 +66,30 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
             return ActionResult.CONSUME;
         } else {
             ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
-            if(actionResult == ActionResult.FAIL) {
-                playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
-                return actionResult;
-            }
+            if(actionResult == ActionResult.PASS) {
+                BlockEntity blockEntity = world.getBlockEntity(pos);
+                if (blockEntity instanceof ShulkerLootCrateBlockEntity) {
+                    ShulkerLootCrateBlockEntity ShulkerLootCrateBlockEntity = (ShulkerLootCrateBlockEntity) blockEntity;
+                    boolean bl2;
+                    if (ShulkerLootCrateBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
+                        Direction direction = state.get(FACING);
+                        bl2 = world.isSpaceEmpty(ShulkerLidCollisions.getLidCollisionBox(pos, direction));
+                    } else {
+                        bl2 = true;
+                    }
 
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof ShulkerLootCrateBlockEntity) {
-                ShulkerLootCrateBlockEntity ShulkerLootCrateBlockEntity = (ShulkerLootCrateBlockEntity)blockEntity;
-                boolean bl2;
-                if (ShulkerLootCrateBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
-                    Direction direction = state.get(FACING);
-                    bl2 = world.isSpaceEmpty(ShulkerLidCollisions.getLidCollisionBox(pos, direction));
+                    if (bl2) {
+                        player.openHandledScreen(ShulkerLootCrateBlockEntity);
+                        player.incrementStat(Stats.OPEN_SHULKER_BOX);
+                        PiglinBrain.onGuardedBlockInteracted(player, true);
+                    }
+
+                    return ActionResult.CONSUME;
                 } else {
-                    bl2 = true;
+                    return ActionResult.PASS;
                 }
-
-                if (bl2) {
-                    player.openHandledScreen(ShulkerLootCrateBlockEntity);
-                    player.incrementStat(Stats.OPEN_SHULKER_BOX);
-                    PiglinBrain.onGuardedBlockInteracted(player, true);
-                }
-
-                return ActionResult.CONSUME;
-            } else {
-                return ActionResult.PASS;
             }
+            return actionResult;
         }
     }
 

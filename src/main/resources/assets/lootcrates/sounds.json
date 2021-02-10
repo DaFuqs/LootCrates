@@ -1,0 +1,8 @@
+{
+  "chest_unlocks": {
+    "subtitle": "subtitles.lootcrates.chest_unlocks",
+    "sounds": [
+      "lootcrates:chest_unlocks"
+    ]
+  }
+}

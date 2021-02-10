@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates.blocks;
 
 import de.dafuqs.lootcrates.LootCrateAtlas;
+import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
@@ -250,6 +251,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
     public void unlock() {
         this.locked = false;
+        this.playSound(LootCrates.CHEST_UNLOCKS_SOUND_EVENT);
     }
 
     public LootCrateBlock getBlock() {

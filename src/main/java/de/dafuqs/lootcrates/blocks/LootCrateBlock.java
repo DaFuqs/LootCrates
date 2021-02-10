@@ -18,6 +18,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -48,7 +49,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                             itemStack.decrement(1);
                         }
                         lootCrateBlockEntity.unlock();
-                        return ActionResult.PASS;
+                        return ActionResult.CONSUME; // just consume the action and play unlock sound.
                     }
                 }
                 if(!world.isClient()) {
@@ -56,6 +57,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                     TranslatableText translatableText = LootCrateAtlas.getKeyNeededTooltip(rarity);
                     player.sendMessage(translatableText, false);
                 }
+                playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
                 return ActionResult.FAIL;
             }
         }

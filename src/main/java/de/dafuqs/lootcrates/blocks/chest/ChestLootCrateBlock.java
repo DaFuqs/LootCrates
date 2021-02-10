@@ -43,19 +43,15 @@ public class ChestLootCrateBlock extends LootCrateBlock {
             return ActionResult.SUCCESS;
         } else {
             ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
-            if(actionResult == ActionResult.FAIL) {
-                playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
-                return actionResult;
-            }
-
-            if(!hasBlockOnTop(world, pos)) {
-                NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
-                if (namedScreenHandlerFactory != null) {
-                    player.openHandledScreen(namedScreenHandlerFactory);
-                    PiglinBrain.onGuardedBlockInteracted(player, true);
+            if(actionResult == ActionResult.PASS) {
+                if (!hasBlockOnTop(world, pos)) {
+                    NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
+                    if (namedScreenHandlerFactory != null) {
+                        player.openHandledScreen(namedScreenHandlerFactory);
+                        PiglinBrain.onGuardedBlockInteracted(player, true);
+                    }
                 }
             }
-
             return ActionResult.CONSUME;
         }
     }

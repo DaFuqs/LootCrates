@@ -2,15 +2,16 @@ package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
-import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.registry.Registry;
 
 public class LootCrates implements ModInitializer {
 
@@ -23,6 +24,9 @@ public class LootCrates implements ModInitializer {
     public static final ItemGroup PREDEFINED_ITEM_GROUP = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID, "predefined_loot_crates"),
             () -> new ItemStack(LootCrateAtlas.getShulkerCrate(LootCrateRarity.EPIC)));
+
+    public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
+    public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = new SoundEvent(CHEST_UNLOCKS_SOUND_ID);
 
     @Override
     public void onInitialize() {
@@ -51,6 +55,8 @@ public class LootCrates implements ModInitializer {
 
         // Add the item group to the creative menu
         new PredefinedLootCratesItemGroup();
+
+        Registry.register(Registry.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
     }
 
 }
