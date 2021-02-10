@@ -115,53 +115,46 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     }
 
     private void pushEntities() {
-        if(world == null) {
-            return;
-        }
-
         BlockState blockState = this.world.getBlockState(this.getPos());
-        if (blockState.getBlock() instanceof ShulkerBoxBlock) {
+        if (blockState.getBlock() instanceof ShulkerLootCrateBlock) {
             Direction direction = blockState.get(ShulkerBoxBlock.FACING);
             Box box = this.getCollisionBox(direction).offset(this.pos);
             List<Entity> list = this.world.getOtherEntities(null, box);
-            if (!list.isEmpty()) {
-                for (Entity entity : list) {
-                    if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
-                        double d = 0.0D;
-                        double e = 0.0D;
-                        double f = 0.0D;
-                        Box box2 = entity.getBoundingBox();
-                        switch (direction.getAxis()) {
-                            case X:
-                                if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-                                    d = box.maxX - box2.minX;
-                                } else {
-                                    d = box2.maxX - box.minX;
-                                }
+            for (Entity entity : list) {
+                if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
+                    double d = 0.0D;
+                    double e = 0.0D;
+                    double f = 0.0D;
+                    Box box2 = entity.getBoundingBox();
+                    switch (direction.getAxis()) {
+                        case X:
+                            if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
+                                d = box.maxX - box2.minX;
+                            } else {
+                                d = box2.maxX - box.minX;
+                            }
 
-                                d += 0.01D;
-                                break;
-                            case Y:
-                                if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-                                    e = box.maxY - box2.minY;
-                                } else {
-                                    e = box2.maxY - box.minY;
-                                }
+                            d += 0.01D;
+                            break;
+                        case Y:
+                            if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
+                                e = box.maxY - box2.minY;
+                            } else {
+                                e = box2.maxY - box.minY;
+                            }
 
-                                e += 0.01D;
-                                break;
-                            case Z:
-                                if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-                                    f = box.maxZ - box2.minZ;
-                                } else {
-                                    f = box2.maxZ - box.minZ;
-                                }
+                            e += 0.01D;
+                            break;
+                        case Z:
+                            if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
+                                f = box.maxZ - box2.minZ;
+                            } else {
+                                f = box2.maxZ - box.minZ;
+                            }
 
-                                f += 0.01D;
-                        }
-
-                        entity.move(MovementType.SHULKER_BOX, new Vec3d(d * (double) direction.getOffsetX(), e * (double) direction.getOffsetY(), f * (double) direction.getOffsetZ()));
+                            f += 0.01D;
                     }
+                    entity.move(MovementType.SHULKER_BOX, new Vec3d(d * (double) direction.getOffsetX(), e * (double) direction.getOffsetY(), f * (double) direction.getOffsetZ()));
                 }
 
             }
