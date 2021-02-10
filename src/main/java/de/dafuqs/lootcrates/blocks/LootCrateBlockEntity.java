@@ -163,7 +163,9 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public CompoundTag addLootCrateBlockTags(CompoundTag tag) {
-        tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
+        if(this.replenishTimeTicks != 0) {
+            tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
+        }
 
         if(this.lastReplenishTimeTick > 0) {
             tag.putLong(LootCrateTagNames.LastReplenishTimeTick.toString(), this.lastReplenishTimeTick);

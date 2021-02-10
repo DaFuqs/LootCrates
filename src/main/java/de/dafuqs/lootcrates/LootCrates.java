@@ -2,11 +2,13 @@ package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
+import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -19,11 +21,11 @@ public class LootCrates implements ModInitializer {
 
     public static final ItemGroup ITEM_GROUP = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID, "loot_crates"),
-            () -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.EPIC)));
+            () -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON)));
 
     public static final ItemGroup PREDEFINED_ITEM_GROUP = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID, "predefined_loot_crates"),
-            () -> new ItemStack(LootCrateAtlas.getShulkerCrate(LootCrateRarity.EPIC)));
+            () -> new ItemStack(Items.AIR)); // Is set in the tab directly
 
     public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
     public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = new SoundEvent(CHEST_UNLOCKS_SOUND_ID);
@@ -41,7 +43,7 @@ public class LootCrates implements ModInitializer {
         epicLootCrate.setCustomSounds(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundEvents.ENTITY_ENDER_DRAGON_FLAP);
         ghostLootCrate.setCustomSounds(SoundEvents.ENTITY_GHAST_AMBIENT, SoundEvents.ENTITY_GHAST_AMBIENT);
         blazeLootCrate.setCustomSounds(SoundEvents.ENTITY_BLAZE_AMBIENT, SoundEvents.ENTITY_BLAZE_SHOOT);
-        //blazeLootCrate.setScheduledTickEvent(ScheduledTickEvent.FIRE);
+        blazeLootCrate.setScheduledTickEvent(ScheduledTickEvent.FIRE);
 
         LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.COMMON, commonLootCrate);
         LootCrateAtlas.registerLootCrateDefinition(LootCrateRarity.UNCOMMON, uncommonLootCrate);
