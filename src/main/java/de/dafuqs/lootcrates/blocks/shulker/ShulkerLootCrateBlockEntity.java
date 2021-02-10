@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
 import de.dafuqs.lootcrates.LootCrateAtlas;
+import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import net.minecraft.block.Block;
@@ -223,11 +224,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     }
 
     public boolean hasTransparency() {
-        if(hasWorld()) {
-            Block block = world.getBlockState(pos).getBlock();
-            return block.isTranslucent(world.getBlockState(pos), world, pos);
-        }
-        return false;
+        return LootCrateAtlas.hasTransparency(this);
     }
 
 }

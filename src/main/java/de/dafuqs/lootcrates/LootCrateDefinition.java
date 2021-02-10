@@ -92,11 +92,7 @@ public class LootCrateDefinition {
 
         public FabricBlockSettings getShulkerBlockSettings() {
             FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, materialColor).luminance(luminance);
-
-            if(hasTransparency) {
-                blockSettings = blockSettings.nonOpaque();
-            }
-
+            // shulker blocks are always opaque
             return blockSettings;
         }
 

@@ -29,7 +29,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -138,11 +137,9 @@ public class LootCrateAtlas {
     }
 
     public static boolean hasTransparency(LootCrateBlockEntity lootCrateBlockEntity) {
-        if(lootCrateBlockEntity.hasWorld()) {
-            BlockState blockState = lootCrateBlockEntity.getWorld().getBlockState(lootCrateBlockEntity.getPos());
-            return blockState.isTranslucent(lootCrateBlockEntity.getWorld(), lootCrateBlockEntity.getPos());
-        }
-        return false;
+        BlockState blockState = lootCrateBlockEntity.getWorld().getBlockState(lootCrateBlockEntity.getPos());
+        LootCrateRarity lootCrateRarity = getCrateRarity(blockState.getBlock());
+        return lootCrateDefinitions.get(lootCrateRarity).hasTransparency;
     }
 
     public static Text getItemLockedTooltip(ItemStack itemStack, CompoundTag compoundTag) {
