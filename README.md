@@ -16,13 +16,11 @@ The container blocks do not generate naturally in the world and are highly custo
 - Make keys drop from special mobs or bosses. Players have to farm them to get access to their collected shulker crates
 - Place instant regenerating, locked loot crates at the servers central square to get players to run into each other for socializaton or PvP, fighting each other for their keys
 
-# The blocks
+# The Blocks
 
 ## Screenshots
 
-![All the Loot Crates](./images/readme_screenshot_loot_crates.png)
-![All the Shulker_Crates](./images/readme_screenshot_shulker_crates.png)
-![All the Keys](./images/readme_screenshot_keys.png)
+![All the Loot Crates, Shulkers and keys](./images/crates.png)
 
 ## Loot Crates
 Loot crates cannot be broken or moved. Instead they generate loot over time!
@@ -42,6 +40,8 @@ All the loot crates, shulker crates and keys come in all vanilla rarities, each 
 - Uncommon
 - Rare
 - Epic
+- Ghastly
+- Blazing
 
 # Overview over the available Item tag data
 Those have to be set under the tag "BlockEntityTag" to have an effect (analog to vanilla items).
