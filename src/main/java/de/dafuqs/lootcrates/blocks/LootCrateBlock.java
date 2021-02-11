@@ -26,6 +26,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,13 +98,15 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             ScheduledTickEvent scheduledTickEvent = ((LootCrateBlockEntity) blockEntity).getRandomTickEvent();
 
             if (scheduledTickEvent == ScheduledTickEvent.FIRE) {
-                int xOffset = 2 - random.nextInt(5);
-                int yOffset = 1 - random.nextInt(3);
-                int zOffset = 2 - random.nextInt(5);
+                if (world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
+                    int xOffset = 2 - random.nextInt(5);
+                    int yOffset = 1 - random.nextInt(3);
+                    int zOffset = 2 - random.nextInt(5);
 
-                BlockPos targetPos = pos.add(xOffset, yOffset, zOffset);
-                if (world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.down()).getMaterial().isSolid()) {
-                    world.setBlockState(targetPos, Blocks.FIRE.getDefaultState());
+                    BlockPos targetPos = pos.add(xOffset, yOffset, zOffset);
+                    if (world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.down()).getMaterial().isSolid()) {
+                        world.setBlockState(targetPos, Blocks.FIRE.getDefaultState());
+                    }
                 }
             }
         }
