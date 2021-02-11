@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "lootcrates",
   "version": "${version}",
-  "name": "LootCrates",
-  "description": "",
+  "name": "Loot Crates",
+  "description": "Lockable highly dynamic loot chests for fabric",
   "authors": [
     "DaFuqs"
   ],
