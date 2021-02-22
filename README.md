@@ -43,13 +43,31 @@ All the loot crates, shulker crates and keys come in all vanilla rarities, each 
 - Ghastly
 - Blazing
 
-# Overview over the available Item tag data
+# Customization
+
+## Block names
+
+- common_chest_loot_crate
+- uncommon_chest_loot_crate
+- rare_chest_loot_crate
+- epic_chest_loot_crate
+- ghost_chest_loot_crate
+- blaze_chest_loot_crate
+
+- common_shulker_loot_crate
+- uncommon_shulker_loot_crate
+- rare_shulker_loot_crate
+- epic_shulker_loot_crate
+- ghost_shulker_loot_crate
+- blaze_shulker_loot_crate
+
+
+## Available Item tag data
 Those have to be set under the tag "BlockEntityTag" to have an effect (analog to vanilla items).
 The data is identical between loot and shulker crates.
 
 Tag                       | NBT Type      | Effect
 ------------------------- | ------------- | ------
-CustomName                | string        | Analog vanilla. The name which will be used instead of the containers default name in it's gui
 LootTable                 | loot table    | The loot table identifier to be used to fill the crate when it's interacted with
 LootTableSeed             | long          | Seed for generating the loot table. 0 or ommitted uses a random seed. Setting a seed means that the generated loot will always be the same
 ReplenishTimeTicks        | long          | When the crate is accessed it will take that many ticks until new loot can be generated. Setting the value to <= 0 results in generating the content just once - at the time of the first opening.
@@ -61,3 +79,30 @@ Inventory                 | list of items | Analog vanilla shulker chests. Defin
 **Warning:**
 
 Handle some combinations with care. Or do you really want players to have portable containers that generate new loot every minute?
+
+## Example
+
+Following examples use a Rare Chest Loot Crate named "Bastion Treasure Crate" containing the vanilla bastion_treasure loot table, that is locked and will be restocked every 60 ticks (3 seconds).
+
+### Command
+
+    /give @p lootcrates:rare_chest_loot_crate{BlockEntityTag: {LootTable: "minecraft:chests/bastion_treasure", Locked: 1b, ReplenishTimeTicks: 60L}, display: {Name: '{"text":"Bastion Treasure Crate"}'}} 1
+    
+### Loot table
+
+```json
+{
+	"pools": [{
+		"rolls": 1,
+		"entries": [{
+			"type": "item",
+			"name": "lootcrates:rare_chest_loot_crate",
+			"weight": 1,
+			"functions": [{
+				"function": "set_nbt",
+				"tag": "{BlockEntityTag: {LootTable: \"minecraft:chests/bastion_treasure\", Locked: 1b, ReplenishTimeTicks: 60L}, display: {Name: '{\"text\":\"Bastion Treasure Crate\"}'}}"
+			}]
+		}]
+	}]
+}
+```
