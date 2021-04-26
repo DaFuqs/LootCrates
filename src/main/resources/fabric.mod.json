@@ -26,7 +26,8 @@
     "lootcrates.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.10.0",
-    "minecraft": ">=1.16.4"
+    "fabricloader": ">=0.11.3",
+    "minecraft": ">=1.16.5",
+    "fabric": ">=0.33.0"
   }
 }

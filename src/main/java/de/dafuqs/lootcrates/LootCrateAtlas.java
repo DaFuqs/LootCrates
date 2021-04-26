@@ -141,7 +141,13 @@ public class LootCrateAtlas {
     public static boolean hasTransparency(LootCrateBlockEntity lootCrateBlockEntity) {
         BlockState blockState = lootCrateBlockEntity.getWorld().getBlockState(lootCrateBlockEntity.getPos());
         LootCrateRarity lootCrateRarity = getCrateRarity(blockState.getBlock());
-        return lootCrateDefinitions.get(lootCrateRarity).hasTransparency;
+
+        LootCrateDefinition lootCrateDefinition = lootCrateDefinitions.get(lootCrateRarity);
+        if(lootCrateDefinition == null) {
+            return false;
+        } else {
+            return lootCrateDefinition.hasTransparency;
+        }
     }
 
     public static Text getItemLockedTooltip(ItemStack itemStack, CompoundTag compoundTag) {

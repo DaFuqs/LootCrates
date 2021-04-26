@@ -21,7 +21,6 @@ public class LootCratesClient implements ClientModInitializer {
 
         LootCrateAtlas.registerTextureAtlas();
         LootCrateAtlas.registerTransparentBlocks();
-
         LootCrateAtlas.setupTextures();
 
         // Add the item group to the creative menu
