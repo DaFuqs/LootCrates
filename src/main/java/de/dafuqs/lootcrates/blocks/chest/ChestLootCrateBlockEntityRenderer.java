@@ -54,7 +54,7 @@ public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & ChestAnim
     }
 
     @Override
-    public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
         World world = entity.getWorld();
         boolean bl = world != null;
 
@@ -67,9 +67,9 @@ public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & ChestAnim
                 boolean hasTransparency = LootCrateAtlas.hasTransparency((ChestLootCrateBlockEntity) entity);
                 VertexConsumer vertexConsumer;
                 if (hasTransparency) {
-                    vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityTranslucent);
+                    vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityTranslucent);
                 } else {
-                    vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutoutNoCull);
+                    vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
                 }
 
                 matrices.push();

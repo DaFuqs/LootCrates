@@ -138,6 +138,10 @@ public class LootCrateAtlas {
     }
 
     public static boolean hasTransparency(LootCrateBlockEntity lootCrateBlockEntity) {
+        if(lootCrateBlockEntity == null) {
+            return false;
+        }
+        
         BlockState blockState = lootCrateBlockEntity.getWorld().getBlockState(lootCrateBlockEntity.getPos());
         LootCrateRarity lootCrateRarity = getCrateRarity(blockState.getBlock());
 

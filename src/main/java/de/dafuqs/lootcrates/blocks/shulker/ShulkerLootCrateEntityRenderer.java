@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
 import de.dafuqs.lootcrates.LootCrateAtlas;
+import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -36,6 +37,14 @@ public class ShulkerLootCrateEntityRenderer implements BlockEntityRenderer<Shulk
 
         SpriteIdentifier spriteIdentifier = LootCrateAtlas.getShulkerTexture(shulkerLootCrateBlockEntity);
 
+        boolean hasTransparency = LootCrateAtlas.hasTransparency(shulkerLootCrateBlockEntity);
+        VertexConsumer vertexConsumer;
+        if (hasTransparency) {
+            vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityTranslucent);
+        } else {
+            vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
+        }
+
         matrixStack.push();
         matrixStack.translate(0.5D, 0.5D, 0.5D);
         float g = 0.9995F;
@@ -46,7 +55,6 @@ public class ShulkerLootCrateEntityRenderer implements BlockEntityRenderer<Shulk
         ModelPart modelPart = this.model.getLid();
         modelPart.setPivot(0.0F, 24.0F - shulkerLootCrateBlockEntity.getAnimationProgress(f) * 0.5F * 16.0F, 0.0F);
         modelPart.yaw = 270.0F * shulkerLootCrateBlockEntity.getAnimationProgress(f) * 0.017453292F;
-        VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
         this.model.render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
         matrixStack.pop();
     }
