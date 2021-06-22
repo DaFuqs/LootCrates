@@ -5,33 +5,71 @@
 
 package de.dafuqs.lootcrates.blocks.chest;
 
-import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.*;
+import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 
-public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements Tickable {
+public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements ChestAnimationProgress {
 
-    private int viewerCount;
-    protected float animationAngle;
-    protected float lastAnimationAngle;
+    private final ChestStateManager stateManager;
+    private final ChestLidAnimator lidAnimator;
 
-    public ChestLootCrateBlockEntity() {
-        super(LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY, DefaultedList.ofSize(27, ItemStack.EMPTY));
+    public ChestLootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
+        super(blockEntityType, blockPos, blockState);
+
+        this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
+        this.stateManager = new ChestStateManager() {
+            protected void onChestOpened(World world, BlockPos pos, BlockState state) {
+                playSound(world, pos, state, SoundEvents.BLOCK_CHEST_OPEN);
+            }
+
+            protected void onChestClosed(World world, BlockPos pos, BlockState state) {
+                playSound(world, pos, state, SoundEvents.BLOCK_CHEST_CLOSE);
+            }
+
+            protected void onInteracted(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+                onInvOpenOrClose(world, pos, state, oldViewerCount, newViewerCount);
+            }
+
+            protected boolean isPlayerViewing(PlayerEntity player) {
+                if (!(player.currentScreenHandler instanceof GenericContainerScreenHandler)) {
+                    return false;
+                } else {
+                    Inventory inventory = ((GenericContainerScreenHandler)player.currentScreenHandler).getInventory();
+                    return inventory == ChestLootCrateBlockEntity.this;
+                }
+            }
+        };
+        this.lidAnimator = new ChestLidAnimator();
+    }
+
+    public ChestLootCrateBlockEntity(BlockPos pos, BlockState state) {
+        this(LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY, pos, state);
+    }
+
+    protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+        Block block = state.getBlock();
+        world.addSyncedBlockEvent(pos, block, 1, newViewerCount);
+    }
+
+    public static void clientTick(World world, BlockPos pos, BlockState state, ChestLootCrateBlockEntity blockEntity) {
+        blockEntity.lidAnimator.step();
     }
 
     @Override
@@ -45,57 +83,22 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
     }
 
     @Override
-    public void tick() {
-        this.lastAnimationAngle = this.animationAngle;
-        if (this.viewerCount > 0 && this.animationAngle == 0.0F) {
-            playOpenSoundEffect();
-        }
-
-        if (this.viewerCount == 0 && this.animationAngle > 0.0F || this.viewerCount > 0 && this.animationAngle < 1.0F) {
-            float g = this.animationAngle;
-            if (this.viewerCount > 0) {
-                this.animationAngle += 0.1F;
-            } else {
-                this.animationAngle -= 0.1F;
-            }
-
-            if (this.animationAngle > 1.0F) {
-                this.animationAngle = 1.0F;
-            }
-
-            if (this.animationAngle < 0.5F && g >= 0.5F) {
-                playCloseSoundEffect();
-            }
-
-            if (this.animationAngle < 0.0F) {
-                this.animationAngle = 0.0F;
-            }
-        }
-    }
-
-    @Override
     public void onOpen(PlayerEntity player) {
-        if (!player.isSpectator()) {
-            if (this.viewerCount < 0) {
-                this.viewerCount = 0;
-            }
-
-            ++this.viewerCount;
-            this.onInvOpenOrClose();
-        }
-    }
-
-    protected void onInvOpenOrClose() {
-        Block block = this.getCachedState().getBlock();
-        if (hasWorld() && block instanceof ChestLootCrateBlock) {
-            this.world.addSyncedBlockEvent(this.pos, block, 1, this.viewerCount);
+        if (!this.removed && !player.isSpectator()) {
+            this.stateManager.openChest(player, this.getWorld(), this.getPos(), this.getCachedState());
         }
     }
 
     @Override
+    public void onClose(PlayerEntity player) {
+        if (!this.removed && !player.isSpectator()) {
+            this.stateManager.closeChest(player, this.getWorld(), this.getPos(), this.getCachedState());
+        }
+    }
+
     public boolean onSyncedBlockEvent(int type, int data) {
         if (type == 1) {
-            this.viewerCount = data;
+            this.lidAnimator.setOpen(data > 0);
             return true;
         } else {
             return super.onSyncedBlockEvent(type, data);
@@ -103,24 +106,7 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements T
     }
 
     @Override
-    public void onClose(PlayerEntity player) {
-        if (!player.isSpectator()) {
-            --this.viewerCount;
-        }
-        this.onInvOpenOrClose();
-    }
-
-    @Environment(EnvType.CLIENT)
     public float getAnimationProgress(float tickDelta) {
-        return MathHelper.lerp(tickDelta, this.lastAnimationAngle, this.animationAngle);
+        return this.lidAnimator.getProgress(tickDelta);
     }
-
-    public SpriteIdentifier getTexture() {
-        return LootCrateAtlas.getChestTexture(this);
-    }
-
-    public boolean hasTransparency() {
-        return LootCrateAtlas.hasTransparency(this);
-    }
-
 }

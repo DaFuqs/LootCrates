@@ -6,7 +6,10 @@ import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -14,7 +17,7 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -46,8 +49,10 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             if(lootCrateBlockEntity.isLocked()) {
                 for(ItemStack itemStack : player.getItemsHand()) {
                     if(lootCrateBlockEntity.doesUnlock(itemStack.getItem())) {
-                        if (lootCrateBlockEntity.doesConsumeKeyOnUnlock()) {
-                            itemStack.decrement(1);
+                        if(!player.isCreative()) {
+                            if (lootCrateBlockEntity.doesConsumeKeyOnUnlock()) {
+                                itemStack.decrement(1);
+                            }
                         }
                         lootCrateBlockEntity.unlock();
                         return ActionResult.CONSUME; // just consume the action and play unlock sound.
@@ -178,7 +183,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 shouldDropItem = true;
             }
 
-            CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
+            NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
                 itemStack.putSubTag("BlockEntityTag", compoundTag);
                 shouldDropItem = true;
@@ -210,7 +215,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
             }
 
-            CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
+            NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
                 itemStack.putSubTag("BlockEntityTag", compoundTag);
             }

@@ -5,7 +5,6 @@ import com.google.common.collect.EnumHashBiMap;
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
-import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlockEntity;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
@@ -29,7 +28,7 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -150,10 +149,10 @@ public class LootCrateAtlas {
         }
     }
 
-    public static Text getItemLockedTooltip(ItemStack itemStack, CompoundTag compoundTag) {
+    public static Text getItemLockedTooltip(ItemStack itemStack, NbtCompound compound) {
         LootCrateRarity itemRarity = getCrateItemRarity((LootCrateItem) itemStack.getItem());
 
-        if (compoundTag.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString()) && compoundTag.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString())) {
+        if (compound.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString()) && compound.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString())) {
             return lootCrateDefinitions.get(itemRarity).lockedTooltip;
         } else {
             return lootCrateDefinitions.get(itemRarity).lockedConsumeTooltip;

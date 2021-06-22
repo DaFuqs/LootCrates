@@ -2,34 +2,17 @@ package de.dafuqs.lootcrates.items;
 
 import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
-import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.inventory.Inventories;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-import java.util.List;
 import java.util.Random;
 
 public class TickingLootCrateItem extends LootCrateItem {

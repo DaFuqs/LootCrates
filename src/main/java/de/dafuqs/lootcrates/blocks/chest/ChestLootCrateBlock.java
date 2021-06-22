@@ -1,9 +1,13 @@
 package de.dafuqs.lootcrates.blocks.chest;
 
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
+import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
@@ -66,12 +70,18 @@ public class ChestLootCrateBlock extends LootCrateBlock {
         return PistonBehavior.BLOCK;
     }
 
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return world.isClient ? checkType(type, LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY, ChestLootCrateBlockEntity::clientTick) : null;
+    }
+
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.scheduledTick(state, world, pos, random);
+
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof ChestLootCrateBlockEntity) {
-            ((ChestLootCrateBlockEntity)blockEntity).tick();
+        if (blockEntity instanceof ChestBlockEntity) {
+            ((ChestBlockEntity)blockEntity).onScheduledTick();
         }
     }
 
@@ -81,8 +91,8 @@ public class ChestLootCrateBlock extends LootCrateBlock {
     }
 
     @Nullable
-    public BlockEntity createBlockEntity(BlockView world) {
-        return new ChestLootCrateBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new ChestLootCrateBlockEntity(pos, state);
     }
 
     @Override

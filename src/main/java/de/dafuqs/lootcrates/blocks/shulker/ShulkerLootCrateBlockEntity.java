@@ -1,46 +1,50 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
 import de.dafuqs.lootcrates.LootCrateAtlas;
-import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ShulkerBoxScreenHandler;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
-public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements Tickable {
+public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements SidedInventory {
 
     private int viewerCount;
     private ShulkerBoxBlockEntity.AnimationStage animationStage;
     private float animationProgress;
     private float prevAnimationProgress;
+    private static final int[] AVAILABLE_SLOTS = IntStream.range(0, 27).toArray();
 
-    public ShulkerLootCrateBlockEntity() {
-        super(LootCratesBlockEntityType.SHULKER_LOOT_CRATE_BLOCK_ENTITY, DefaultedList.ofSize(27, ItemStack.EMPTY));
+    public ShulkerLootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
+        super(blockEntityType, blockPos, blockState);
         this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+    }
+
+    public ShulkerLootCrateBlockEntity(BlockPos pos, BlockState state) {
+        this(LootCratesBlockEntityType.SHULKER_LOOT_CRATE_BLOCK_ENTITY, pos, state);
     }
 
     @Override
@@ -57,16 +61,11 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
         return this.animationStage == ShulkerBoxBlockEntity.AnimationStage.CLOSED;
     }
 
-
-    @Override
-    public void tick() {
-        this.updateAnimation();
-        if (this.animationStage == ShulkerBoxBlockEntity.AnimationStage.OPENING || this.animationStage == ShulkerBoxBlockEntity.AnimationStage.CLOSING) {
-            this.pushEntities();
-        }
+    public static void tick(World world, BlockPos pos, BlockState state, ShulkerLootCrateBlockEntity blockEntity) {
+        blockEntity.updateAnimation(world, pos, state);
     }
 
-    protected void updateAnimation() {
+    private void updateAnimation(World world, BlockPos pos, BlockState state) {
         this.prevAnimationProgress = this.animationProgress;
         switch(this.animationStage) {
             case CLOSED:
@@ -75,24 +74,45 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
             case OPENING:
                 this.animationProgress += 0.1F;
                 if (this.animationProgress >= 1.0F) {
-                    this.pushEntities();
                     this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
                     this.animationProgress = 1.0F;
-                    this.updateNeighborStates();
+                    updateNeighborStates(world, pos, state);
                 }
+
+                this.pushEntities(world, pos, state);
                 break;
             case CLOSING:
                 this.animationProgress -= 0.1F;
                 if (this.animationProgress <= 0.0F) {
                     this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
                     this.animationProgress = 0.0F;
-                    this.updateNeighborStates();
+                    updateNeighborStates(world, pos, state);
                 }
                 break;
             case OPENED:
                 this.animationProgress = 1.0F;
         }
+    }
 
+    private void pushEntities(World world, BlockPos pos, BlockState state) {
+        if (state.getBlock() instanceof ShulkerBoxBlock) {
+            Direction direction = state.get(ShulkerBoxBlock.FACING);
+            Box box = ShulkerEntity.method_33347(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
+            List<Entity> list = world.getOtherEntities(null, box);
+            if (!list.isEmpty()) {
+                for(int i = 0; i < list.size(); ++i) {
+                    Entity entity = list.get(i);
+                    if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
+                        entity.move(MovementType.SHULKER_BOX, new Vec3d((box.getXLength() + 0.01D) * (double)direction.getOffsetX(), (box.getYLength() + 0.01D) * (double)direction.getOffsetY(), (box.getZLength() + 0.01D) * (double)direction.getOffsetZ()));
+                    }
+                }
+
+            }
+        }
+    }
+
+    private static void updateNeighborStates(World world, BlockPos pos, BlockState state) {
+        state.updateNeighbors(world, pos, 3);
     }
 
     public ShulkerBoxBlockEntity.AnimationStage getAnimationStage() {
@@ -218,6 +238,21 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 
     public boolean hasTransparency() {
         return LootCrateAtlas.hasTransparency(this);
+    }
+
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        return AVAILABLE_SLOTS;
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        return true;
     }
 
 }

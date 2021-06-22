@@ -6,9 +6,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
-import net.minecraft.block.MaterialColor;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.TranslatableText;
@@ -24,7 +23,7 @@ public class LootCrateDefinition {
         public SpriteIdentifier chestTexture;
         public Identifier shulkerTextureIdentifier;
         public SpriteIdentifier shulkerTexture;
-        public MaterialColor materialColor;
+        public MapColor mapColor;
         public boolean hasTransparency;
         public ScheduledTickEvent scheduledTickEvent;
         public boolean fireProof;
@@ -37,11 +36,11 @@ public class LootCrateDefinition {
         SoundEvent customOpenSoundEvent;
         SoundEvent customCloseSoundEvent;
 
-        public LootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MaterialColor materialColor, int luminance, boolean hasTransparency, boolean fireProof) {
+        public LootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MapColor mapColor, int luminance, boolean hasTransparency, boolean fireProof) {
             this.identifier = lootCrateRarity.toString().toLowerCase();
 
             this.hasTransparency = hasTransparency;
-            this.materialColor = materialColor;
+            this.mapColor = mapColor;
             this.fireProof = fireProof;
             this.luminance = luminance;
             this.rarity = rarity;
@@ -81,7 +80,7 @@ public class LootCrateDefinition {
         }
 
         public FabricBlockSettings getChestBlockSettings() {
-            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.METAL, materialColor).requiresTool().strength(-1.0F, 3600000.0F).dropsNothing().luminance(luminance);
+            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.METAL, mapColor).requiresTool().strength(-1.0F, 3600000.0F).dropsNothing().luminance(luminance);
 
             if(hasTransparency) {
                 blockSettings = blockSettings.nonOpaque();
@@ -91,7 +90,7 @@ public class LootCrateDefinition {
         }
 
         public FabricBlockSettings getShulkerBlockSettings() {
-            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, materialColor).luminance(luminance);
+            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, mapColor).luminance(luminance);
             // shulker blocks are always opaque
             return blockSettings;
         }

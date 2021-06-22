@@ -10,8 +10,11 @@ import de.dafuqs.lootcrates.items.LootKeyItem;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.enums.ChestType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.Item;
@@ -20,17 +23,18 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.nbt.Tag;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -39,7 +43,7 @@ import java.util.UUID;
 
 public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity {
 
-    private DefaultedList<ItemStack> inventory;
+    protected DefaultedList<ItemStack> inventory;
 
     private boolean locked;
     private boolean doNotConsumeKeyOnUnlock;
@@ -50,29 +54,29 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     private long replenishTimeTicks;
     private long lastReplenishTimeTick;
 
-    protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, DefaultedList<ItemStack> inventory) {
-        super(blockEntityType);
-        this.inventory = inventory;
+    protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
+        super(blockEntityType, blockPos, blockState);
+        this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
         registeredPlayerUUIDs = new ArrayList<>();
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public NbtCompound writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
 
-        Inventories.toTag(tag, this.inventory, false);
+        Inventories.writeNbt(tag, this.inventory, false);
         tag = addLootCrateBlockTags(tag);
 
         return tag;
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
-        super.fromTag(state, tag);
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
 
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         if(tag.contains("Items", 9)) {
-            Inventories.fromTag(tag, this.inventory);
+            Inventories.readNbt(tag, this.inventory);
         }
 
         setLootCrateBlockTags(tag);
@@ -138,8 +142,8 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         return false;
     }
 
-    public CompoundTag serializeInventory(CompoundTag tag) {
-        Inventories.toTag(tag, this.inventory, false);
+    public NbtCompound serializeInventory(NbtCompound tag) {
+        Inventories.writeNbt(tag, this.inventory, false);
         return tag;
     }
 
@@ -162,7 +166,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
-    public CompoundTag addLootCrateBlockTags(CompoundTag tag) {
+    public NbtCompound addLootCrateBlockTags(NbtCompound tag) {
         if(this.replenishTimeTicks != 0) {
             tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
         }
@@ -179,7 +183,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(this.oncePerPlayer) {
             tag.putBoolean(LootCrateTagNames.OncePerPlayer.toString(), true);
             if(this.registeredPlayerUUIDs.size() > 0) {
-                ListTag registeredPlayers = new ListTag();
+                NbtList registeredPlayers = new NbtList();
                 for (UUID uuid : this.registeredPlayerUUIDs) {
                     registeredPlayers.add(NbtHelper.fromUuid(uuid));
                 }
@@ -191,7 +195,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         return tag;
     }
 
-    public void setLootCrateBlockTags(CompoundTag tag) {
+    public void setLootCrateBlockTags(NbtCompound tag) {
         this.registeredPlayerUUIDs = new ArrayList<>();
 
         this.deserializeLootTable(tag);
@@ -218,8 +222,8 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(tag.contains(LootCrateTagNames.OncePerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
             this.oncePerPlayer = true;
             if(tag.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
-                ListTag playerUUIDs = tag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
-                for (Tag playerUUID : playerUUIDs) {
+                NbtList playerUUIDs = tag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
+                for (NbtElement playerUUID : playerUUIDs) {
                     this.registeredPlayerUUIDs.add(NbtHelper.toUuid(playerUUID));
                 }
             }
@@ -295,6 +299,14 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(customSoundEvent != null) {
             playSound(customSoundEvent, 0.4F);
         }
+    }
+
+    protected static void playSound(World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
+        double d = (double)pos.getX() + 0.5D;
+        double e = (double)pos.getY() + 0.5D;
+        double f = (double)pos.getZ() + 0.5D;
+
+        world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
     }
 
 }

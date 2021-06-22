@@ -7,8 +7,8 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -29,24 +29,24 @@ public class LootCrateItem extends BlockItem {
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         super.appendTooltip(itemStack, world, tooltip, tooltipContext);
 
-        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-        if (compoundTag != null) {
+        NbtCompound compound = itemStack.getSubTag("BlockEntityTag");
+        if (compound != null) {
 
             // lock
             boolean locked = false;
-            if (compoundTag.contains(LootCrateTagNames.Locked.toString()) && compoundTag.getBoolean(LootCrateTagNames.Locked.toString())) {
+            if (compound.contains(LootCrateTagNames.Locked.toString()) && compound.getBoolean(LootCrateTagNames.Locked.toString())) {
                 locked = true;
-                tooltip.add(LootCrateAtlas.getItemLockedTooltip(itemStack, compoundTag));
+                tooltip.add(LootCrateAtlas.getItemLockedTooltip(itemStack, compound));
             }
 
             boolean advanced = tooltipContext.isAdvanced();
             long replenishTimeTicks = 0;
-            if (compoundTag.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
-                replenishTimeTicks = compoundTag.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
+            if (compound.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
+                replenishTimeTicks = compound.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
             }
 
-            boolean oncePerPlayer = compoundTag.contains(LootCrateTagNames.OncePerPlayer.toString()) && compoundTag.getBoolean(LootCrateTagNames.OncePerPlayer.toString());
-            boolean wasOpened = compoundTag.contains(LootCrateTagNames.LastReplenishTimeTick.toString()) && compoundTag.getLong(LootCrateTagNames.LastReplenishTimeTick.toString()) != 0;
+            boolean oncePerPlayer = compound.contains(LootCrateTagNames.OncePerPlayer.toString()) && compound.getBoolean(LootCrateTagNames.OncePerPlayer.toString());
+            boolean wasOpened = compound.contains(LootCrateTagNames.LastReplenishTimeTick.toString()) && compound.getLong(LootCrateTagNames.LastReplenishTimeTick.toString()) != 0;
 
             if (replenishTimeTicks <= 0 && !oncePerPlayer && wasOpened) {
                 // cannot generate more loot
@@ -56,8 +56,8 @@ public class LootCrateItem extends BlockItem {
 
                 // oncePerPlayer really is only useful when replenish time is positive
                 if (oncePerPlayer && replenishTimeTicks > 0) {
-                    if(compoundTag.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
-                        ListTag playerUUIDsTag = compoundTag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
+                    if(compound.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
+                        NbtList playerUUIDsTag = compound.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
                         int playerCount = playerUUIDsTag.size();
                         tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player_with_count", playerCount));
                     } else {
@@ -66,12 +66,12 @@ public class LootCrateItem extends BlockItem {
                 }
 
                 if(advanced) {
-                    if (compoundTag.contains("LootTable")) {
-                        String lootTableText = compoundTag.getString("LootTable");
+                    if (compound.contains("LootTable")) {
+                        String lootTableText = compound.getString("LootTable");
                         tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.loot_table", lootTableText));
                     }
-                    if (compoundTag.contains("LootTableSeed")) {
-                        long lootTableSeed = compoundTag.getLong("LootTableSeed");
+                    if (compound.contains("LootTableSeed")) {
+                        long lootTableSeed = compound.getLong("LootTableSeed");
                         tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.fixed_seed", lootTableSeed));
                     }
                 }
@@ -79,9 +79,9 @@ public class LootCrateItem extends BlockItem {
             }
 
             if(!locked) {
-                if (compoundTag.contains("Items", 9)) {
+                if (compound.contains("Items", 9)) {
                     DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
-                    Inventories.fromTag(compoundTag, defaultedList);
+                    Inventories.readNbt(compound, defaultedList);
                     int i = 0;
                     int j = 0;
 
@@ -123,9 +123,9 @@ public class LootCrateItem extends BlockItem {
         }
     }
 
-    public static CompoundTag getLootCrateItemCompoundTag(Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer) {
-        CompoundTag compoundTag = new CompoundTag();
-        CompoundTag blockEntityTag = new CompoundTag();
+    public static NbtCompound getLootCrateItemCompoundTag(Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer) {
+        NbtCompound compoundTag = new NbtCompound();
+        NbtCompound blockEntityTag = new NbtCompound();
 
         blockEntityTag.putString("LootTable", lootTable.toString());
         if(locked) {
