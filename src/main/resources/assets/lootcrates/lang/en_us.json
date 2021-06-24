@@ -1,4 +1,5 @@
 {
+  "text.autoconfig.LootCrates.option.lootCrateChestsAreIndestructible": "If LootCrates chests are indestructible. Requires restart.",
 
   "itemGroup.lootcrates.loot_crates": "Loot Crates",
   "itemGroup.lootcrates.predefined_loot_crates": "Predefined Loot Crates",
@@ -64,6 +65,6 @@
   "item.lootcrates.loot_crate.tooltip.replenish_time_once": "Generates loot once",
   "item.lootcrates.loot_crate.tooltip.fixed_seed": "Fixed seed: %d",
   "item.lootcrates.loot_crate.tooltip.once_per_player": "Once per player",
-  "item.lootcrates.loot_crate.tooltip.once_per_player_with_count": "Once per player §o(%d opened)§r",
+  "item.lootcrates.loot_crate.tooltip.once_per_player_already_opened_by_you": "Once per player §o(you opened already)§r",
   "item.lootcrates.loot_crate.tooltip.no_data_set": "No data set"
 }

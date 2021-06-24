@@ -12,7 +12,7 @@
     "repo": "github.com/DaFuqs/LootCrates"
   },
   "license": "MIT",
-  "icon": "assets/lootcrates/textures/item/epic_crate_key.png",
+  "icon": "assets/lootcrates/textures/item/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
@@ -20,10 +20,12 @@
     ],
     "main": [
       "de.dafuqs.lootcrates.LootCrates"
+    ],
+    "modmenu": [
+      "de.dafuqs.lootcrates.config.ModMenuConfig"
     ]
   },
   "mixins": [
-    "lootcrates.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.11.3",

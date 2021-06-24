@@ -80,10 +80,14 @@ public class LootCrateDefinition {
         }
 
         public FabricBlockSettings getChestBlockSettings() {
-            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.METAL, mapColor).requiresTool().strength(-1.0F, 3600000.0F).dropsNothing().luminance(luminance);
+            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.METAL, mapColor).luminance(luminance);
+
+            if(LootCrates.CONFIG.lootCrateChestsAreIndestructible) {
+                blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
+            }
 
             if(hasTransparency) {
-                blockSettings = blockSettings.nonOpaque();
+                blockSettings = blockSettings.strength(2.0F).nonOpaque();
             }
 
             return blockSettings;

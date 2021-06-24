@@ -67,17 +67,22 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
         } else if (player.isSpectator()) {
             return ActionResult.CONSUME;
         } else {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof ShulkerLootCrateBlockEntity) {
-                ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity = (ShulkerLootCrateBlockEntity)blockEntity;
-                if (canOpen(state, world, pos, shulkerLootCrateBlockEntity)) {
-                    player.openHandledScreen(shulkerLootCrateBlockEntity);
-                    PiglinBrain.onGuardedBlockInteracted(player, true);
-                }
+            ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
+            if(actionResult == ActionResult.PASS) {
+                BlockEntity blockEntity = world.getBlockEntity(pos);
+                if (blockEntity instanceof ShulkerLootCrateBlockEntity) {
+                    ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity = (ShulkerLootCrateBlockEntity) blockEntity;
+                    if (canOpen(state, world, pos, shulkerLootCrateBlockEntity)) {
+                        player.openHandledScreen(shulkerLootCrateBlockEntity);
+                        PiglinBrain.onGuardedBlockInteracted(player, true);
+                    }
 
-                return ActionResult.CONSUME;
+                    return ActionResult.CONSUME;
+                } else {
+                    return ActionResult.PASS;
+                }
             } else {
-                return ActionResult.PASS;
+                return ActionResult.CONSUME;
             }
         }
     }

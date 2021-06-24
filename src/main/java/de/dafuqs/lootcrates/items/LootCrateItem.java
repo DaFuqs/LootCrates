@@ -8,7 +8,10 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -18,6 +21,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.UUID;
 
 public class LootCrateItem extends BlockItem {
 
@@ -56,10 +60,22 @@ public class LootCrateItem extends BlockItem {
 
                 // oncePerPlayer really is only useful when replenish time is positive
                 if (oncePerPlayer && replenishTimeTicks > 0) {
+                    boolean playerHasAlreadyOpened = false;
                     if(compound.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
                         NbtList playerUUIDsTag = compound.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
-                        int playerCount = playerUUIDsTag.size();
-                        tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player_with_count", playerCount));
+                        if(playerUUIDsTag.size() > 0) {
+                            UUID playerUUID = world.getPlayers().get(0).getUuid(); // the current player in singleplayer
+                            for(NbtElement currentUUID : playerUUIDsTag) {
+                                if (playerUUID.equals(NbtHelper.toUuid(currentUUID))) {
+                                    playerHasAlreadyOpened = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if(playerHasAlreadyOpened) {
+                        tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player_already_opened_by_you"));
                     } else {
                         tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player"));
                     }
