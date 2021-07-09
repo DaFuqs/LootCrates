@@ -6,9 +6,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
-import net.minecraft.block.MaterialColor;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.TranslatableText;
@@ -24,7 +23,7 @@ public class LootCrateDefinition {
         public SpriteIdentifier chestTexture;
         public Identifier shulkerTextureIdentifier;
         public SpriteIdentifier shulkerTexture;
-        public MaterialColor materialColor;
+        public MapColor materialColor;
         public boolean hasTransparency;
         public ScheduledTickEvent scheduledTickEvent;
         public boolean fireProof;
@@ -37,7 +36,7 @@ public class LootCrateDefinition {
         SoundEvent customOpenSoundEvent;
         SoundEvent customCloseSoundEvent;
 
-        public LootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MaterialColor materialColor, int luminance, boolean hasTransparency, boolean fireProof) {
+        public LootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MapColor materialColor, int luminance, boolean hasTransparency, boolean fireProof) {
             this.identifier = lootCrateRarity.toString().toLowerCase();
 
             this.hasTransparency = hasTransparency;

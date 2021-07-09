@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -66,7 +66,7 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
                                     if(doNotConsumeKeyOnUnlock && !locked) {
                                         // no use in that tag when there is no lock, is there?
                                     } else {
-                                        CompoundTag compoundTag = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, replenishTimeTicks, 0, oncePerPlayer);
+                                        NbtCompound compoundTag = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, replenishTimeTicks, 0, oncePerPlayer);
                                         ItemStack itemStack = new ItemStack(lootCrateItem);
                                         itemStack.setTag(compoundTag);
                                         stacks.add(itemStack);

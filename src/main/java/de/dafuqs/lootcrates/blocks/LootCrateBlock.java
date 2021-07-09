@@ -14,7 +14,7 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -178,7 +178,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 shouldDropItem = true;
             }
 
-            CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
+            NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
                 itemStack.putSubTag("BlockEntityTag", compoundTag);
                 shouldDropItem = true;
@@ -210,7 +210,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
             }
 
-            CompoundTag compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new CompoundTag());
+            NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
                 itemStack.putSubTag("BlockEntityTag", compoundTag);
             }

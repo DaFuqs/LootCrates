@@ -7,8 +7,8 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -29,7 +29,7 @@ public class LootCrateItem extends BlockItem {
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         super.appendTooltip(itemStack, world, tooltip, tooltipContext);
 
-        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
+        NbtCompound compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null) {
 
             // lock
@@ -57,7 +57,7 @@ public class LootCrateItem extends BlockItem {
                 // oncePerPlayer really is only useful when replenish time is positive
                 if (oncePerPlayer && replenishTimeTicks > 0) {
                     if(compoundTag.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
-                        ListTag playerUUIDsTag = compoundTag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
+                        NbtList playerUUIDsTag = compoundTag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
                         int playerCount = playerUUIDsTag.size();
                         tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player_with_count", playerCount));
                     } else {
@@ -81,7 +81,7 @@ public class LootCrateItem extends BlockItem {
             if(!locked) {
                 if (compoundTag.contains("Items", 9)) {
                     DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
-                    Inventories.fromTag(compoundTag, defaultedList);
+                    Inventories.readNbt(compoundTag, defaultedList);
                     int i = 0;
                     int j = 0;
 
@@ -123,9 +123,9 @@ public class LootCrateItem extends BlockItem {
         }
     }
 
-    public static CompoundTag getLootCrateItemCompoundTag(Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer) {
-        CompoundTag compoundTag = new CompoundTag();
-        CompoundTag blockEntityTag = new CompoundTag();
+    public static NbtCompound getLootCrateItemCompoundTag(Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer) {
+        NbtCompound compoundTag = new NbtCompound();
+        NbtCompound blockEntityTag = new NbtCompound();
 
         blockEntityTag.putString("LootTable", lootTable.toString());
         if(locked) {

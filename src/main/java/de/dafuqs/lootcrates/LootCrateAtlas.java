@@ -29,7 +29,7 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -139,18 +139,22 @@ public class LootCrateAtlas {
     }
 
     public static boolean hasTransparency(LootCrateBlockEntity lootCrateBlockEntity) {
-        BlockState blockState = lootCrateBlockEntity.getWorld().getBlockState(lootCrateBlockEntity.getPos());
-        LootCrateRarity lootCrateRarity = getCrateRarity(blockState.getBlock());
+        if(lootCrateBlockEntity.hasWorld()) {
+            BlockState blockState = lootCrateBlockEntity.getWorld().getBlockState(lootCrateBlockEntity.getPos());
+            LootCrateRarity lootCrateRarity = getCrateRarity(blockState.getBlock());
 
-        LootCrateDefinition lootCrateDefinition = lootCrateDefinitions.get(lootCrateRarity);
-        if(lootCrateDefinition == null) {
-            return false;
+            LootCrateDefinition lootCrateDefinition = lootCrateDefinitions.get(lootCrateRarity);
+            if (lootCrateDefinition == null) {
+                return false;
+            } else {
+                return lootCrateDefinition.hasTransparency;
+            }
         } else {
-            return lootCrateDefinition.hasTransparency;
+            return false;
         }
     }
 
-    public static Text getItemLockedTooltip(ItemStack itemStack, CompoundTag compoundTag) {
+    public static Text getItemLockedTooltip(ItemStack itemStack, NbtCompound compoundTag) {
         LootCrateRarity itemRarity = getCrateItemRarity((LootCrateItem) itemStack.getItem());
 
         if (compoundTag.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString()) && compoundTag.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString())) {

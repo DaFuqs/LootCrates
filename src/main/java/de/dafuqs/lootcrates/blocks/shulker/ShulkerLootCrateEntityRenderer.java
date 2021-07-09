@@ -12,8 +12,8 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerLootCrateEntityRenderer extends BlockEntityRenderer<ShulkerLootCrateBlockEntity> {
@@ -55,7 +55,7 @@ public class ShulkerLootCrateEntityRenderer extends BlockEntityRenderer<ShulkerL
 
         this.model.getBottomShell().render(matrixStack, vertexConsumer, light, overlay);
         matrixStack.translate(0.0D, (-shulkerLootCrateBlockEntity.getAnimationProgress(tickDelta) * 0.5F), 0.0D);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0F * shulkerLootCrateBlockEntity.getAnimationProgress(tickDelta)));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0F * shulkerLootCrateBlockEntity.getAnimationProgress(tickDelta)));
         this.model.getTopShell().render(matrixStack, vertexConsumer, light, overlay);
 
         matrixStack.pop();

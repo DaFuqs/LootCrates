@@ -20,14 +20,14 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.nbt.Tag;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
@@ -57,22 +57,22 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public NbtCompound writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
 
-        Inventories.toTag(tag, this.inventory, false);
+        Inventories.writeNbt(tag, this.inventory, false);
         tag = addLootCrateBlockTags(tag);
 
         return tag;
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
+    public void fromTag(BlockState state, NbtCompound tag) {
         super.fromTag(state, tag);
 
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         if(tag.contains("Items", 9)) {
-            Inventories.fromTag(tag, this.inventory);
+            Inventories.readNbt(tag, this.inventory);
         }
 
         setLootCrateBlockTags(tag);
@@ -138,8 +138,8 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         return false;
     }
 
-    public CompoundTag serializeInventory(CompoundTag tag) {
-        Inventories.toTag(tag, this.inventory, false);
+    public NbtCompound serializeInventory(NbtCompound tag) {
+        Inventories.writeNbt(tag, this.inventory, false);
         return tag;
     }
 
@@ -162,7 +162,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
-    public CompoundTag addLootCrateBlockTags(CompoundTag tag) {
+    public NbtCompound addLootCrateBlockTags(NbtCompound tag) {
         if(this.replenishTimeTicks != 0) {
             tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
         }
@@ -179,7 +179,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(this.oncePerPlayer) {
             tag.putBoolean(LootCrateTagNames.OncePerPlayer.toString(), true);
             if(this.registeredPlayerUUIDs.size() > 0) {
-                ListTag registeredPlayers = new ListTag();
+                NbtList registeredPlayers = new NbtList();
                 for (UUID uuid : this.registeredPlayerUUIDs) {
                     registeredPlayers.add(NbtHelper.fromUuid(uuid));
                 }
@@ -191,7 +191,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         return tag;
     }
 
-    public void setLootCrateBlockTags(CompoundTag tag) {
+    public void setLootCrateBlockTags(NbtCompound tag) {
         this.registeredPlayerUUIDs = new ArrayList<>();
 
         this.deserializeLootTable(tag);
@@ -218,8 +218,8 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(tag.contains(LootCrateTagNames.OncePerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
             this.oncePerPlayer = true;
             if(tag.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
-                ListTag playerUUIDs = tag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
-                for (Tag playerUUID : playerUUIDs) {
+                NbtList playerUUIDs = tag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
+                for (NbtElement playerUUID : playerUUIDs) {
                     this.registeredPlayerUUIDs.add(NbtHelper.toUuid(playerUUID));
                 }
             }
