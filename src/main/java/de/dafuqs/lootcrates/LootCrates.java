@@ -1,8 +1,11 @@
 package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
+import de.dafuqs.lootcrates.config.LootCratesConfig;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.block.MapColor;
@@ -14,10 +17,15 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LootCrates implements ModInitializer {
 
     public static final String MOD_ID = "lootcrates";
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+    public static LootCratesConfig CONFIG;
+
 
     public static final ItemGroup ITEM_GROUP = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID, "loot_crates"),
@@ -30,9 +38,17 @@ public class LootCrates implements ModInitializer {
     public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
     public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = new SoundEvent(CHEST_UNLOCKS_SOUND_ID);
 
+
     @Override
     public void onInitialize() {
+
+        // Config
+        LOGGER.info("[LootCrates] Loading config...");
+        AutoConfig.register(LootCratesConfig.class, JanksonConfigSerializer::new);
+        CONFIG = AutoConfig.getConfigHolder(LootCratesConfig.class).getConfig();
+
         // All the different types of crates
+        LOGGER.info("[LootCrates] Loading crate definitions...");
         LootCrateDefinition commonLootCrate = new LootCrateDefinition(LootCrateRarity.COMMON, Rarity.COMMON, MapColor.SPRUCE_BROWN, 0, false, false);
         LootCrateDefinition uncommonLootCrate = new LootCrateDefinition(LootCrateRarity.UNCOMMON, Rarity.UNCOMMON, MapColor.YELLOW, 0, false, false);
         LootCrateDefinition rareLootCrate = new LootCrateDefinition(LootCrateRarity.RARE, Rarity.RARE, MapColor.BLUE, 0, false, false);
@@ -55,7 +71,10 @@ public class LootCrates implements ModInitializer {
         // The block entity type
         LootCratesBlockEntityType.register();
 
+        LOGGER.info("[LootCrates] Registering sounds...");
         Registry.register(Registry.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
+
+        LOGGER.info("[LootCrates] Finished!");
     }
 
 }

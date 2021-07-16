@@ -1,5 +1,6 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
+import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import net.minecraft.block.*;
@@ -10,7 +11,6 @@ import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.ShulkerLidCollisions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -53,10 +53,12 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
 
     @Override
     protected BlockBreakAction getBlockBreakAction() {
-        return BlockBreakAction.KEEP_INVENTORY;
+        if(LootCrates.CONFIG.ShulkerCratesKeepTheirInventory) {
+            return BlockBreakAction.KEEP_INVENTORY;
+        } else {
+            return BlockBreakAction.DROP_AND_SCATTER_INVENTORY;
+        }
     }
-
-
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {

@@ -1,5 +1,6 @@
 package de.dafuqs.lootcrates.blocks.chest;
 
+import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import net.minecraft.block.*;
@@ -58,7 +59,11 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 
     @Override
     protected BlockBreakAction getBlockBreakAction() {
-        return BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY;
+        if(LootCrates.CONFIG.ChestCratesKeepTheirInventory) {
+            return BlockBreakAction.KEEP_INVENTORY;
+        } else {
+            return BlockBreakAction.DROP_AND_SCATTER_INVENTORY;
+        }
     }
 
     @Override
