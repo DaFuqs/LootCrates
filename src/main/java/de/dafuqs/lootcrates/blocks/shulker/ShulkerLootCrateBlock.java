@@ -1,5 +1,6 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
+import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
@@ -57,7 +58,11 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
 
     @Override
     protected BlockBreakAction getBlockBreakAction() {
-        return BlockBreakAction.KEEP_INVENTORY;
+        if(LootCrates.CONFIG.ShulkerCratesKeepTheirInventory) {
+            return BlockBreakAction.KEEP_INVENTORY;
+        } else {
+            return BlockBreakAction.DROP_AND_SCATTER_INVENTORY;
+        }
     }
 
     @Override

@@ -185,7 +185,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 
             NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
-                itemStack.putSubTag("BlockEntityTag", compoundTag);
+                itemStack.setSubNbt("BlockEntityTag", compoundTag);
                 shouldDropItem = true;
             }
 
@@ -217,7 +217,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 
             NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
-                itemStack.putSubTag("BlockEntityTag", compoundTag);
+                itemStack.setSubNbt("BlockEntityTag", compoundTag);
             }
         }
         return itemStack;

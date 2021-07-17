@@ -62,7 +62,7 @@ public class LootCrateAtlas {
                 return shulkerBoxBlockEntity.suffocates();
             }
         };
-        return new ShulkerLootCrateBlock(settings.strength(2.0F).dynamicBounds().nonOpaque().suffocates(contextPredicate).blockVision(contextPredicate));
+        return new ShulkerLootCrateBlock(settings.dynamicBounds().nonOpaque().suffocates(contextPredicate).blockVision(contextPredicate));
     }
 
     public static void registerLootCrateDefinition(LootCrateRarity lootCrateRarity, LootCrateDefinition lootCrateDefinition) {

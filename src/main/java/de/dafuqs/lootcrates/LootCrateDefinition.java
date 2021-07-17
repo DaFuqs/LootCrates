@@ -82,12 +82,14 @@ public class LootCrateDefinition {
         public FabricBlockSettings getChestBlockSettings() {
             FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.METAL, mapColor).luminance(luminance);
 
-            if(LootCrates.CONFIG.lootCrateChestsAreIndestructible) {
+            if(LootCrates.CONFIG.ChestCratesAreIndestructible) {
                 blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
+            } else {
+                blockSettings = blockSettings.strength(3.0F, 3.0F);
             }
 
             if(hasTransparency) {
-                blockSettings = blockSettings.strength(2.0F).nonOpaque();
+                blockSettings = blockSettings.nonOpaque();
             }
 
             return blockSettings;
@@ -95,6 +97,13 @@ public class LootCrateDefinition {
 
         public FabricBlockSettings getShulkerBlockSettings() {
             FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, mapColor).luminance(luminance);
+
+            if(LootCrates.CONFIG.ShulkerCratesAreIndestructible) {
+                blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
+            } else {
+                blockSettings = blockSettings.strength(3.0F, 3.0F);
+            }
+
             // shulker blocks are always opaque
             return blockSettings;
         }

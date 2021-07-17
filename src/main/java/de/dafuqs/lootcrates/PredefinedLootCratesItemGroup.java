@@ -68,7 +68,7 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
                                     } else {
                                         NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, replenishTimeTicks, 0, oncePerPlayer);
                                         ItemStack itemStack = new ItemStack(lootCrateItem);
-                                        itemStack.setTag(compound);
+                                        itemStack.setNbt(compound);
                                         stacks.add(itemStack);
                                     }
                                 }

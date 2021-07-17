@@ -33,7 +33,7 @@ public class LootCrateItem extends BlockItem {
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         super.appendTooltip(itemStack, world, tooltip, tooltipContext);
 
-        NbtCompound compound = itemStack.getSubTag("BlockEntityTag");
+        NbtCompound compound = itemStack.getSubNbt("BlockEntityTag");
         if (compound != null) {
 
             // lock

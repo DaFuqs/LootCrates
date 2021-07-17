@@ -12,7 +12,7 @@ group = project.maven_group
 
 repositories {
     maven { url "https://maven.shedaniel.me/" }
-    maven { url "https://maven.terraformersmc.com/" }
+    maven { url "https://maven.kotlindiscord.com/repository/terraformers/" }
 }
 
 dependencies {
@@ -56,26 +56,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 jar {
-    from "LICENSE"
-}
-
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
-
-    // select the repositories you want to publish to
-    repositories {
-        // uncomment to publish to the local maven
-        // mavenLocal()
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
     }
 }
