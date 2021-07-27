@@ -23,6 +23,9 @@
     ],
     "modmenu": [
       "de.dafuqs.lootcrates.config.ModMenuConfig"
+    ],
+    "quickshulker": [
+      "de.dafuqs.lootcrates.compat.QuickShulkerCompat"
     ]
   },
   "mixins": [
