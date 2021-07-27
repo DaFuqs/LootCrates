@@ -10,6 +10,7 @@ import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
 import net.kyrptonaught.shulkerutils.ShulkerUtils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ShulkerBoxScreenHandler;
@@ -24,18 +25,18 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
                 printLockedMessage(player, stack);
             } else
                 player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
-                        new ShulkerBoxScreenHandler(i, player.getInventory(), ShulkerUtils.getInventoryFromShulker(stack)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.shulkerBox")));
+                        new ShulkerBoxScreenHandler(i, player.getInventory(), new ShulkerLootItemStackInventory(stack, 27)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.lootcrates.shulker_crate")));
         }));
     }
 
     private boolean isLocked(ItemStack stack) {
         NbtCompound tag = stack.getSubNbt("BlockEntityTag");
-        if (tag == null) return true;
-        return tag.contains(LootCrateTagNames.Locked.toString()) && tag.getBoolean(LootCrateTagNames.Locked.toString());
+        if (tag == null || !tag.contains(LootCrateTagNames.Locked.toString())) return false;
+        return tag.getBoolean(LootCrateTagNames.Locked.toString());
     }
 
     private void printLockedMessage(PlayerEntity player, ItemStack stack) {
-        if (stack.getItem() instanceof LootCrateItem) {
+        if (stack.getItem() instanceof BlockItem) {
             Block block = ((LootCrateItem) stack.getItem()).getBlock();
             LootCrateRarity rarity = LootCrateAtlas.getCrateRarity(block);
             TranslatableText translatableText = LootCrateAtlas.getKeyNeededTooltip(rarity);
