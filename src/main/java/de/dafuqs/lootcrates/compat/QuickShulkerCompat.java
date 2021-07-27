@@ -1,6 +1,8 @@
 package de.dafuqs.lootcrates.compat;
 
 import de.dafuqs.lootcrates.LootCrateAtlas;
+import de.dafuqs.lootcrates.LootCrates;
+import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
@@ -20,13 +22,23 @@ import net.minecraft.text.TranslatableText;
 public class QuickShulkerCompat implements RegisterQuickShulker {
     @Override
     public void registerProviders() {
-        QuickOpenableRegistry.register(ShulkerLootCrateBlock.class, true, false, ((player, stack) -> {
-            if (isLocked(stack)) {
-                printLockedMessage(player, stack);
-            } else
-                player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
-                        new ShulkerBoxScreenHandler(i, player.getInventory(), new ShulkerLootItemStackInventory(stack, 27)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.lootcrates.shulker_crate")));
-        }));
+            QuickOpenableRegistry.register(ShulkerLootCrateBlock.class, true, false, ((player, stack) -> {
+                if(LootCrates.CONFIG.ShulkerCratesKeepTheirInventory) {
+                    if (isLocked(stack)) {
+                        printLockedMessage(player, stack);
+                    } else
+                        player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
+                                new ShulkerBoxScreenHandler(i, player.getInventory(), new ShulkerLootItemStackInventory(stack, 27)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.lootcrates.shulker_crate")));
+            }}));
+
+            QuickOpenableRegistry.register(ChestLootCrateBlock.class, true, false, ((player, stack) -> {
+                if(LootCrates.CONFIG.ChestCratesKeepTheirInventory) {
+                    if (isLocked(stack)) {
+                        printLockedMessage(player, stack);
+                    } else
+                        player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
+                                new ShulkerBoxScreenHandler(i, player.getInventory(), new ShulkerLootItemStackInventory(stack, 27)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.lootcrates.loot_crate")));
+            }}));
     }
 
     private boolean isLocked(ItemStack stack) {
@@ -43,4 +55,5 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
             player.sendMessage(translatableText, false);
         }
     }
+
 }

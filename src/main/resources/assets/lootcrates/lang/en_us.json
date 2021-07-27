@@ -1,5 +1,8 @@
 {
-  "text.autoconfig.LootCrates.option.lootCrateChestsAreIndestructible": "If LootCrates chests are indestructible. Requires restart.",
+  "text.autoconfig.LootCrates.option.ChestCratesAreIndestructible": "Chest crates are indestructible. Requires restart.",
+  "text.autoconfig.LootCrates.option.ShulkerCratesAreIndestructible": "Shulker crates are indestructible. Requires restart.",
+  "text.autoconfig.LootCrates.option.ChestCratesKeepTheirInventory": "Chest crates retain their inventory on breaking",
+  "text.autoconfig.LootCrates.option.ShulkerCratesKeepTheirInventory": "Shulker crates retain their inventory on breaking",
 
   "itemGroup.lootcrates.loot_crates": "Loot Crates",
   "itemGroup.lootcrates.predefined_loot_crates": "Predefined Loot Crates",
