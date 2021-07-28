@@ -43,10 +43,11 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
             if (LootCrates.CONFIG.ShulkerCratesKeepTheirInventory) {
                 if (isLocked(stack)) {
                     printLockedMessage(player, stack);
-                } else
+                } else {
                     checkLootInteraction(stack, (ServerPlayerEntity) player);
                     player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
                             new ShulkerBoxScreenHandler(i, player.getInventory(), ShulkerUtils.getInventoryFromShulker(stack)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.lootcrates.shulker_crate")));
+                }
             }
         }));
 
@@ -54,10 +55,11 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
             if (LootCrates.CONFIG.ChestCratesKeepTheirInventory) {
                 if (isLocked(stack)) {
                     printLockedMessage(player, stack);
-                } else
+                } else {
                     checkLootInteraction(stack, (ServerPlayerEntity) player);
                     player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
                             new ShulkerBoxScreenHandler(i, player.getInventory(), ShulkerUtils.getInventoryFromShulker(stack)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.lootcrates.loot_crate")));
+                }
             }
         }));
     }
@@ -92,9 +94,9 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
         // only players can generate container loot
         if (player != null && lootTableId != null && player.getServer() != null && shouldGenerateNewLoot(stack, player)) {
             LootTable lootTable = player.getServer().getLootManager().getTable(lootTableId);
-            if (player instanceof ServerPlayerEntity) {
-                Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test((ServerPlayerEntity) player, lootTableId);
-            }
+
+            Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test( player, lootTableId);
+
             LootContext.Builder builder = (new LootContext.Builder((ServerWorld) player.world)).parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(player.getBlockPos())).random(lootTableSeed);
             builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
             ItemStackInventory itemStackInventory = ShulkerUtils.getInventoryFromShulker(stack);
@@ -126,6 +128,7 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
                 }
             }
         }
+
         // if replenish time is set to <=0: just generate loot once
         if (replenishTimeTicks <= 0) {
             if (lastReplenishTimeTick == 0) {
@@ -145,7 +148,6 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
                         lastReplenishTimeTick = player.world.getTime();
                         registeredPlayerUUIDs.add(player.getUuid());
                         saveNbtToStack(stack, lastReplenishTimeTick, oncePerPlayer, registeredPlayerUUIDs);
-                        //this.markDirty();
                         return true;
                     }
                 } else {
