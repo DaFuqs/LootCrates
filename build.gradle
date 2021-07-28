@@ -31,7 +31,7 @@ dependencies {
 
     modApi("com.terraformersmc:modmenu:${project.modmenu_version}")
 
-    modImplementation('net.kyrptonaught:quickshulker:1.2.1-1.17')
+    modImplementation('net.kyrptonaught:quickshulker:1.2.2-1.17')
 }
 
 processResources {
