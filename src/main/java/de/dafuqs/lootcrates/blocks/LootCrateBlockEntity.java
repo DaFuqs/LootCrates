@@ -297,4 +297,8 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
+    public void setOncePerPlayer(boolean oncePerPlayer) {
+        this.oncePerPlayer = oncePerPlayer;
+    }
+
 }

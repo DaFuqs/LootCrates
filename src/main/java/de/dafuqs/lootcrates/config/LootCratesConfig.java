@@ -12,4 +12,5 @@ public class LootCratesConfig implements ConfigData {
     public boolean ChestCratesKeepTheirInventory = false;
     public boolean ShulkerCratesKeepTheirInventory = true;
 
+    public boolean VanillaTreasureChestsAreOncePerPlayer = true;
 }
