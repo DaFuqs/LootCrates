@@ -25,11 +25,14 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.*;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -307,6 +310,10 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         double f = (double)pos.getZ() + 0.5D;
 
         world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
+    }
+
+    public void setOncePerPlayer(boolean oncePerPlayer) {
+        this.oncePerPlayer = oncePerPlayer;
     }
 
 }

@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -106,7 +107,6 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
                         entity.move(MovementType.SHULKER_BOX, new Vec3d((box.getXLength() + 0.01D) * (double)direction.getOffsetX(), (box.getYLength() + 0.01D) * (double)direction.getOffsetY(), (box.getZLength() + 0.01D) * (double)direction.getOffsetZ()));
                     }
                 }
-
             }
         }
     }

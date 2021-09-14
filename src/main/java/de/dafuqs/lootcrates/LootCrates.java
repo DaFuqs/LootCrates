@@ -1,6 +1,8 @@
 package de.dafuqs.lootcrates;
 
+import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
+import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
 import de.dafuqs.lootcrates.config.LootCratesConfig;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
@@ -8,17 +10,35 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
 import net.minecraft.block.MapColor;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LootCrates implements ModInitializer {
 
@@ -36,6 +56,24 @@ public class LootCrates implements ModInitializer {
 
     public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
     public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = new SoundEvent(CHEST_UNLOCKS_SOUND_ID);
+
+
+    public static class LootCrateReplacement {
+
+        public RegistryKey<World> worldKey;
+        public BlockPos blockPos;
+        public Identifier lootTable;
+        public long lootTableSeed;
+
+        public LootCrateReplacement(RegistryKey<World> worldKey, BlockPos blockPos, Identifier lootTable, long lootTableSeed) {
+            this.worldKey = worldKey;
+            this.blockPos = blockPos;
+            this.lootTable = lootTable;
+            this.lootTableSeed = lootTableSeed;
+        }
+    }
+
+    public static List<LootCrateReplacement> replacements = new ArrayList<>();
 
     @Override
     public void onInitialize() {
@@ -73,6 +111,29 @@ public class LootCrates implements ModInitializer {
         Registry.register(Registry.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
 
         LOGGER.info("[LootCrates] Finished!");
+
+        if(CONFIG.VanillaTreasureChestsAreOncePerPlayer) {
+            ServerTickEvents.END_SERVER_TICK.register(server -> {
+                if (!replacements.isEmpty()) {
+                    for (LootCrateReplacement replacement : replacements) {
+                        ServerWorld serverWorld = server.getWorld(replacement.worldKey);
+                        if (serverWorld != null) {
+                            serverWorld.removeBlockEntity(replacement.blockPos);
+                            BlockState chestBlockState = serverWorld.getBlockState(replacement.blockPos);
+
+                            serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, chestBlockState.get(ChestBlock.FACING)), 3);
+
+                            BlockEntity blockEntity = serverWorld.getBlockEntity(replacement.blockPos);
+                            if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
+                                lootCrateBlockEntity.setLootTable(replacement.lootTable, replacement.lootTableSeed);
+                                lootCrateBlockEntity.setOncePerPlayer(true);
+                            }
+                        }
+                    }
+                }
+                replacements.clear();
+            });
+        }
     }
 
 }
