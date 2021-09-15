@@ -3,7 +3,6 @@ package de.dafuqs.lootcrates.blocks.shulker;
 import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
 import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;

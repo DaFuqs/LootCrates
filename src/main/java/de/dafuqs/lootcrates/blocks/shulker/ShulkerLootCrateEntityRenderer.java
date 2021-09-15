@@ -1,7 +1,6 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
 import de.dafuqs.lootcrates.LootCrateAtlas;
-import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
