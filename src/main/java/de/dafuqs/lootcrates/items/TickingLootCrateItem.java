@@ -29,9 +29,11 @@ public class TickingLootCrateItem extends LootCrateItem {
             if (scheduledTickEvent == ScheduledTickEvent.FIRE) {
                 // play fire sound, set player and surroundings on fire
                 if (world.isClient) {
-                    Random random = world.getRandom();
-                    if (random.nextInt(50) == 0) {
-                        entity.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.4F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.2F);
+                    if(world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
+                        Random random = world.getRandom();
+                        if (random.nextInt(50) == 0) {
+                            entity.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.4F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.2F);
+                        }
                     }
                 } else {
                     int r = world.getRandom().nextInt(120);

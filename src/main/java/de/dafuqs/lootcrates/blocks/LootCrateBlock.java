@@ -6,16 +6,15 @@ import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
@@ -188,6 +187,22 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             }
 
             if (keepInventory && !lootCrateBlockEntity.isEmpty()) {
+                // drop all contents that are considered to be non-nestable to prevent book banning
+                for(int i = 0; i < lootCrateBlockEntity.getInvStackList().size(); i++) {
+                    Item item = lootCrateBlockEntity.getInvStackList().get(i).getItem();
+                    if(item instanceof BlockItem) {
+                        BlockItem blockItem = (BlockItem) item;
+                        if(blockItem.getBlock() instanceof ShulkerBoxBlock || blockItem.getBlock() instanceof LootCrateBlock) {
+                            ItemScatterer.spawn(lootCrateBlockEntity.getWorld(),
+                                    lootCrateBlockEntity.getPos().getX(),
+                                    lootCrateBlockEntity.getPos().getY(),
+                                    lootCrateBlockEntity.getPos().getZ(),
+                                    lootCrateBlockEntity.getInvStackList().get(i));
+                            lootCrateBlockEntity.getInvStackList().set(i, ItemStack.EMPTY);
+                        }
+                    }
+                }
+
                 lootCrateBlockEntity.serializeInventory(compoundTag);
                 shouldDropItem = true;
             }

@@ -24,6 +24,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -106,7 +107,12 @@ public class LootCrates implements ModInitializer {
         if(CONFIG.VanillaTreasureChestsAreOncePerPlayer) {
             ServerTickEvents.END_SERVER_TICK.register(server -> {
                 if (!replacements.isEmpty()) {
-                    for (LootCrateReplacement replacement : replacements) {
+
+                    // Some protection against concurrent modifications
+                    List<LootCrateReplacement> list = new ArrayList<>(replacements);
+                    replacements.clear();
+
+                    for (LootCrateReplacement replacement : list) {
                         ServerWorld serverWorld = server.getWorld(replacement.worldKey);
                         if (serverWorld != null) {
                             serverWorld.removeBlockEntity(replacement.blockPos);
@@ -114,18 +120,20 @@ public class LootCrates implements ModInitializer {
 
                             if(chestBlockState.getBlock() instanceof ChestBlock) {
                                 serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, chestBlockState.get(ChestBlock.FACING)), 3);
+                            } else {
+                                serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, Direction.NORTH), 3);
+                            }
 
-                                BlockEntity blockEntity = serverWorld.getBlockEntity(replacement.blockPos);
-                                if (blockEntity instanceof LootCrateBlockEntity) {
-                                    LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) blockEntity;
-                                    lootCrateBlockEntity.setLootTable(replacement.lootTable, replacement.lootTableSeed);
-                                    lootCrateBlockEntity.setOncePerPlayer(true);
-                                }
+                            BlockEntity blockEntity = serverWorld.getBlockEntity(replacement.blockPos);
+                            if (blockEntity instanceof LootCrateBlockEntity) {
+                                LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) blockEntity;
+                                lootCrateBlockEntity.setLootTable(replacement.lootTable, replacement.lootTableSeed);
+                                lootCrateBlockEntity.setOncePerPlayer(true);
+                                lootCrateBlockEntity.setReplenishTimeTicks(1);
                             }
                         }
                     }
                 }
-                replacements.clear();
             });
         }
 

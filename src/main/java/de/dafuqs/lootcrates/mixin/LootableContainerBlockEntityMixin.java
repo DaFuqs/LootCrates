@@ -4,6 +4,7 @@ import de.dafuqs.lootcrates.LootCrates;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -19,13 +20,18 @@ import java.util.Random;
 public class LootableContainerBlockEntityMixin {
 
     @Inject(method = "setLootTable(Lnet/minecraft/world/BlockView;Ljava/util/Random;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Identifier;)V", at = @At("TAIL"))
-    private static void convertChestToLootCrate(BlockView world, Random random, BlockPos pos, Identifier id, CallbackInfo ci) {
-        if(LootCrates.CONFIG.VanillaTreasureChestsAreOncePerPlayer && world instanceof ChunkRegion) {
-            ChunkRegion region = (ChunkRegion) world;
+    private static void noteChestForLootCrateConversion(BlockView world, Random random, BlockPos pos, Identifier id, CallbackInfo ci) {
+        if(LootCrates.CONFIG.VanillaTreasureChestsAreOncePerPlayer && world instanceof ChunkRegion || world instanceof ServerWorld) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof ChestBlockEntity) {
                 LootTableAccessor lootTableAccessor = ((LootTableAccessor) blockEntity);
-                LootCrates.replacements.add(new LootCrates.LootCrateReplacement(region.toServerWorld().getRegistryKey(), pos, lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
+
+                if(world instanceof ChunkRegion) {
+                    LootCrates.replacements.add(new LootCrates.LootCrateReplacement(((ChunkRegion) world).toServerWorld().getRegistryKey(), pos, lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
+                } else {
+                    LootCrates.replacements.add(new LootCrates.LootCrateReplacement(((ServerWorld) world).getRegistryKey(), pos, lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
+                }
+
             }
         }
     }
