@@ -4,11 +4,15 @@ import de.dafuqs.lootcrates.LootCrates;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,15 +20,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Random;
 
 @Mixin(LootableContainerBlockEntity.class)
-public class LootableContainerBlockEntityMixin {
+public abstract class LootableContainerBlockEntityMixin {
+
+    @Shadow public abstract boolean checkUnlocked(PlayerEntity player);
 
     @Inject(method = "setLootTable(Lnet/minecraft/world/BlockView;Ljava/util/Random;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Identifier;)V", at = @At("TAIL"))
     private static void convertChestToLootCrate(BlockView world, Random random, BlockPos pos, Identifier id, CallbackInfo ci) {
         if(LootCrates.CONFIG.VanillaTreasureChestsAreOncePerPlayer) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof ChestBlockEntity && world instanceof ChunkRegion chunkRegion) {
+            if (blockEntity instanceof ChestBlockEntity && world instanceof ChunkRegion || world instanceof ServerWorld) {
                 LootTableAccessor lootTableAccessor = ((LootTableAccessor) blockEntity);
-                LootCrates.replacements.add(new LootCrates.LootCrateReplacement(chunkRegion.toServerWorld().getRegistryKey(), pos, lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
+
+                if(world instanceof ChunkRegion chunkRegion) {
+                    LootCrates.replacements.add(new LootCrates.LootCrateReplacement(chunkRegion.toServerWorld().getRegistryKey(), pos, lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
+                } else {
+                    ServerWorld serverWorld = (ServerWorld) world;
+                    LootCrates.replacements.add(new LootCrates.LootCrateReplacement(serverWorld.getRegistryKey(), pos, lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
+                }
             }
         }
     }

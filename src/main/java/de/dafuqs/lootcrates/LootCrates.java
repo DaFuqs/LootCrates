@@ -109,7 +109,12 @@ public class LootCrates implements ModInitializer {
         if(CONFIG.VanillaTreasureChestsAreOncePerPlayer) {
             ServerTickEvents.END_SERVER_TICK.register(server -> {
                 if (!replacements.isEmpty()) {
-                    for (LootCrateReplacement replacement : replacements) {
+
+                    // Some protection against concurrent modifications
+                    List<LootCrateReplacement> list = new ArrayList<>(replacements);
+                    replacements.clear();
+
+                    for (LootCrateReplacement replacement : list) {
                         ServerWorld serverWorld = server.getWorld(replacement.worldKey);
                         if (serverWorld != null) {
                             serverWorld.removeBlockEntity(replacement.blockPos);
@@ -130,7 +135,6 @@ public class LootCrates implements ModInitializer {
                         }
                     }
                 }
-                replacements.clear();
             });
         }
     }
