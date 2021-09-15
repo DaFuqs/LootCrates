@@ -24,6 +24,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -114,7 +115,11 @@ public class LootCrates implements ModInitializer {
                             serverWorld.removeBlockEntity(replacement.blockPos);
                             BlockState chestBlockState = serverWorld.getBlockState(replacement.blockPos);
 
-                            serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, chestBlockState.get(ChestBlock.FACING)), 3);
+                            if(chestBlockState.getBlock() instanceof ChestBlock) {
+                                serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, chestBlockState.get(ChestBlock.FACING)), 3);
+                            } else {
+                                serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, Direction.NORTH), 3);
+                            }
 
                             BlockEntity blockEntity = serverWorld.getBlockEntity(replacement.blockPos);
                             if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
