@@ -73,7 +73,7 @@ LootTableSeed             | long          | Seed for generating the loot table. 
 ReplenishTimeTicks        | long          | When the crate is accessed it will take that many ticks until new loot can be generated. Setting the value to <= 0 results in generating the content just once - at the time of the first opening.
 Locked                    | boolean       | When true a key with matching rarity will be required to unlock the crate and access it's contents
 DoNotConsumeKeyOnUnlock   | boolean       | When true opening a locked crate will not consume the key.
-OncePerPlayer             | boolean       | When true every player can only use the crate once to generate loot. If "LootGenerationTimeInTicks" is set to <= 0 loot will be generated once per player
+OncePerPlayer             | boolean       | When true every player can only use the crate once to generate loot. "ReplenishTimeTicks" has to be set to >0.
 Inventory                 | list of items | Analog vanilla shulker chests. Defines the items stored in the crate. Can be used to define items that are always present in a crate at first opening. (chest crates can have this set, too. They just don't set it when broken, because they are meant to be unbreakable outside creative)
 
 **Warning:**
