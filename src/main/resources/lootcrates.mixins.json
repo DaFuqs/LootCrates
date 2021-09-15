@@ -4,6 +4,7 @@
   "package": "de.dafuqs.lootcrates.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "BlockEntityMixin",
     "LootableContainerBlockEntityMixin",
     "LootTableAccessor"
   ],
