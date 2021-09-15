@@ -5,8 +5,10 @@ import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BundleItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -29,9 +31,11 @@ public class TickingLootCrateItem extends LootCrateItem {
             if (scheduledTickEvent == ScheduledTickEvent.FIRE) {
                 // play fire sound, set player and surroundings on fire
                 if (world.isClient) {
-                    Random random = world.getRandom();
-                    if (random.nextInt(50) == 0) {
-                        entity.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.4F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.2F);
+                    if(world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
+                        Random random = world.getRandom();
+                        if (random.nextInt(50) == 0) {
+                            entity.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.4F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.2F);
+                        }
                     }
                 } else {
                     int r = world.getRandom().nextInt(120);

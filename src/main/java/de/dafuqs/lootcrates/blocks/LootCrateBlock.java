@@ -195,6 +195,18 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             }
 
             if (keepInventory && !lootCrateBlockEntity.isEmpty()) {
+                // drop all contents that are considered to be non-nestable to prevent book banning
+                for(int i = 0; i < lootCrateBlockEntity.inventory.size(); i++) {
+                    if(!lootCrateBlockEntity.inventory.get(i).getItem().canBeNested()) {
+                        ItemScatterer.spawn(lootCrateBlockEntity.getWorld(),
+                                lootCrateBlockEntity.getPos().getX(),
+                                lootCrateBlockEntity.getPos().getY(),
+                                lootCrateBlockEntity.getPos().getZ(),
+                                lootCrateBlockEntity.inventory.get(i));
+                        lootCrateBlockEntity.inventory.set(i, ItemStack.EMPTY);
+                    }
+                }
+
                 lootCrateBlockEntity.serializeInventory(compoundTag);
                 shouldDropItem = true;
             }

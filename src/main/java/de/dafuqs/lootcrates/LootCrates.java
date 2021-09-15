@@ -18,17 +18,12 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -36,9 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class LootCrates implements ModInitializer {
 
@@ -127,6 +120,7 @@ public class LootCrates implements ModInitializer {
                             if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
                                 lootCrateBlockEntity.setLootTable(replacement.lootTable, replacement.lootTableSeed);
                                 lootCrateBlockEntity.setOncePerPlayer(true);
+                                lootCrateBlockEntity.setReplenishTimeTicks(1);
                             }
                         }
                     }

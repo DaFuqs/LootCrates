@@ -3,6 +3,8 @@ package de.dafuqs.lootcrates.items;
 import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import net.minecraft.block.Block;
+import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.BlockItem;
@@ -19,6 +21,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +31,11 @@ public class LootCrateItem extends BlockItem {
 
     public LootCrateItem(Block block, Settings settings) {
         super(block, settings);
+    }
+
+    @Override
+    public boolean canBeNested() {
+        return false;
     }
 
     @Override
@@ -124,7 +133,8 @@ public class LootCrateItem extends BlockItem {
         }
     }
 
-    private TranslatableText getReplenishTimeHumanReadableText(long replenishTime) {
+    @Contract("_ -> new")
+    private @NotNull TranslatableText getReplenishTimeHumanReadableText(long replenishTime) {
         if(replenishTime >= 1728000) { // 1 day
             return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_days", replenishTime / 1728000F);
         } else if(replenishTime >= 72000) { // 1 hour
@@ -139,7 +149,7 @@ public class LootCrateItem extends BlockItem {
         }
     }
 
-    public static NbtCompound getLootCrateItemCompoundTag(Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer) {
+    public static @NotNull NbtCompound getLootCrateItemCompoundTag(@NotNull Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer) {
         NbtCompound compoundTag = new NbtCompound();
         NbtCompound blockEntityTag = new NbtCompound();
 

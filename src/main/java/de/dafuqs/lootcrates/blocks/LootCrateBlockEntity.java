@@ -316,4 +316,8 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         this.oncePerPlayer = oncePerPlayer;
     }
 
+    public void setReplenishTimeTicks(int ticks) {
+        this.replenishTimeTicks = ticks;
+    }
+
 }
