@@ -12,7 +12,7 @@
     "repo": "github.com/DaFuqs/LootCrates"
   },
   "license": "MIT",
-  "icon": "assets/lootcrates/textures/item/icon.png",
+  "icon": "assets/lootcrates/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
