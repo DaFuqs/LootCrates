@@ -47,12 +47,15 @@ LootTableSeed             | long          | Seed for generating the loot table. 
 ![All the Loot Crates, Shulkers and keys](./images/crates.png)
 
 ## Loot Crate Chests
-Loot crates cannot be broken or moved. Instead they generate loot over time!
+Loot crates cannot be broken or moved. Instead, they generate loot over time!
 
 ## Shulker Crates
 Shulker crates, like their loot crate counterparts, can generate loot.
 But unlike their unbreakable counterparts they can be broken and picked up.
 They also retain their items and can be used as backpacks.
+
+## Loot Barrels
+By default, these behave exactly like loot crates.
 
 ## Keys
 Crates may be locked, requiring a key with matching rarity to unlock.
