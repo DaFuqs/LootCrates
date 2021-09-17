@@ -1,12 +1,8 @@
 package de.dafuqs.lootcrates.items;
 
-import de.dafuqs.lootcrates.LootCrateAtlas;
-import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;

@@ -12,14 +12,12 @@ import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -28,13 +26,15 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Position;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -145,7 +145,7 @@ public class LootCrates implements ModInitializer {
         LOGGER.info("[LootCrates] Registering sounds...");
         Registry.register(Registry.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
 
-        if(CONFIG.VanillaTreasureChestsAreOncePerPlayer) {
+        if(CONFIG.ReplaceVanillaWorldgenChests) {
             ServerTickEvents.END_SERVER_TICK.register(server -> {
                 if (!replacements.isEmpty()) {
 
@@ -169,8 +169,12 @@ public class LootCrates implements ModInitializer {
                                 BlockEntity blockEntity = serverWorld.getBlockEntity(replacement.blockPos);
                                 if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
                                     lootCrateBlockEntity.setLootTable(replacement.lootTable, replacement.lootTableSeed);
-                                    lootCrateBlockEntity.setOncePerPlayer(true);
-                                    lootCrateBlockEntity.setReplenishTimeTicks(1);
+                                    if(CONFIG.ReplacedWorldgenChestsAreOncePerPlayer) {
+                                        lootCrateBlockEntity.setOncePerPlayer(true);
+                                    }
+                                    if(CONFIG.ReplacedWorldgenChestsRestockEveryXTicks > 0) {
+                                        lootCrateBlockEntity.setReplenishTimeTicks(CONFIG.ReplacedWorldgenChestsRestockEveryXTicks);
+                                    }
                                 }
                             }
                         } catch (Exception e) {
