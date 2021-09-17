@@ -43,13 +43,13 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
 
         ArrayList<Long> replenishTimeTicksValues = new ArrayList<>();
         replenishTimeTicksValues.add(-1L);      // once
-        replenishTimeTicksValues.add(20L);      // 1 second
-        replenishTimeTicksValues.add(72000L);   // 1 hour
+        replenishTimeTicksValues.add(1L);       // 1 tick
         replenishTimeTicksValues.add(1728000L); // 1 day
 
-        ArrayList<Boolean> booleans = new ArrayList<>();
-        booleans.add(true);
-        booleans.add(false);
+        ArrayList<Boolean> booleans = new ArrayList<>() {{
+            add(true);
+            add(false);
+        }};
 
         List<Item> allLootCrates = LootCrateAtlas.getAllCrateItems();
         Set<Identifier> allLootTables = LootTables.getAll();
@@ -58,18 +58,20 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
             for (Identifier lootTable : allLootTables) {
                 for (Long replenishTimeTicks : replenishTimeTicksValues) {
                     for (boolean locked : booleans) {
-                        for (boolean doNotConsumeKeyOnUnlock : booleans) {
-                            for (boolean oncePerPlayer : booleans) {
-                                if(oncePerPlayer && replenishTimeTicks < 0) {
-                                    // oncePerPlayer really is only useful when replenish time is positive
-                                } else {
-                                    if(doNotConsumeKeyOnUnlock && !locked) {
-                                        // no use in that tag when there is no lock, is there?
+                        for (boolean trapped : booleans) {
+                            for (boolean doNotConsumeKeyOnUnlock : booleans) {
+                                for (boolean oncePerPlayer : booleans) {
+                                    if (oncePerPlayer && replenishTimeTicks < 0) {
+                                        // oncePerPlayer really is only useful when replenish time is positive
                                     } else {
-                                        NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, replenishTimeTicks, 0, oncePerPlayer);
-                                        ItemStack itemStack = new ItemStack(lootCrateItem);
-                                        itemStack.setNbt(compound);
-                                        stacks.add(itemStack);
+                                        if (doNotConsumeKeyOnUnlock && !locked) {
+                                            // no use in that tag when there is no lock, is there?
+                                        } else {
+                                            NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, replenishTimeTicks, 0, oncePerPlayer, trapped);
+                                            ItemStack itemStack = new ItemStack(lootCrateItem);
+                                            itemStack.setNbt(compound);
+                                            stacks.add(itemStack);
+                                        }
                                     }
                                 }
                             }

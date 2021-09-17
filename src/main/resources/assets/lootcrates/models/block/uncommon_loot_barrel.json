@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "lootcrates:block/uncommon_loot_barrel_top",
+    "bottom": "lootcrates:block/uncommon_loot_barrel_bottom",
+    "side": "lootcrates:block/uncommon_loot_barrel_side"
+  }
+}

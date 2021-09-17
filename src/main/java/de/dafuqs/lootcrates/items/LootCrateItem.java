@@ -49,6 +49,10 @@ public class LootCrateItem extends BlockItem {
                 tooltip.add(LootCrateAtlas.getItemLockedTooltip(itemStack, compound));
             }
 
+            if (compound.contains(LootCrateTagNames.Trapped.toString()) && compound.getBoolean(LootCrateTagNames.Trapped.toString())) {
+                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.trapped"));
+            }
+
             boolean advanced = tooltipContext.isAdvanced();
             long replenishTimeTicks = 0;
             if (compound.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
@@ -146,7 +150,7 @@ public class LootCrateItem extends BlockItem {
         }
     }
 
-    public static @NotNull NbtCompound getLootCrateItemCompoundTag(@NotNull Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer) {
+    public static @NotNull NbtCompound getLootCrateItemCompoundTag(@NotNull Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer, boolean trapped) {
         NbtCompound compoundTag = new NbtCompound();
         NbtCompound blockEntityTag = new NbtCompound();
 
@@ -166,6 +170,9 @@ public class LootCrateItem extends BlockItem {
         }
         if(oncePerPlayer) {
             blockEntityTag.putBoolean(LootCrateTagNames.OncePerPlayer.toString(), true);
+        }
+        if(trapped) {
+            blockEntityTag.putBoolean(LootCrateTagNames.Trapped.toString(), true);
         }
 
         compoundTag.put("BlockEntityTag", blockEntityTag);

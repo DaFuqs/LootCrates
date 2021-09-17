@@ -15,12 +15,18 @@ public class LootCratesConfig implements ConfigData {
     @Comment(value = "Whether chest and shulker loot crates are indestructible")
     public boolean ChestCratesAreIndestructible = true;
     @ConfigEntry.Category("GENERAL")
+    public boolean LootBarrelsAreIndestructible = true;
+    @ConfigEntry.Category("GENERAL")
     public boolean ShulkerCratesAreIndestructible = false;
 
     @Comment(value = """
             Whether  chest and shulker loot crates should heep their inventory"
             when broken. Otherwise they will drop their contents just like broken chests""")
+    @ConfigEntry.Category("GENERAL")
     public boolean ChestCratesKeepTheirInventory = false;
+    @ConfigEntry.Category("GENERAL")
+    public boolean LootBarrelsKeepTheirInventory = false;
+    @ConfigEntry.Category("GENERAL")
     public boolean ShulkerCratesKeepTheirInventory = true;
 
     @ConfigEntry.Category("worldgen")

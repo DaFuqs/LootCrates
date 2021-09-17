@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "lootcrates:block/epic_loot_barrel_top",
+    "bottom": "lootcrates:block/epic_loot_barrel_bottom",
+    "side": "lootcrates:block/epic_loot_barrel_side"
+  }
+}

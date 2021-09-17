@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -118,6 +119,22 @@ public class LootCrateDefinition {
             // shulker blocks are always opaque
             return blockSettings;
         }
+
+    public FabricBlockSettings getLootBarrelBlockSettings() {
+        FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.WOOD, mapColor).luminance(luminance).breakByTool(FabricToolTags.PICKAXES);
+
+        if(LootCrates.CONFIG.LootBarrelsAreIndestructible) {
+            blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
+        } else {
+            blockSettings = blockSettings.strength(3.0F, 2.5F);
+        }
+
+        if(hasTransparency) {
+            blockSettings = blockSettings.nonOpaque();
+        }
+
+        return blockSettings;
+    }
 
         @Environment(EnvType.CLIENT)
         public void setupTextures() {

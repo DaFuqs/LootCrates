@@ -23,6 +23,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +45,15 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 
     public ShulkerLootCrateBlockEntity(BlockPos pos, BlockState state) {
         this(LootCratesBlockEntityType.SHULKER_LOOT_CRATE_BLOCK_ENTITY, pos, state);
+    }
+
+    protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+        super.onInvOpenOrClose(world, pos, state, oldViewerCount, newViewerCount);
+    }
+
+    @Override
+    public int getCurrentLookingPlayers(BlockView world, BlockPos pos) {
+        return this.viewerCount;
     }
 
     @Override
@@ -94,15 +104,14 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     }
 
     private void pushEntities(World world, BlockPos pos, BlockState state) {
-        if (state.getBlock() instanceof ShulkerBoxBlock) {
+        if (state.getBlock() instanceof ShulkerLootCrateBlock) {
             Direction direction = state.get(ShulkerBoxBlock.FACING);
             Box box = ShulkerEntity.method_33347(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
             List<Entity> list = world.getOtherEntities(null, box);
             if (!list.isEmpty()) {
-                for(int i = 0; i < list.size(); ++i) {
-                    Entity entity = list.get(i);
+                for (Entity entity : list) {
                     if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
-                        entity.move(MovementType.SHULKER_BOX, new Vec3d((box.getXLength() + 0.01D) * (double)direction.getOffsetX(), (box.getYLength() + 0.01D) * (double)direction.getOffsetY(), (box.getZLength() + 0.01D) * (double)direction.getOffsetZ()));
+                        entity.move(MovementType.SHULKER_BOX, new Vec3d((box.getXLength() + 0.01D) * (double) direction.getOffsetX(), (box.getYLength() + 0.01D) * (double) direction.getOffsetY(), (box.getZLength() + 0.01D) * (double) direction.getOffsetZ()));
                     }
                 }
             }
@@ -124,59 +133,6 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     public Box getBoundingBox(Direction openDirection) {
         float f = this.getAnimationProgress(1.0F);
         return VoxelShapes.fullCube().getBoundingBox().stretch((0.5F * f * (float)openDirection.getOffsetX()), (0.5F * f * (float)openDirection.getOffsetY()), (0.5F * f * (float)openDirection.getOffsetZ()));
-    }
-
-
-    private Box getCollisionBox(Direction facing) {
-        Direction direction = facing.getOpposite();
-        return this.getBoundingBox(facing).shrink(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
-    }
-
-    private void pushEntities() {
-        BlockState blockState = this.world.getBlockState(this.getPos());
-        if (blockState.getBlock() instanceof ShulkerLootCrateBlock) {
-            Direction direction = blockState.get(ShulkerBoxBlock.FACING);
-            Box box = this.getCollisionBox(direction).offset(this.pos);
-            List<Entity> list = this.world.getOtherEntities(null, box);
-            for (Entity entity : list) {
-                if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
-                    double d = 0.0D;
-                    double e = 0.0D;
-                    double f = 0.0D;
-                    Box box2 = entity.getBoundingBox();
-                    switch (direction.getAxis()) {
-                        case X:
-                            if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-                                d = box.maxX - box2.minX;
-                            } else {
-                                d = box2.maxX - box.minX;
-                            }
-
-                            d += 0.01D;
-                            break;
-                        case Y:
-                            if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-                                e = box.maxY - box2.minY;
-                            } else {
-                                e = box2.maxY - box.minY;
-                            }
-
-                            e += 0.01D;
-                            break;
-                        case Z:
-                            if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-                                f = box.maxZ - box2.minZ;
-                            } else {
-                                f = box2.maxZ - box.minZ;
-                            }
-
-                            f += 0.01D;
-                    }
-                    entity.move(MovementType.SHULKER_BOX, new Vec3d(d * (double) direction.getOffsetX(), e * (double) direction.getOffsetY(), f * (double) direction.getOffsetZ()));
-                }
-
-            }
-        }
     }
 
     @Override
@@ -203,11 +159,13 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     @Override
     public void onOpen(PlayerEntity player) {
         if (!player.isSpectator() && hasWorld()) {
+
             if (this.viewerCount < 0) {
                 this.viewerCount = 0;
             }
-
             ++this.viewerCount;
+            onInvOpenOrClose(world, pos, world.getBlockState(pos), this.viewerCount-1, this.viewerCount);
+
             this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount == 1) {
                 playOpenSoundEffect();
@@ -219,6 +177,8 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     public void onClose(PlayerEntity player) {
         if (!player.isSpectator() && hasWorld()) {
             --this.viewerCount;
+            onInvOpenOrClose(world, pos, world.getBlockState(pos), this.viewerCount+1, this.viewerCount);
+
             this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount <= 0) {
                 playCloseSoundEffect();
@@ -228,14 +188,6 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 
     public float getAnimationProgress(float f) {
         return MathHelper.lerp(f, this.prevAnimationProgress, this.animationProgress);
-    }
-
-    public SpriteIdentifier getTexture() {
-        return LootCrateAtlas.getShulkerTexture(this);
-    }
-
-    public boolean hasTransparency() {
-        return LootCrateAtlas.hasTransparency(this);
     }
 
     @Override

@@ -3,12 +3,14 @@
 // (powered by FernFlower decompiler)
 //
 
-package de.dafuqs.lootcrates.blocks.chest;
+package de.dafuqs.lootcrates.blocks.barrel;
 
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
+import net.minecraft.block.BarrelBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestLidAnimator;
 import net.minecraft.block.entity.ChestStateManager;
@@ -27,22 +29,23 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements ChestAnimationProgress {
+public class LootBarrelBlockEntity extends LootCrateBlockEntity {
 
     private final ChestStateManager stateManager;
-    private final ChestLidAnimator lidAnimator;
 
-    public ChestLootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
+    public LootBarrelBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
 
         this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
         this.stateManager = new ChestStateManager() {
             protected void onChestOpened(World world, BlockPos pos, BlockState state) {
-                playSound(world, pos, state, SoundEvents.BLOCK_CHEST_OPEN);
+                playSound(world, pos, state, SoundEvents.BLOCK_BARREL_OPEN);
+                setOpen(state, true);
             }
 
             protected void onChestClosed(World world, BlockPos pos, BlockState state) {
-                playSound(world, pos, state, SoundEvents.BLOCK_CHEST_CLOSE);
+                playSound(world, pos, state, SoundEvents.BLOCK_BARREL_CLOSE);
+                setOpen(state, false);
             }
 
             protected void onInteracted(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
@@ -54,21 +57,14 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements C
                     return false;
                 } else {
                     Inventory inventory = ((GenericContainerScreenHandler)player.currentScreenHandler).getInventory();
-                    return inventory == ChestLootCrateBlockEntity.this;
+                    return inventory == LootBarrelBlockEntity.this;
                 }
             }
         };
-        this.lidAnimator = new ChestLidAnimator();
-    }
-
-    public ChestLootCrateBlockEntity(BlockPos pos, BlockState state) {
-        this(LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY, pos, state);
     }
 
     protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
         super.onInvOpenOrClose(world, pos, state, oldViewerCount, newViewerCount);
-        Block block = state.getBlock();
-        world.addSyncedBlockEvent(pos, block, 1, newViewerCount);
     }
 
     @Override
@@ -76,13 +72,23 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements C
         return this.stateManager.getViewerCount();
     }
 
-    public static void clientTick(World world, BlockPos pos, BlockState state, ChestLootCrateBlockEntity blockEntity) {
-        blockEntity.lidAnimator.step();
+    public LootBarrelBlockEntity(BlockPos blockPos, BlockState blockState) {
+        this(LootCratesBlockEntityType.LOOT_BARREL_BLOCK_ENTITY, blockPos, blockState);
+    }
+
+    private void setOpen(BlockState state, boolean open) {
+        this.world.setBlockState(this.getPos(), state.with(BarrelBlock.OPEN, open), 3);
+    }
+
+    public void tick() {
+        if (!this.removed) {
+            this.stateManager.updateViewerCount(this.getWorld(), this.getPos(), this.getCachedState());
+        }
     }
 
     @Override
     protected Text getContainerName() {
-        return new TranslatableText("container.lootcrates.loot_crate");
+        return new TranslatableText("container.lootcrates.loot_barrel");
     }
 
     @Override
@@ -104,17 +110,4 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements C
         }
     }
 
-    public boolean onSyncedBlockEvent(int type, int data) {
-        if (type == 1) {
-            this.lidAnimator.setOpen(data > 0);
-            return true;
-        } else {
-            return super.onSyncedBlockEvent(type, data);
-        }
-    }
-
-    @Override
-    public float getAnimationProgress(float tickDelta) {
-        return this.lidAnimator.getProgress(tickDelta);
-    }
 }

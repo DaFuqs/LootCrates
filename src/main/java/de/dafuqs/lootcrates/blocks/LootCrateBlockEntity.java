@@ -32,6 +32,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +48,8 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     private boolean doNotConsumeKeyOnUnlock;
     private boolean oncePerPlayer;
     private List<UUID> registeredPlayerUUIDs;
-    ScheduledTickEvent scheduledTickEvent;
+    private ScheduledTickEvent scheduledTickEvent;
+    private boolean trapped;
 
     private long replenishTimeTicks;
     private long lastReplenishTimeTick;
@@ -178,6 +180,9 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
                 tag.putBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString(), true);
             }
         }
+        if(this.trapped) {
+            tag.putBoolean(LootCrateTagNames.Trapped.toString(), true);
+        }
         if(this.oncePerPlayer) {
             tag.putBoolean(LootCrateTagNames.OncePerPlayer.toString(), true);
             if(this.registeredPlayerUUIDs.size() > 0) {
@@ -216,6 +221,9 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             this.locked = false;
             this.doNotConsumeKeyOnUnlock = false;
         }
+        if(tag.contains(LootCrateTagNames.Trapped.toString()) && tag.getBoolean(LootCrateTagNames.Trapped.toString())) {
+            this.trapped = true;
+        }
 
         if(tag.contains(LootCrateTagNames.OncePerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
             this.oncePerPlayer = true;
@@ -230,8 +238,20 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
+    protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+        if (this.trapped && oldViewerCount != newViewerCount) {
+            Block block = state.getBlock();
+            world.updateNeighborsAlways(pos, block);
+            world.updateNeighborsAlways(pos.down(), block);
+        }
+    }
+
     public boolean isLocked() {
         return this.locked;
+    }
+
+    public boolean isTrapped() {
+        return this.trapped;
     }
 
     public boolean doesUnlock(Item item) {
@@ -314,5 +334,11 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     public void setReplenishTimeTicks(int ticks) {
         this.replenishTimeTicks = ticks;
     }
+
+    public void setTrapped(boolean trapped) {
+        this.trapped = trapped;
+    }
+
+    public abstract int getCurrentLookingPlayers(BlockView world, BlockPos pos);
 
 }

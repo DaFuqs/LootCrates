@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -31,9 +32,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -92,6 +96,41 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     @Override
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
+    }
+
+    public boolean emitsRedstonePower(BlockState state) {
+        return true;
+    }
+
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
+            if (lootCrateBlockEntity.isTrapped()) {
+                return MathHelper.clamp(getPlayersLookingInCrateCount(world, pos), 0, 15);
+            }
+        }
+        return 0;
+    }
+
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
+            if (lootCrateBlockEntity.isTrapped()) {
+                return direction == Direction.UP ? state.getWeakRedstonePower(world, pos, direction) : 0;
+            }
+        }
+        return 0;
+    }
+
+    public static int getPlayersLookingInCrateCount(@NotNull BlockView world, BlockPos pos) {
+        BlockState blockState = world.getBlockState(pos);
+        if (blockState.hasBlockEntity()) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
+                return lootCrateBlockEntity.getCurrentLookingPlayers(world, pos);
+            }
+        }
+        return 0;
     }
 
     @Override
