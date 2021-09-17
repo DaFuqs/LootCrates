@@ -167,6 +167,10 @@ public class LootCrateAtlas {
         return shulkerCrateBlocks.get(lootCrateRarity);
     }
 
+    public static Block getLootBarrel(LootCrateRarity lootCrateRarity) {
+        return lootBarrelBlocks.get(lootCrateRarity);
+    }
+
     public static boolean hasTransparency(LootCrateBlockEntity lootCrateBlockEntity) {
         if(lootCrateBlockEntity == null) {
             return false;

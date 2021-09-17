@@ -12,10 +12,7 @@ import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.MapColor;
+import net.minecraft.block.*;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
@@ -29,6 +26,7 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.BlockPos;
@@ -158,11 +156,21 @@ public class LootCrates implements ModInitializer {
                             ServerWorld serverWorld = server.getWorld(replacement.worldKey);
                             if (serverWorld != null) {
                                 serverWorld.removeBlockEntity(replacement.blockPos);
-                                BlockState chestBlockState = serverWorld.getBlockState(replacement.blockPos);
 
-                                if (chestBlockState.getBlock() instanceof ChestBlock) {
-                                    serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, chestBlockState.get(ChestBlock.FACING)), 3);
+                                BlockState sourceBlockState = serverWorld.getBlockState(replacement.blockPos);
+                                Block sourceBlock = sourceBlockState.getBlock();
+
+                                boolean trapped = false;
+
+                                if(sourceBlock instanceof ChestBlock) {
+                                    if(sourceBlock instanceof TrappedChestBlock) {
+                                        trapped = true;
+                                    }
+                                    serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, sourceBlockState.get(ChestBlock.FACING)), 3);
+                                } else if(sourceBlock instanceof BarrelBlock) {
+                                    serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootBarrel(LootCrateRarity.COMMON).getDefaultState().with(Properties.FACING, sourceBlockState.get(Properties.FACING)), 3);
                                 } else {
+                                    // fallback: assume chest
                                     serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, Direction.NORTH), 3);
                                 }
 
@@ -174,6 +182,9 @@ public class LootCrates implements ModInitializer {
                                     }
                                     if(CONFIG.ReplacedWorldgenChestsRestockEveryXTicks > 0) {
                                         lootCrateBlockEntity.setReplenishTimeTicks(CONFIG.ReplacedWorldgenChestsRestockEveryXTicks);
+                                    }
+                                    if(trapped) {
+                                        lootCrateBlockEntity.setTrapped(true);
                                     }
                                 }
                             }
