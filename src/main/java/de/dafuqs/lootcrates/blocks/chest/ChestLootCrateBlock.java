@@ -2,13 +2,11 @@ package de.dafuqs.lootcrates.blocks.chest;
 
 import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
+import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import de.dafuqs.lootcrates.enums.BlockBreakAction;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.entity.*;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
@@ -60,6 +58,17 @@ public class ChestLootCrateBlock extends LootCrateBlock {
         }
     }
 
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock())) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof LootCrateBlockEntity) {
+                world.updateComparators(pos, state.getBlock());
+            }
+
+            super.onStateReplaced(state, world, pos, newState, moved);
+        }
+    }
+
     @Override
     protected BlockBreakAction getBlockBreakAction() {
         if(LootCrates.CONFIG.ChestCratesKeepTheirInventory) {
@@ -71,7 +80,11 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 
     @Override
     public PistonBehavior getPistonBehavior(BlockState state) {
-        return PistonBehavior.BLOCK;
+        if(LootCrates.CONFIG.ChestCratesAreIndestructible) {
+            return PistonBehavior.BLOCK;
+        } else {
+            return PistonBehavior.DESTROY;
+        }
     }
 
     @Nullable

@@ -107,7 +107,11 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
 
     @Override
     public PistonBehavior getPistonBehavior(BlockState state) {
-        return PistonBehavior.DESTROY;
+        if(LootCrates.CONFIG.ShulkerCratesAreIndestructible) {
+            return PistonBehavior.BLOCK;
+        } else {
+            return PistonBehavior.DESTROY;
+        }
     }
 
     @Override
