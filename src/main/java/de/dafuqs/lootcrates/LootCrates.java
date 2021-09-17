@@ -28,6 +28,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -118,23 +119,27 @@ public class LootCrates implements ModInitializer {
                     replacements.clear();
 
                     for (LootCrateReplacement replacement : list) {
-                        ServerWorld serverWorld = server.getWorld(replacement.worldKey);
-                        if (serverWorld != null) {
-                            serverWorld.removeBlockEntity(replacement.blockPos);
-                            BlockState chestBlockState = serverWorld.getBlockState(replacement.blockPos);
+                        try {
+                            ServerWorld serverWorld = server.getWorld(replacement.worldKey);
+                            if (serverWorld != null) {
+                                serverWorld.removeBlockEntity(replacement.blockPos);
+                                BlockState chestBlockState = serverWorld.getBlockState(replacement.blockPos);
 
-                            if(chestBlockState.getBlock() instanceof ChestBlock) {
-                                serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, chestBlockState.get(ChestBlock.FACING)), 3);
-                            } else {
-                                serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, Direction.NORTH), 3);
-                            }
+                                if (chestBlockState.getBlock() instanceof ChestBlock) {
+                                    serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, chestBlockState.get(ChestBlock.FACING)), 3);
+                                } else {
+                                    serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, Direction.NORTH), 3);
+                                }
 
-                            BlockEntity blockEntity = serverWorld.getBlockEntity(replacement.blockPos);
-                            if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
-                                lootCrateBlockEntity.setLootTable(replacement.lootTable, replacement.lootTableSeed);
-                                lootCrateBlockEntity.setOncePerPlayer(true);
-                                lootCrateBlockEntity.setReplenishTimeTicks(1);
+                                BlockEntity blockEntity = serverWorld.getBlockEntity(replacement.blockPos);
+                                if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
+                                    lootCrateBlockEntity.setLootTable(replacement.lootTable, replacement.lootTableSeed);
+                                    lootCrateBlockEntity.setOncePerPlayer(true);
+                                    lootCrateBlockEntity.setReplenishTimeTicks(1);
+                                }
                             }
+                        } catch (Exception e) {
+                            LOGGER.log(Level.ERROR, "[LootCrates] Error while replacing a chest in the world (" + replacement.worldKey + " at " + replacement.blockPos + " with loot table " + replacement.lootTable + ")");
                         }
                     }
                 }
