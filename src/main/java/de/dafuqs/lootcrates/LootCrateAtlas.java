@@ -20,6 +20,8 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.dispenser.BlockPlacementDispenserBehavior;
+import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
@@ -101,6 +103,9 @@ public class LootCrateAtlas {
         }
         Registry.register(Registry.ITEM, lootCrateIdentifier, lootCrateBlockItem);
         Registry.register(Registry.ITEM, shulkerCrateIdentifier, shulkerCrateBlockItem);
+
+        DispenserBlock.registerBehavior(lootCrateBlockItem, new BlockPlacementDispenserBehavior());
+        DispenserBlock.registerBehavior(shulkerCrateBlockItem, new BlockPlacementDispenserBehavior());
 
         chestCrateItems.put(lootCrateRarity, lootCrateBlockItem);
         shulkerCrateItems.put(lootCrateRarity, shulkerCrateBlockItem);
