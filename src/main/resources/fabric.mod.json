@@ -36,5 +36,8 @@
     "minecraft": ">=1.17.0",
     "fabric": ">=0.36.0",
     "cloth-config2": ">=5.0.34"
+  },
+  "suggests": {
+    "quickshulker": "1.2.2-1.17"
   }
 }

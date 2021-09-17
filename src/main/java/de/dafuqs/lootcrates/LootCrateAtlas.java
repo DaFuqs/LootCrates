@@ -46,7 +46,7 @@ import static net.minecraft.client.render.TexturedRenderLayers.SHULKER_BOXES_ATL
 public class LootCrateAtlas {
 
     private static final HashMap<LootCrateRarity, LootCrateDefinition> lootCrateDefinitions = new HashMap<>();
-    private static final BiMap<LootCrateRarity, Item> lootCrateKeys = EnumHashBiMap.create(LootCrateRarity.class);
+    private static final BiMap<LootCrateRarity, LootKeyItem> lootCrateKeys = EnumHashBiMap.create(LootCrateRarity.class);
     private static final BiMap<LootCrateRarity, BlockItem> chestCrateItems = EnumHashBiMap.create(LootCrateRarity.class);
     private static final BiMap<LootCrateRarity, BlockItem> shulkerCrateItems = EnumHashBiMap.create(LootCrateRarity.class);
     private static final BiMap<LootCrateRarity, Block> lootCrateBlocks = EnumHashBiMap.create(LootCrateRarity.class);
@@ -71,10 +71,10 @@ public class LootCrateAtlas {
         // create & register key item
         Identifier key_item_identifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_crate_key");
 
-        Item key_item = new LootKeyItem(lootCrateDefinition.getKeyItemSettings());
-        Registry.register(Registry.ITEM, key_item_identifier, key_item);
+        LootKeyItem keyItem = new LootKeyItem(lootCrateDefinition.getKeyItemSettings());
+        Registry.register(Registry.ITEM, key_item_identifier, keyItem);
 
-        lootCrateKeys.put(lootCrateRarity, key_item);
+        lootCrateKeys.put(lootCrateRarity, keyItem);
 
         // create & register blocks
         Identifier loot_crate_identifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_chest_loot_crate");
@@ -214,12 +214,25 @@ public class LootCrateAtlas {
         }
     }
 
+    public static LootCrateRarity getCrateItemRarity(Item item) {
+        BlockItem blockItem = (BlockItem) item;
+
+        if(blockItem.getBlock() instanceof LootCrateBlock lootCrateBlock) {
+            return getCrateRarity(lootCrateBlock);
+        }
+        return LootCrateRarity.COMMON;
+    }
+
     private static LootCrateRarity getShulkerRarity(Block block) {
         return shulkerCrateBlocks.inverse().get(block);
     }
 
     public static LootCrateRarity getKeyRarity(LootKeyItem item) {
         return lootCrateKeys.inverse().get(item);
+    }
+
+    public static LootKeyItem getLootKeyItem(LootCrateRarity lootCrateRarity) {
+        return lootCrateKeys.get(lootCrateRarity);
     }
 
     protected static LootCrateRarity getCrateItemRarity(LootCrateItem item) {

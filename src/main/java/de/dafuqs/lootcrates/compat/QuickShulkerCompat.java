@@ -7,6 +7,7 @@ import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import de.dafuqs.lootcrates.items.LootCrateItem;
+import de.dafuqs.lootcrates.items.LootKeyItem;
 import net.kyrptonaught.quickshulker.api.QuickOpenableRegistry;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
 import net.kyrptonaught.shulkerutils.ItemStackInventory;
@@ -28,8 +29,10 @@ import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
@@ -42,7 +45,11 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
         QuickOpenableRegistry.register(ShulkerLootCrateBlock.class, true, false, ((player, stack) -> {
             if (LootCrates.CONFIG.ShulkerCratesKeepTheirInventory) {
                 if (isLocked(stack)) {
-                    printLockedMessage(player, stack);
+                    if(consumeKey(player, LootCrateAtlas.getCrateItemRarity(stack.getItem()))) {
+                        unlock(player, stack);
+                    } else {
+                        printLockedMessage(player, stack);
+                    }
                 } else {
                     checkLootInteraction(stack, (ServerPlayerEntity) player);
                     player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
@@ -54,7 +61,11 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
         QuickOpenableRegistry.register(ChestLootCrateBlock.class, true, false, ((player, stack) -> {
             if (LootCrates.CONFIG.ChestCratesKeepTheirInventory) {
                 if (isLocked(stack)) {
-                    printLockedMessage(player, stack);
+                    if(consumeKey(player, LootCrateAtlas.getCrateItemRarity(stack.getItem()))) {
+                        unlock(player, stack);
+                    } else {
+                        printLockedMessage(player, stack);
+                    }
                 } else {
                     checkLootInteraction(stack, (ServerPlayerEntity) player);
                     player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
@@ -68,6 +79,28 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
         NbtCompound tag = stack.getSubNbt("BlockEntityTag");
         if (tag == null || !tag.contains(LootCrateTagNames.Locked.toString())) return false;
         return tag.getBoolean(LootCrateTagNames.Locked.toString());
+    }
+
+    private void unlock(PlayerEntity player, ItemStack stack) {
+        player.getEntityWorld().playSound(null, player.getBlockPos(), LootCrates.CHEST_UNLOCKS_SOUND_EVENT, SoundCategory.PLAYERS, 1.0F, 1.0F);
+        NbtCompound tag = stack.getSubNbt("BlockEntityTag");
+        if (tag != null) {
+            tag.putBoolean(LootCrateTagNames.Locked.toString(), false);
+        }
+    }
+
+    private boolean consumeKey(PlayerEntity player, LootCrateRarity lootCrateRarity) {
+        if(player.isCreative()) {
+            return true;
+        } else {
+            ItemStack lootKeyItemStack = new ItemStack(LootCrateAtlas.getLootKeyItem(lootCrateRarity));
+            if (player.getInventory().contains(lootKeyItemStack)) {
+                int slot = player.getInventory().getSlotWithStack(lootKeyItemStack);
+                player.getInventory().getStack(slot).decrement(1);
+                return true;
+            }
+        }
+        return false;
     }
 
     private void printLockedMessage(PlayerEntity player, ItemStack stack) {
