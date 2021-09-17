@@ -19,6 +19,7 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
@@ -117,6 +118,7 @@ public class LootCrateAtlas {
         Registry.register(Registry.ITEM, lootBagIdentifier, lootBagItem);
 
         lootBagItems.put(lootCrateRarity, lootBagItem);
+        DispenserBlock.registerBehavior(lootBagItem, LootCrates.LOOT_BAG_DISPENSER_BEHAVIOR);
     }
 
     public static SpriteIdentifier getChestTexture(LootCrateBlockEntity lootCrateBlockEntity) {

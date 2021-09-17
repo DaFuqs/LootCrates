@@ -57,7 +57,7 @@ public class LootBagItem extends Item {
         return compoundTag;
     }
 
-    private @Nullable Identifier getLootTableIdentifier(@NotNull ItemStack itemStack) {
+    public @Nullable Identifier getLootTableIdentifier(@NotNull ItemStack itemStack) {
         NbtCompound nbtCompound = itemStack.getNbt();
         if (nbtCompound != null && nbtCompound.contains("LootTable")) {
             return Identifier.tryParse(nbtCompound.getString("LootTable"));
@@ -66,7 +66,7 @@ public class LootBagItem extends Item {
         }
     }
 
-    private long getLootTableSeed(@NotNull ItemStack itemStack) {
+    public long getLootTableSeed(@NotNull ItemStack itemStack) {
         NbtCompound nbtCompound = itemStack.getNbt();
         if (nbtCompound != null && nbtCompound.contains("LootTableSeed")) {
             return nbtCompound.getLong("LootTableSeed");
@@ -88,7 +88,7 @@ public class LootBagItem extends Item {
         return super.use(world, user, hand);
     }
 
-    private List<ItemStack> getLootTableContents(ServerPlayerEntity player, ItemStack lootBagItemStack) {
+    public List<ItemStack> getLootTableContents(ServerPlayerEntity player, ItemStack lootBagItemStack) {
         Identifier lootTableId = getLootTableIdentifier(lootBagItemStack);
         if(lootTableId != null) {
             LootTable lootTable = player.getServerWorld().getServer().getLootManager().getTable(lootTableId);

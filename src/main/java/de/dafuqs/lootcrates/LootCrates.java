@@ -6,25 +6,35 @@ import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
 import de.dafuqs.lootcrates.config.LootCratesConfig;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
+import de.dafuqs.lootcrates.items.LootBagItem;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.MapColor;
+import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.*;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -55,6 +65,33 @@ public class LootCrates implements ModInitializer {
 
     public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
     public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = new SoundEvent(CHEST_UNLOCKS_SOUND_ID);
+
+    public static DispenserBehavior LOOT_BAG_DISPENSER_BEHAVIOR = (pointer, stack) -> {
+        if(stack.getItem() instanceof LootBagItem lootBagItem) {
+            Identifier lootTableId = lootBagItem.getLootTableIdentifier(stack);
+            if (lootTableId != null) {
+                long lootTableSeed = lootBagItem.getLootTableSeed(stack);
+
+                LootTable lootTable = pointer.getWorld().getServer().getLootManager().getTable(lootTableId);
+                Vec3d destinationPos = Vec3d.ofCenter(pointer.getPos());
+                LootContext.Builder builder = (new LootContext.Builder(pointer.getWorld())).parameter(LootContextParameters.ORIGIN, destinationPos).random(lootTableSeed);
+
+                List<ItemStack> lootStacks = lootTable.generateLoot(builder.build(LootContextTypes.CHEST));
+                Position position = DispenserBlock.getOutputLocation(pointer);
+                Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+
+                for (ItemStack lootStack : lootStacks) {
+                    ItemEntity itemEntity = new ItemEntity(pointer.getWorld(), position.getX(), position.getY(), position.getZ(), lootStack);
+                    itemEntity.setVelocity(direction.getOffsetX() * 0.2, direction.getOffsetY() * 0.2, direction.getOffsetZ() * 0.2);
+                    pointer.getWorld().spawnEntity(itemEntity);
+                }
+            }
+            stack.decrement(1);
+            return stack;
+        }
+        return stack;
+    };
+
 
     public static class LootCrateReplacement {
 
@@ -108,8 +145,6 @@ public class LootCrates implements ModInitializer {
         LOGGER.info("[LootCrates] Registering sounds...");
         Registry.register(Registry.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
 
-        LOGGER.info("[LootCrates] Finished!");
-
         if(CONFIG.VanillaTreasureChestsAreOncePerPlayer) {
             ServerTickEvents.END_SERVER_TICK.register(server -> {
                 if (!replacements.isEmpty()) {
@@ -145,6 +180,7 @@ public class LootCrates implements ModInitializer {
                 }
             });
         }
-    }
 
+        LOGGER.info("[LootCrates] Finished!");
+    }
 }
