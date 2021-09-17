@@ -29,10 +29,11 @@ All the loot bundles, crates, shulker crates and keys come in these rarities, ea
 
 ![Loot Bundles](./images/loot_bundles.jpg)
 
-## Loot Bundles
 Loot bundles come in all rarities. They can be used by players to get random content of a set loot table in their inventory.
 
-### Available Item tag data
+https://user-images.githubusercontent.com/26429514/133820478-b6ddfea9-5b03-41af-ab50-f85598c2e4f0.mp4
+
+### Available Loot Bundle Item tags
 Tag                       | NBT Type      | Effect
 ------------------------- | ------------- | ------
 LootTable                 | loot table    | The loot table identifier to be used to fill the crate when it's interacted with
