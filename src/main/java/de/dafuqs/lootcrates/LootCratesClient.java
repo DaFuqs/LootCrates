@@ -20,5 +20,6 @@ public class LootCratesClient implements ClientModInitializer {
 
         // Add the item group to the creative menu
         new PredefinedLootCratesItemGroup();
+        new PredefinedLootBagsItemGroup();
     }
 }

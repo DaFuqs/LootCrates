@@ -10,9 +10,7 @@ import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlockEntity;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
-import de.dafuqs.lootcrates.items.LootCrateItem;
-import de.dafuqs.lootcrates.items.LootKeyItem;
-import de.dafuqs.lootcrates.items.TickingLootCrateItem;
+import de.dafuqs.lootcrates.items.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -49,16 +47,16 @@ public class LootCrateAtlas {
     private static final BiMap<LootCrateRarity, LootKeyItem> lootCrateKeys = EnumHashBiMap.create(LootCrateRarity.class);
     private static final BiMap<LootCrateRarity, BlockItem> chestCrateItems = EnumHashBiMap.create(LootCrateRarity.class);
     private static final BiMap<LootCrateRarity, BlockItem> shulkerCrateItems = EnumHashBiMap.create(LootCrateRarity.class);
-    private static final BiMap<LootCrateRarity, Block> lootCrateBlocks = EnumHashBiMap.create(LootCrateRarity.class);
-    private static final BiMap<LootCrateRarity, Block> shulkerCrateBlocks = EnumHashBiMap.create(LootCrateRarity.class);
+    private static final BiMap<LootCrateRarity, LootBagItem> lootBagItems = EnumHashBiMap.create(LootCrateRarity.class);
+    private static final BiMap<LootCrateRarity, ChestLootCrateBlock> lootCrateBlocks = EnumHashBiMap.create(LootCrateRarity.class);
+    private static final BiMap<LootCrateRarity, ShulkerLootCrateBlock> shulkerCrateBlocks = EnumHashBiMap.create(LootCrateRarity.class);
 
     private static ShulkerLootCrateBlock createShulkerLootCrateBlock(AbstractBlock.Settings settings) {
         AbstractBlock.ContextPredicate contextPredicate = (blockState, blockView, blockPos) -> {
             BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
-            if (!(blockEntity instanceof ShulkerLootCrateBlockEntity)) {
+            if (!(blockEntity instanceof ShulkerLootCrateBlockEntity shulkerBoxBlockEntity)) {
                 return true;
             } else {
-                ShulkerLootCrateBlockEntity shulkerBoxBlockEntity = (ShulkerLootCrateBlockEntity)blockEntity;
                 return shulkerBoxBlockEntity.suffocates();
             }
         };
@@ -69,42 +67,56 @@ public class LootCrateAtlas {
         lootCrateDefinitions.put(lootCrateRarity, lootCrateDefinition);
 
         // create & register key item
-        Identifier key_item_identifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_crate_key");
+        Identifier keyItemIdentifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_crate_key");
 
         LootKeyItem keyItem = new LootKeyItem(lootCrateDefinition.getKeyItemSettings());
-        Registry.register(Registry.ITEM, key_item_identifier, keyItem);
+        Registry.register(Registry.ITEM, keyItemIdentifier, keyItem);
 
         lootCrateKeys.put(lootCrateRarity, keyItem);
 
         // create & register blocks
-        Identifier loot_crate_identifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_chest_loot_crate");
-        Identifier shulker_crate_identifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_shulker_loot_crate");
+        Identifier lootCrateIdentifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_chest_loot_crate");
+        Identifier shulkerCrateIdentifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_shulker_loot_crate");
 
-        Block loot_crate_block = new ChestLootCrateBlock(lootCrateDefinition.getChestBlockSettings());
-        Block shulker_crate_block = createShulkerLootCrateBlock(lootCrateDefinition.getShulkerBlockSettings());
-        Registry.register(Registry.BLOCK, loot_crate_identifier, loot_crate_block);
-        Registry.register(Registry.BLOCK, shulker_crate_identifier, shulker_crate_block);
+        ChestLootCrateBlock lootCrateBlock = new ChestLootCrateBlock(lootCrateDefinition.getChestBlockSettings());
+        ShulkerLootCrateBlock shulkerLootCrateBlock = createShulkerLootCrateBlock(lootCrateDefinition.getShulkerBlockSettings());
+        Registry.register(Registry.BLOCK, lootCrateIdentifier, lootCrateBlock);
+        Registry.register(Registry.BLOCK, shulkerCrateIdentifier, shulkerLootCrateBlock);
 
-        lootCrateBlocks.put(lootCrateRarity, loot_crate_block);
-        shulkerCrateBlocks.put(lootCrateRarity, shulker_crate_block);
+        lootCrateBlocks.put(lootCrateRarity, lootCrateBlock);
+        shulkerCrateBlocks.put(lootCrateRarity, shulkerLootCrateBlock);
 
         // create & register block items
         FabricItemSettings blockItemSettings = lootCrateDefinition.getBlockItemSettings();
 
-        BlockItem loot_crate_block_item;
-        BlockItem shulker_crate_block_item;
+        BlockItem lootCrateBlockItem;
+        BlockItem shulkerCrateBlockItem;
         if(lootCrateDefinition.scheduledTickEvent == ScheduledTickEvent.NONE) {
-            loot_crate_block_item = new LootCrateItem(loot_crate_block, blockItemSettings);
-            shulker_crate_block_item = new LootCrateItem(shulker_crate_block, blockItemSettings);
+            lootCrateBlockItem = new LootCrateItem(lootCrateBlock, blockItemSettings);
+            shulkerCrateBlockItem = new LootCrateItem(shulkerLootCrateBlock, blockItemSettings);
         } else {
-            loot_crate_block_item = new TickingLootCrateItem(loot_crate_block, blockItemSettings);
-            shulker_crate_block_item = new TickingLootCrateItem(shulker_crate_block, blockItemSettings);
+            lootCrateBlockItem = new TickingLootCrateItem(lootCrateBlock, blockItemSettings);
+            shulkerCrateBlockItem = new TickingLootCrateItem(shulkerLootCrateBlock, blockItemSettings);
         }
-        Registry.register(Registry.ITEM, loot_crate_identifier, loot_crate_block_item);
-        Registry.register(Registry.ITEM, shulker_crate_identifier, shulker_crate_block_item);
+        Registry.register(Registry.ITEM, lootCrateIdentifier, lootCrateBlockItem);
+        Registry.register(Registry.ITEM, shulkerCrateIdentifier, shulkerCrateBlockItem);
 
-        chestCrateItems.put(lootCrateRarity, loot_crate_block_item);
-        shulkerCrateItems.put(lootCrateRarity, shulker_crate_block_item);
+        chestCrateItems.put(lootCrateRarity, lootCrateBlockItem);
+        shulkerCrateItems.put(lootCrateRarity, shulkerCrateBlockItem);
+
+        // create & register loot bag item
+        Identifier lootBagIdentifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_loot_bag");
+
+        LootBagItem lootBagItem;
+        if(lootCrateDefinition.scheduledTickEvent == ScheduledTickEvent.NONE) {
+            lootBagItem = new LootBagItem(lootCrateDefinition.getLootBagItemSettings());
+        } else {
+            lootBagItem = new TickingLootBagItem(lootCrateDefinition.getLootBagItemSettings());
+        }
+
+        Registry.register(Registry.ITEM, lootBagIdentifier, lootBagItem);
+
+        lootBagItems.put(lootCrateRarity, lootBagItem);
     }
 
     public static SpriteIdentifier getChestTexture(LootCrateBlockEntity lootCrateBlockEntity) {
@@ -187,6 +199,10 @@ public class LootCrateAtlas {
         return arrayList;
     }
 
+    public static List<Item> getAllLootBagItems() {
+        return new ArrayList<>(lootBagItems.values());
+    }
+
     public static void registerTextureAtlas() {
         //Register textures in chest atlas
         ClientSpriteRegistryCallback.event(TexturedRenderLayers.CHEST_ATLAS_TEXTURE).register((texture, registry) -> {
@@ -248,6 +264,11 @@ public class LootCrateAtlas {
         return lootCrateDefinitions.get(lootCrateKeys.inverse().get(item)).lootKeyTooltip;
     }
 
+    public static Text getLootBagItemToolTip(ItemStack itemStack) {
+        Item item = itemStack.getItem();
+        return lootCrateDefinitions.get(lootBagItems.inverse().get(item)).lootBagTooltip;
+    }
+
     public static ScheduledTickEvent getRandomTickEvent(LootCrateBlock lootCrateBlock) {
         LootCrateRarity lootCrateRarity = getCrateRarity(lootCrateBlock);
         return lootCrateDefinitions.get(lootCrateRarity).scheduledTickEvent;
@@ -278,6 +299,10 @@ public class LootCrateAtlas {
         for(LootCrateDefinition lootCrateDefinition : lootCrateDefinitions.values()) {
             lootCrateDefinition.setupTextures();
         }
+    }
+
+    public static LootBagItem getLootBagItem(LootCrateRarity rarity) {
+        return lootBagItems.get(rarity);
     }
 
 }

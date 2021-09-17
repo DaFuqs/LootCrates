@@ -19,7 +19,7 @@ import java.util.Set;
 public final class PredefinedLootCratesItemGroup extends ItemGroup {
 
     public PredefinedLootCratesItemGroup() {
-        super(LootCrates.PREDEFINED_ITEM_GROUP.getIndex(), LootCrates.PREDEFINED_ITEM_GROUP.getName());
+        super(LootCrates.PREDEFINED_CRATES_GROUP.getIndex(), LootCrates.PREDEFINED_CRATES_GROUP.getName());
     }
 
     @Environment(EnvType.CLIENT)

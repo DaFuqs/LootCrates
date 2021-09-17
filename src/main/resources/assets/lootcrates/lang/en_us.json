@@ -7,6 +7,7 @@
 
   "itemGroup.lootcrates.loot_crates": "Loot Crates",
   "itemGroup.lootcrates.predefined_loot_crates": "Predefined Loot Crates",
+  "itemGroup.lootcrates.predefined_loot_bags": "Predefined Loot Bags",
 
   "subtitles.lootcrates.chest_unlocks": "Chest unlocks",
 
@@ -16,13 +17,26 @@
   "item.lootcrates.epic_crate_key": "Epic Crate Key",
   "item.lootcrates.ghost_crate_key": "§aGhastly Crate Key",
   "item.lootcrates.blaze_crate_key": "§6Blazing Crate Key",
-
   "item.lootcrates.common_crate_key.tooltip": "Can be used to open locked §fCommon Loot Crates",
   "item.lootcrates.uncommon_crate_key.tooltip": "Can be used to open locked §eUncommon Loot Crates",
   "item.lootcrates.rare_crate_key.tooltip": "Can be used to open locked §bRare Loot Crates",
   "item.lootcrates.epic_crate_key.tooltip": "Can be used to open locked §dEpic Loot Crates",
   "item.lootcrates.ghost_crate_key.tooltip": "Can be used to open locked §aGhastly Loot Crates",
   "item.lootcrates.blaze_crate_key.tooltip": "Can be used to open locked §6Blazing Loot Crates",
+
+  "item.lootcrates.common_loot_bag": "Common Loot Bundle",
+  "item.lootcrates.uncommon_loot_bag": "Uncommon Loot Bundle",
+  "item.lootcrates.rare_loot_bag": "Rare Loot Bundle",
+  "item.lootcrates.epic_loot_bag": "Epic Loot Bundle",
+  "item.lootcrates.ghost_loot_bag": "§aGhastly Loot Bundle",
+  "item.lootcrates.blaze_loot_bag": "§6Blazing Loot Bundle",
+  "item.lootcrates.loot_crate.tooltip.no_loot_table": "Empty",
+  "item.lootcrates.common_loot_bag.tooltip": "Contains §fCommon loot",
+  "item.lootcrates.uncommon_loot_bag.tooltip": "Contains §eUncommon§r loot",
+  "item.lootcrates.rare_loot_bag.tooltip": "Contains §bRare§r loot",
+  "item.lootcrates.epic_loot_bag.tooltip": "Contains §dEpic§r loot",
+  "item.lootcrates.ghost_loot_bag.tooltip": "Contains §aGhastly§r loot",
+  "item.lootcrates.blaze_loot_bag.tooltip": "Contains §6Blazing§r loot",
 
   "block.lootcrates.common_chest_loot_crate": "Common Loot Crate",
   "block.lootcrates.uncommon_chest_loot_crate": "Uncommon Loot Crate",

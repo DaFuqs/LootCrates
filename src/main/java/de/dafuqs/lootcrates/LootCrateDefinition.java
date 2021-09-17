@@ -33,6 +33,7 @@ public class LootCrateDefinition {
         public TranslatableText lockedTooltip;
         public TranslatableText lockedConsumeTooltip;
         public TranslatableText lootKeyTooltip;
+        public TranslatableText lootBagTooltip;
         public TranslatableText keyNeededTooltip;
         SoundEvent customOpenSoundEvent;
         SoundEvent customCloseSoundEvent;
@@ -48,6 +49,7 @@ public class LootCrateDefinition {
             this.lockedTooltip = new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_use_" + this.identifier);
             this.lockedConsumeTooltip = new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_consume_" + this.identifier);
             this.lootKeyTooltip = new TranslatableText("item.lootcrates." + this.identifier + "_crate_key.tooltip");
+            this.lootBagTooltip = new TranslatableText("item.lootcrates." + this.identifier + "_loot_bag.tooltip");
             this.keyNeededTooltip = new TranslatableText("message.lootcrates." + this.identifier + "_key_needed_to_unlock");
 
             this.customOpenSoundEvent = null;
@@ -71,6 +73,14 @@ public class LootCrateDefinition {
                 return new FabricItemSettings().group(LootCrates.ITEM_GROUP).maxCount(16).rarity(rarity);
             }
         }
+
+    public FabricItemSettings getLootBagItemSettings() {
+        if(fireProof) {
+            return new FabricItemSettings().group(LootCrates.ITEM_GROUP).maxCount(16).rarity(rarity).fireproof();
+        } else {
+            return new FabricItemSettings().group(LootCrates.ITEM_GROUP).maxCount(16).rarity(rarity);
+        }
+    }
 
         public FabricItemSettings getBlockItemSettings() {
             if(fireProof) {

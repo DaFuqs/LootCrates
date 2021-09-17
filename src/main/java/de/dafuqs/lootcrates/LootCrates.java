@@ -44,13 +44,16 @@ public class LootCrates implements ModInitializer {
             new Identifier(MOD_ID, "loot_crates"),
             () -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON)));
 
-    public static final ItemGroup PREDEFINED_ITEM_GROUP = FabricItemGroupBuilder.build(
+    public static final ItemGroup PREDEFINED_CRATES_GROUP = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID, "predefined_loot_crates"),
+            () -> new ItemStack(Items.AIR)); // Is set in the tab directly
+
+    public static final ItemGroup PREDEFINED_BAGS_GROUP = FabricItemGroupBuilder.build(
+            new Identifier(MOD_ID, "predefined_loot_bags"),
             () -> new ItemStack(Items.AIR)); // Is set in the tab directly
 
     public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
     public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = new SoundEvent(CHEST_UNLOCKS_SOUND_ID);
-
 
     public static class LootCrateReplacement {
 

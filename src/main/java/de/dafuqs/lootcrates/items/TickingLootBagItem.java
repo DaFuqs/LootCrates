@@ -1,14 +1,14 @@
 package de.dafuqs.lootcrates.items;
 
-import net.minecraft.block.Block;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class TickingLootCrateItem extends LootCrateItem implements LootCrateItemEffect {
+public class TickingLootBagItem extends LootBagItem implements LootCrateItemEffect {
 
-    public TickingLootCrateItem(Block block, Settings settings) {
-        super(block, settings);
+    public TickingLootBagItem(FabricItemSettings fabricItemSettings) {
+        super(fabricItemSettings);
     }
 
     @Override
