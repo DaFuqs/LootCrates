@@ -14,7 +14,7 @@ The container blocks do not generate naturally in the world and are highly custo
 - Use shulker crates in mob drops for that "loot bags" feel
 - To build upon that: Use locked shulker crates instead. To encourage trading scatter the required keys around the landscape for players to find.
 - Make keys drop from special mobs or bosses. Players have to farm them to get access to their collected shulker crates
-- Place instant regenerating, locked loot crates at the servers central square to get players to run into each other for socializaton or PvP, fighting each other for their keys
+- Place instant regenerating, locked loot crates at the servers central square to get players to run into each other for socialization or PvP, fighting each other for their keys
 
 ## Rarities
 All the loot bundles, crates, shulker crates and keys come in these rarities, each with their own unique look:
@@ -37,7 +37,7 @@ https://user-images.githubusercontent.com/26429514/133820478-b6ddfea9-5b03-41af-
 Tag                       | NBT Type      | Effect
 ------------------------- | ------------- | ------
 LootTable                 | loot table    | The loot table identifier to be used to fill the crate when it's interacted with
-LootTableSeed             | long          | Seed for generating the loot table. 0 or ommitted uses a random seed. Setting a seed means that the generated loot will always be the same
+LootTableSeed             | long          | Seed for generating the loot table. 0 or omitted uses a random seed. Setting a seed means that the generated loot will always be the same
 
 
 # Loot Crates
@@ -67,7 +67,7 @@ The data is identical between loot and shulker crates.
 Tag                       | NBT Type      | Effect
 ------------------------- | ------------- | ------
 LootTable                 | loot table    | The loot table identifier to be used to fill the crate when it's interacted with
-LootTableSeed             | long          | Seed for generating the loot table. 0 or ommitted uses a random seed. Setting a seed means that the generated loot will always be the same
+LootTableSeed             | long          | Seed for generating the loot table. 0 or omitted uses a random seed. Setting a seed means that the generated loot will always be the same
 ReplenishTimeTicks        | long          | When the crate is accessed it will take that many ticks until new loot can be generated. Setting the value to <= 0 results in generating the content just once - at the time of the first opening.
 Locked                    | boolean       | When true a key with matching rarity will be required to unlock the crate and access it's contents
 DoNotConsumeKeyOnUnlock   | boolean       | When true opening a locked crate will not consume the key.
