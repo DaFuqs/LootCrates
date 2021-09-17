@@ -16,10 +16,8 @@ import java.util.Random;
 
 public interface LootCrateItemEffect {
 
-    public default void doInventoryTick(ItemStack stack, World world, Entity entity) {
+    public default void doInventoryTick(World world, Entity entity, ScheduledTickEvent scheduledTickEvent) {
         if(world != null && entity != null) {
-            ScheduledTickEvent scheduledTickEvent = LootCrateAtlas.getRandomTickEvent((LootCrateBlock) ((BlockItem) stack.getItem()).getBlock());
-
             if (scheduledTickEvent == ScheduledTickEvent.FIRE) {
                 // play fire sound, set player and surroundings on fire
                 if (world.isClient) {

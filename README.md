@@ -16,13 +16,20 @@ The container blocks do not generate naturally in the world and are highly custo
 - Make keys drop from special mobs or bosses. Players have to farm them to get access to their collected shulker crates
 - Place instant regenerating, locked loot crates at the servers central square to get players to run into each other for socializaton or PvP, fighting each other for their keys
 
-# The Blocks
+## Rarities
+All the loot bundles, crates, shulker crates and keys come in these rarities, each with their own unique look:
+- Common
+- Uncommon
+- Rare
+- Epic
+- Ghastly
+- Blazing
 
-## Screenshots
+# Loot Bundles
 
-![All the Loot Crates, Shulkers and keys](./images/crates.png)
+![Loot Bundles](./images/loot_bundles.jpg)
 
-## Loot Bundes
+## Loot Bundles
 Loot bundles come in all rarities. They can be used by players to get random content of a set loot table in their inventory.
 
 ### Available Item tag data
@@ -31,7 +38,14 @@ Tag                       | NBT Type      | Effect
 LootTable                 | loot table    | The loot table identifier to be used to fill the crate when it's interacted with
 LootTableSeed             | long          | Seed for generating the loot table. 0 or ommitted uses a random seed. Setting a seed means that the generated loot will always be the same
 
-## Loot Crates
+
+# Loot Crates
+
+## Screenshots
+
+![All the Loot Crates, Shulkers and keys](./images/crates.png)
+
+## Loot Crate Chests
 Loot crates cannot be broken or moved. Instead they generate loot over time!
 
 ## Shulker Crates
@@ -42,15 +56,6 @@ They also retain their items and can be used as backpacks.
 ## Keys
 Crates may be locked, requiring a key with matching rarity to unlock.
 Other than that the keys themselves are rather unspectacular.
-
-## Rarities
-All the loot crates, shulker crates and keys come in all vanilla rarities, each with their own unique look:
-- Common
-- Uncommon
-- Rare
-- Epic
-- Ghastly
-- Blazing
 
 # Customization
 

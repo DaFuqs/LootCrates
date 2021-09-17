@@ -95,8 +95,8 @@ public class LootCrateAtlas {
             lootCrateBlockItem = new LootCrateItem(lootCrateBlock, blockItemSettings);
             shulkerCrateBlockItem = new LootCrateItem(shulkerLootCrateBlock, blockItemSettings);
         } else {
-            lootCrateBlockItem = new TickingLootCrateItem(lootCrateBlock, blockItemSettings);
-            shulkerCrateBlockItem = new TickingLootCrateItem(shulkerLootCrateBlock, blockItemSettings);
+            lootCrateBlockItem = new TickingLootCrateItem(lootCrateBlock, blockItemSettings, lootCrateDefinition.scheduledTickEvent);
+            shulkerCrateBlockItem = new TickingLootCrateItem(shulkerLootCrateBlock, blockItemSettings, lootCrateDefinition.scheduledTickEvent);
         }
         Registry.register(Registry.ITEM, lootCrateIdentifier, lootCrateBlockItem);
         Registry.register(Registry.ITEM, shulkerCrateIdentifier, shulkerCrateBlockItem);
@@ -111,7 +111,7 @@ public class LootCrateAtlas {
         if(lootCrateDefinition.scheduledTickEvent == ScheduledTickEvent.NONE) {
             lootBagItem = new LootBagItem(lootCrateDefinition.getLootBagItemSettings());
         } else {
-            lootBagItem = new TickingLootBagItem(lootCrateDefinition.getLootBagItemSettings());
+            lootBagItem = new TickingLootBagItem(lootCrateDefinition.getLootBagItemSettings(), lootCrateDefinition.scheduledTickEvent);
         }
 
         Registry.register(Registry.ITEM, lootBagIdentifier, lootBagItem);
