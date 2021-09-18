@@ -1,5 +1,6 @@
 package de.dafuqs.lootcrates;
 
+import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
@@ -162,29 +163,33 @@ public class LootCrates implements ModInitializer {
 
                                 boolean trapped = false;
 
-                                if(sourceBlock instanceof ChestBlock) {
-                                    if(sourceBlock instanceof TrappedChestBlock) {
-                                        trapped = true;
+                                if(!(sourceBlock instanceof LootCrateBlock)) {
+                                    if (sourceBlock instanceof ChestBlock) {
+                                        if (sourceBlock instanceof TrappedChestBlock) {
+                                            trapped = true;
+                                        }
+                                        serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, sourceBlockState.get(ChestBlock.FACING)), 3);
+                                    } else if (sourceBlock instanceof BarrelBlock) {
+                                        serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootBarrel(LootCrateRarity.COMMON).getDefaultState().with(Properties.FACING, sourceBlockState.get(Properties.FACING)), 3);
+                                    } else {
+                                        // the worldgen may have been replaced by other blocks.
+                                        // Like a mineshaft cutting into a dungeon, replacing the chest with air again
+                                        // => do not replace
+                                        continue;
                                     }
-                                    serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, sourceBlockState.get(ChestBlock.FACING)), 3);
-                                } else if(sourceBlock instanceof BarrelBlock) {
-                                    serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootBarrel(LootCrateRarity.COMMON).getDefaultState().with(Properties.FACING, sourceBlockState.get(Properties.FACING)), 3);
-                                } else {
-                                    // fallback: assume chest
-                                    serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, Direction.NORTH), 3);
-                                }
 
-                                BlockEntity blockEntity = serverWorld.getBlockEntity(replacement.blockPos);
-                                if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
-                                    lootCrateBlockEntity.setLootTable(replacement.lootTable, replacement.lootTableSeed);
-                                    if(CONFIG.ReplacedWorldgenChestsAreOncePerPlayer) {
-                                        lootCrateBlockEntity.setOncePerPlayer(true);
-                                    }
-                                    if(CONFIG.ReplacedWorldgenChestsRestockEveryXTicks > 0) {
-                                        lootCrateBlockEntity.setReplenishTimeTicks(CONFIG.ReplacedWorldgenChestsRestockEveryXTicks);
-                                    }
-                                    if(trapped) {
-                                        lootCrateBlockEntity.setTrapped(true);
+                                    BlockEntity blockEntity = serverWorld.getBlockEntity(replacement.blockPos);
+                                    if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
+                                        lootCrateBlockEntity.setLootTable(replacement.lootTable, replacement.lootTableSeed);
+                                        if (CONFIG.ReplacedWorldgenChestsAreOncePerPlayer) {
+                                            lootCrateBlockEntity.setOncePerPlayer(true);
+                                        }
+                                        if (CONFIG.ReplacedWorldgenChestsRestockEveryXTicks > 0) {
+                                            lootCrateBlockEntity.setReplenishTimeTicks(CONFIG.ReplacedWorldgenChestsRestockEveryXTicks);
+                                        }
+                                        if (trapped) {
+                                            lootCrateBlockEntity.setTrapped(true);
+                                        }
                                     }
                                 }
                             }
