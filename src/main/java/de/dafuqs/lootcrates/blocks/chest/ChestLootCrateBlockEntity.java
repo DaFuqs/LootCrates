@@ -81,11 +81,6 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements C
     }
 
     @Override
-    protected Text getContainerName() {
-        return new TranslatableText("container.lootcrates.loot_crate");
-    }
-
-    @Override
     protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
         return GenericContainerScreenHandler.createGeneric9x3(syncId, playerInventory, this);
     }

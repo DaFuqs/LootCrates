@@ -56,10 +56,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
         return this.viewerCount;
     }
 
-    @Override
-    protected Text getContainerName() {
-        return new TranslatableText("container.lootcrates.shulker_crate");
-    }
+
 
     @Override
     protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {

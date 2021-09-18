@@ -29,6 +29,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -243,6 +248,17 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             Block block = state.getBlock();
             world.updateNeighborsAlways(pos, block);
             world.updateNeighborsAlways(pos.down(), block);
+        }
+    }
+
+    @Override
+    protected Text getContainerName() {
+        BlockState state = this.world.getBlockState(this.getPos());
+        Text name = state.getBlock().getName();
+        if(name.getString().startsWith("§")) {
+            return new LiteralText(name.getString().substring(2));
+        } else {
+            return name;
         }
     }
 

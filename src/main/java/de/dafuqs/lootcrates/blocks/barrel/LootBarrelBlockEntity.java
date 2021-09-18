@@ -87,11 +87,6 @@ public class LootBarrelBlockEntity extends LootCrateBlockEntity {
     }
 
     @Override
-    protected Text getContainerName() {
-        return new TranslatableText("container.lootcrates.loot_barrel");
-    }
-
-    @Override
     protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
         return GenericContainerScreenHandler.createGeneric9x3(syncId, playerInventory, this);
     }
