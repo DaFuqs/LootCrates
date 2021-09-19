@@ -49,10 +49,12 @@ public final class PredefinedLootBagsItemGroup extends ItemGroup {
 
         for(Item lootBagItem : allLootBags) {
             for (Identifier lootTable : allLootTables) {
-                NbtCompound compound = LootBagItem.getItemCompoundTag(lootTable, 0);
-                ItemStack itemStack = new ItemStack(lootBagItem);
-                itemStack.setNbt(compound);
-                stacks.add(itemStack);
+                if(!lootTable.getPath().contains("entities")) { // to reduce the lists size a bit
+                    NbtCompound compound = LootBagItem.getItemCompoundTag(lootTable, 0);
+                    ItemStack itemStack = new ItemStack(lootBagItem);
+                    itemStack.setNbt(compound);
+                    stacks.add(itemStack);
+                }
             }
         }
 
