@@ -82,7 +82,7 @@ public class LootBarrelBlock extends LootCrateBlock {
 
     @Override
     public PistonBehavior getPistonBehavior(BlockState state) {
-        if(LootCrates.CONFIG.LootBarrelsAreIndestructible) {
+        if(LootCrates.CONFIG.LootBarrelHardness < 0) {
             return PistonBehavior.BLOCK;
         } else {
             return PistonBehavior.DESTROY;

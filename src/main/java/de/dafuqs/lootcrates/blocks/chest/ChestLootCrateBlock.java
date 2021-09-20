@@ -83,7 +83,7 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 
     @Override
     public PistonBehavior getPistonBehavior(BlockState state) {
-        if(LootCrates.CONFIG.ChestCratesAreIndestructible) {
+        if(LootCrates.CONFIG.ChestCrateHardness < 0) {
             return PistonBehavior.BLOCK;
         } else {
             return PistonBehavior.DESTROY;

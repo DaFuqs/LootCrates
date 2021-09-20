@@ -94,10 +94,10 @@ public class LootCrateDefinition {
         public FabricBlockSettings getChestBlockSettings() {
             FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.METAL, mapColor).luminance(luminance).breakByTool(FabricToolTags.PICKAXES);
 
-            if(LootCrates.CONFIG.ChestCratesAreIndestructible) {
+            if(LootCrates.CONFIG.ChestCrateHardness < 0) {
                 blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
             } else {
-                blockSettings = blockSettings.strength(3.0F, 3.0F);
+                blockSettings = blockSettings.strength(LootCrates.CONFIG.ChestCrateHardness);
             }
 
             if(hasTransparency) {
@@ -110,10 +110,10 @@ public class LootCrateDefinition {
         public FabricBlockSettings getShulkerBlockSettings() {
             FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, mapColor).luminance(luminance).breakByTool(FabricToolTags.PICKAXES);
 
-            if(LootCrates.CONFIG.ShulkerCratesAreIndestructible) {
+            if(LootCrates.CONFIG.ShulkerCrateHardness < 0) {
                 blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
             } else {
-                blockSettings = blockSettings.strength(3.0F, 3.0F);
+                blockSettings = blockSettings.strength(LootCrates.CONFIG.ShulkerCrateHardness);
             }
 
             // shulker blocks are always opaque
@@ -123,10 +123,10 @@ public class LootCrateDefinition {
     public FabricBlockSettings getLootBarrelBlockSettings() {
         FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.WOOD, mapColor).luminance(luminance).breakByTool(FabricToolTags.PICKAXES);
 
-        if(LootCrates.CONFIG.LootBarrelsAreIndestructible) {
+        if(LootCrates.CONFIG.LootBarrelHardness < 0) {
             blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
         } else {
-            blockSettings = blockSettings.strength(3.0F, 2.5F);
+            blockSettings = blockSettings.strength(LootCrates.CONFIG.LootBarrelHardness);
         }
 
         if(hasTransparency) {
