@@ -203,7 +203,7 @@ public class LootCratesWorldgenReplacer {
 
                         boolean trapped = false;
                         if(!(sourceBlock instanceof LootCrateBlock)) {
-                            LootCrateReplacementEntry replacementTargetData = getEntryForLootTable(replacementPosition.lootTable, serverWorld.getRandom());
+                            LootCrateReplacementEntry replacementTargetData = getEntryForLootTable(replacementPosition.lootTable, new Random(replacementPosition.lootTableSeed));
 
                             if (sourceBlock instanceof ChestBlock) {
                                 if (sourceBlock instanceof TrappedChestBlock) {
