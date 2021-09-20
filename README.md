@@ -86,6 +86,9 @@ Handle some combinations with care. Or do you really want players to have portab
 
 Following examples use a Rare Chest Loot Crate named "Bastion Treasure Crate" containing the vanilla bastion_treasure loot table, that is locked and will be restocked every 60 ticks (3 seconds).
 
+## How Loot Crates work internally
+![Untitled Diagram](https://user-images.githubusercontent.com/26429514/134002391-1b9e0e91-6fec-4355-98b3-3d50582b82c0.png)
+
 ### Give-Command
 
     /give @p lootcrates:rare_chest_loot_crate{BlockEntityTag: {LootTable: "minecraft:chests/bastion_treasure", Locked: 1b, ReplenishTimeTicks: 60L}, display: {Name: '{"text":"Bastion Treasure Crate"}'}} 1
