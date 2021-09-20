@@ -24,6 +24,16 @@ public class LootCratesConfig implements ConfigData {
     public float ShulkerCrateHardness = 3.0F;
 
     @Comment(value = """
+    If crates that are mined by players should drop as items
+    Otherwise they will be destroyed and do not drop.""")
+    @ConfigEntry.Category("general")
+    public boolean ChestCratesDropAsItems = false;
+    @ConfigEntry.Category("general")
+    public boolean LootBarrelsDropAsItems = false;
+    @ConfigEntry.Category("general")
+    public boolean ShulkerCratesDropAsItems = true;
+
+    @Comment(value = """
             Whether chest and shulker loot crates should keep their inventory when broken.
             Otherwise they will drop their contents just like broken chests""")
     @ConfigEntry.Gui.PrefixText
@@ -37,7 +47,7 @@ public class LootCratesConfig implements ConfigData {
     @ConfigEntry.Category("worldgen")
     @Comment(value = """
             If all chests that generate during worldgen should be replaced by loot crates.
-            This includes vanilla and modded structures.See the granular configuration in LootCratesWorldgenSettings.json5
+            This includes vanilla and modded structures. See the granular configuration in LootCratesWorldgenSettings.json5
             This is especially useful if you want new players to find treasure in structures that were
             raided by players before, or if players should have an incentive to visit those structures again.
             Setting restocking to <= 0 results them functioning like vanilla chests.

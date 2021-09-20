@@ -44,29 +44,9 @@ public class LootCratesWorldgenReplacer {
                 myWriter.write("""
 [
 	{
-		// the default for all loot tables not specified otherwise
 		"loot_table": "",
 		"entries": [
 			{
-				// the crate generates loot once for each player opening it
-				"once_per_player": true,
-				// the crate can generate loot 1 tick after it was last opened
-				"replenish_time_ticks": 1,
-				// the crate is not locked, no key necessary
-				// other values: "require_key" (player keeps the key) and "consume_key" (key will be destroyed)
-				"lock": "none",
-				// proportional weight for this entry to others in this list
-				"weight": 3
-			},
-			{
-				"crate_rarity": "uncommon",
-				"once_per_player": true,
-				"replenish_time_ticks": 1,
-				"lock": "none",
-				"weight": 2
-			},
-			{
-				"crate_rarity": "rare",
 				"once_per_player": true,
 				"replenish_time_ticks": 1,
 				"lock": "none",
@@ -86,15 +66,10 @@ public class LootCratesWorldgenReplacer {
 			},
 			{
 				"crate_rarity": "uncommon",
-				// when specifying a loot_table the original chests loot table
-				// will be overridden. Otherwise it will keep the original loot table
-				// like in the entry before. Great for making multiple rarity entries for each loot table
 				"loot_table": "minecraft:example_loot_table_uncommon",
 				"once_per_player": true,
 				"replenish_time_ticks": 1,
 				"lock": "consume_key",
-				// since the sum of all weights in this list is 3+2+1=6, this entry will be picked
-				// 2 out of 6 times. Making it a 1/3 chance
 				"weight": 2
 			},
 			{
@@ -244,11 +219,10 @@ public class LootCratesWorldgenReplacer {
                         }
                     }
                 } catch (Exception e) {
-                    LootCrates.LOGGER.error("[LootCrates] Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "' )");
+                    LootCrates.LOGGER.error("[LootCrates] Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "' ) + " + e.getLocalizedMessage());
                 }
             }
         }
     }
-
 
 }

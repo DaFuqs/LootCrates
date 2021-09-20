@@ -12,22 +12,9 @@
         // other values: "require_key" (player keeps the key) and "consume_key" (key will be destroyed)
         "lock": "none",
         // proportional weight for this entry to others in this list
-        "weight": 3
-      },
-      {
-        "crate_rarity": "uncommon",
-        "once_per_player": true,
-        "replenish_time_ticks": 1,
-        "lock": "none",
-        "weight": 2
-      },
-      {
-        "crate_rarity": "rare",
-        "once_per_player": true,
-        "replenish_time_ticks": 1,
-        "lock": "none",
+        // can be omitted and assumed 1
         "weight": 1
-      }
+      },
     ]
   },
   {
@@ -42,9 +29,9 @@
       },
       {
         "crate_rarity": "uncommon",
-        // when specifying a loot_table the original chests loot table
-        // will be overridden. Otherwise it will keep the original loot table
-        // like in the entry before. Great for making multiple rarity entries for each loot table
+        // When specifying a loot_table the original chests loot table will be overridden.
+        // Otherwise it will keep the original loot table like in the entry before.
+        // Great for making multiple rarity entries for each loot table
         "loot_table": "minecraft:example_loot_table_uncommon",
         "once_per_player": true,
         "replenish_time_ticks": 1,

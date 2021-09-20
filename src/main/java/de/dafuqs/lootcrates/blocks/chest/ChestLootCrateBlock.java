@@ -77,7 +77,11 @@ public class ChestLootCrateBlock extends LootCrateBlock {
         if(LootCrates.CONFIG.ChestCratesKeepTheirInventory) {
             return BlockBreakAction.KEEP_INVENTORY;
         } else {
-            return BlockBreakAction.DROP_AND_SCATTER_INVENTORY;
+            if(LootCrates.CONFIG.ChestCratesDropAsItems) {
+                return BlockBreakAction.DROP_AND_SCATTER_INVENTORY;
+            } else {
+                return BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY;
+            }
         }
     }
 

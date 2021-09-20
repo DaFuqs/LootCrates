@@ -59,7 +59,11 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
         if(LootCrates.CONFIG.ShulkerCratesKeepTheirInventory) {
             return BlockBreakAction.KEEP_INVENTORY;
         } else {
-            return BlockBreakAction.DROP_AND_SCATTER_INVENTORY;
+            if(LootCrates.CONFIG.ShulkerCratesDropAsItems) {
+                return BlockBreakAction.DROP_AND_SCATTER_INVENTORY;
+            } else {
+                return BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY;
+            }
         }
     }
 

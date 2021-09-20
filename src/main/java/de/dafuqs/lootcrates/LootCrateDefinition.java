@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -99,6 +98,9 @@ public class LootCrateDefinition {
             } else {
                 blockSettings = blockSettings.strength(LootCrates.CONFIG.ChestCrateHardness);
             }
+            if(!LootCrates.CONFIG.ChestCratesDropAsItems) {
+                blockSettings = blockSettings.dropsNothing();
+            }
 
             if(hasTransparency) {
                 blockSettings = blockSettings.nonOpaque();
@@ -115,6 +117,9 @@ public class LootCrateDefinition {
             } else {
                 blockSettings = blockSettings.strength(LootCrates.CONFIG.ShulkerCrateHardness);
             }
+            if(!LootCrates.CONFIG.ShulkerCratesDropAsItems) {
+                blockSettings = blockSettings.dropsNothing();
+            }
 
             // shulker blocks are always opaque
             return blockSettings;
@@ -127,6 +132,9 @@ public class LootCrateDefinition {
             blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
         } else {
             blockSettings = blockSettings.strength(LootCrates.CONFIG.LootBarrelHardness);
+        }
+        if(!LootCrates.CONFIG.LootBarrelsDropAsItems) {
+            blockSettings = blockSettings.dropsNothing();
         }
 
         if(hasTransparency) {
