@@ -33,7 +33,6 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
 
     public static final DirectionProperty FACING;
     public static final Identifier CONTENTS;
-    public static final BooleanProperty LOCKED;
 
     public ShulkerLootCrateBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -133,7 +132,6 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
     static {
         FACING = FacingBlock.FACING;
         CONTENTS = new Identifier("contents");
-        LOCKED = Properties.LOCKED;
     }
 
     @Nullable

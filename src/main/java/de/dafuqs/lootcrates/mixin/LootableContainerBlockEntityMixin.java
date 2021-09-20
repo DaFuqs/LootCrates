@@ -1,6 +1,8 @@
 package de.dafuqs.lootcrates.mixin;
 
 import de.dafuqs.lootcrates.LootCrates;
+import de.dafuqs.lootcrates.worldgen.LootCrateReplacementPosition;
+import de.dafuqs.lootcrates.worldgen.LootCratesWorldgenReplacer;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -38,7 +40,7 @@ public abstract class LootableContainerBlockEntityMixin {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if ((blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity) && world instanceof ChunkRegion || world instanceof ServerWorld) {
                     LootTableAccessor lootTableAccessor = ((LootTableAccessor) blockEntity);
-                    LootCrates.replacements.add(new LootCrates.LootCrateReplacement(worldRegistryKey, pos, lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
+                    LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition(worldRegistryKey, pos, lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
                 }
             }
         }

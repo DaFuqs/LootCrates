@@ -37,17 +37,17 @@ public class LootCratesConfig implements ConfigData {
     @ConfigEntry.Category("worldgen")
     @Comment(value = """
             If all chests that generate during worldgen should be replaced by loot crates.
-            This includes vanilla and modded structures
+            This includes vanilla and modded structures.See the granular configuration in LootCratesWorldgenSettings.json5
             This is especially useful if you want new players to find treasure in structures that were
             raided by players before, or if players should have an incentive to visit those structures again.
             Setting restocking to <= 0 results them functioning like vanilla chests.
             Restocking is only evaluated when players actually open chests, no performance impact besides that.
             So feel free to leave it at 1 if you want loot to be available instantly for every unique player.""")
     public boolean ReplaceVanillaWorldgenChests = true;
-    @ConfigEntry.Category("worldgen")
+    /*@ConfigEntry.Category("worldgen")
     public boolean ReplacedWorldgenChestsAreOncePerPlayer = true;
     @ConfigEntry.Category("worldgen")
-    public int ReplacedWorldgenChestsRestockEveryXTicks = 1; // <= 0: disabled
+    public int ReplacedWorldgenChestsRestockEveryXTicks = 1; // <= 0: disabled*/
     @ConfigEntry.Category("worldgen")
     public List<String> ReplaceVanillaWorldgenChestsDimensionsBlacklist = List.of("spectrum:deeper_down");
 

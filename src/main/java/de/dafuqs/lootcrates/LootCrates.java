@@ -1,13 +1,11 @@
 package de.dafuqs.lootcrates;
 
-import de.dafuqs.lootcrates.blocks.LootCrateBlock;
-import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
 import de.dafuqs.lootcrates.config.LootCratesConfig;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import de.dafuqs.lootcrates.items.LootBagItem;
+import de.dafuqs.lootcrates.worldgen.LootCratesWorldgenReplacer;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
@@ -15,7 +13,6 @@ import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.*;
 import net.minecraft.block.dispenser.DispenserBehavior;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -24,24 +21,17 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LootCrates implements ModInitializer {
@@ -91,24 +81,6 @@ public class LootCrates implements ModInitializer {
         return stack;
     };
 
-
-    public static class LootCrateReplacement {
-
-        public RegistryKey<World> worldKey;
-        public BlockPos blockPos;
-        public Identifier lootTable;
-        public long lootTableSeed;
-
-        public LootCrateReplacement(RegistryKey<World> worldKey, BlockPos blockPos, Identifier lootTable, long lootTableSeed) {
-            this.worldKey = worldKey;
-            this.blockPos = blockPos;
-            this.lootTable = lootTable;
-            this.lootTableSeed = lootTableSeed;
-        }
-    }
-
-    public static List<LootCrateReplacement> replacements = new ArrayList<>();
-
     @Override
     public void onInitialize() {
 
@@ -144,60 +116,15 @@ public class LootCrates implements ModInitializer {
         LOGGER.info("[LootCrates] Registering sounds...");
         Registry.register(Registry.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
 
+        LOGGER.info("[LootCrates] Loading LootCratesWorldgenSettings.json...");
+
+        LootCratesWorldgenReplacer.initialize();
+
+        LOGGER.info("[LootCrates] Finished LootCratesWorldgenSettings.json...");
+
         if(CONFIG.ReplaceVanillaWorldgenChests) {
             ServerTickEvents.END_SERVER_TICK.register(server -> {
-                if (!replacements.isEmpty()) {
-
-                    // Some protection against concurrent modifications
-                    List<LootCrateReplacement> list = new ArrayList<>(replacements);
-                    replacements.clear();
-
-                    for (LootCrateReplacement replacement : list) {
-                        try {
-                            ServerWorld serverWorld = server.getWorld(replacement.worldKey);
-                            if (serverWorld != null) {
-                                serverWorld.removeBlockEntity(replacement.blockPos);
-
-                                BlockState sourceBlockState = serverWorld.getBlockState(replacement.blockPos);
-                                Block sourceBlock = sourceBlockState.getBlock();
-
-                                boolean trapped = false;
-
-                                if(!(sourceBlock instanceof LootCrateBlock)) {
-                                    if (sourceBlock instanceof ChestBlock) {
-                                        if (sourceBlock instanceof TrappedChestBlock) {
-                                            trapped = true;
-                                        }
-                                        serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON).getDefaultState().with(ChestLootCrateBlock.FACING, sourceBlockState.get(ChestBlock.FACING)), 3);
-                                    } else if (sourceBlock instanceof BarrelBlock) {
-                                        serverWorld.setBlockState(replacement.blockPos, LootCrateAtlas.getLootBarrel(LootCrateRarity.COMMON).getDefaultState().with(Properties.FACING, sourceBlockState.get(Properties.FACING)), 3);
-                                    } else {
-                                        // the worldgen may have been replaced by other blocks.
-                                        // Like a mineshaft cutting into a dungeon, replacing the chest with air again
-                                        // => do not replace
-                                        continue;
-                                    }
-
-                                    BlockEntity blockEntity = serverWorld.getBlockEntity(replacement.blockPos);
-                                    if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
-                                        lootCrateBlockEntity.setLootTable(replacement.lootTable, replacement.lootTableSeed);
-                                        if (CONFIG.ReplacedWorldgenChestsAreOncePerPlayer) {
-                                            lootCrateBlockEntity.setOncePerPlayer(true);
-                                        }
-                                        if (CONFIG.ReplacedWorldgenChestsRestockEveryXTicks > 0) {
-                                            lootCrateBlockEntity.setReplenishTimeTicks(CONFIG.ReplacedWorldgenChestsRestockEveryXTicks);
-                                        }
-                                        if (trapped) {
-                                            lootCrateBlockEntity.setTrapped(true);
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            LOGGER.log(Level.ERROR, "[LootCrates] Error while replacing a chest in the world (" + replacement.worldKey + " at " + replacement.blockPos + " with loot table " + replacement.lootTable + ")");
-                        }
-                    }
-                }
+                LootCratesWorldgenReplacer.tick(server);
             });
         }
 

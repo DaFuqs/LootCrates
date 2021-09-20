@@ -1,6 +1,8 @@
 package de.dafuqs.lootcrates.mixin;
 
 import de.dafuqs.lootcrates.LootCrates;
+import de.dafuqs.lootcrates.worldgen.LootCrateReplacementPosition;
+import de.dafuqs.lootcrates.worldgen.LootCratesWorldgenReplacer;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -27,7 +29,7 @@ public class BlockEntityMixin {
             if (!LootCrates.CONFIG.ReplaceVanillaWorldgenChestsDimensionsBlacklist.contains(worldRegistryKey.getValue().toString())) {
                 LootTableAccessor lootTableAccessor = ((LootTableAccessor) this);
                 if (lootTableAccessor.getLootTableIdentifier() != null) {
-                    LootCrates.replacements.add(new LootCrates.LootCrateReplacement(worldRegistryKey, ((LootableContainerBlockEntity)(Object) this).getPos(), lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
+                    LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition(worldRegistryKey, ((LootableContainerBlockEntity)(Object) this).getPos(), lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
                 }
             }
         }

@@ -7,6 +7,7 @@ import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import de.dafuqs.lootcrates.items.LootKeyItem;
+import de.dafuqs.lootcrates.worldgen.LockType;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -39,6 +40,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -357,4 +359,20 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
     public abstract int getCurrentLookingPlayers(BlockView world, BlockPos pos);
 
+    public void setLock(@NotNull LockType lockType) {
+        switch (lockType) {
+            case NONE -> {
+                this.locked = false;
+                this.doNotConsumeKeyOnUnlock = true;
+            }
+            case CONSUME_KEY -> {
+                this.locked = true;
+                this.doNotConsumeKeyOnUnlock = false;
+            }
+            default -> {
+                this.locked = true;
+                this.doNotConsumeKeyOnUnlock = true;
+            }
+        }
+    }
 }
