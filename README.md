@@ -36,7 +36,7 @@ https://user-images.githubusercontent.com/26429514/133820478-b6ddfea9-5b03-41af-
 ### Available Loot Bundle Item tags
 Tag                       | NBT Type      | Effect
 ------------------------- | ------------- | ------
-LootTable                 | loot table    | The loot table identifier to be used to fill the crate when it's interacted with
+LootTable                 | loot table    | The loot table identifier to be used for the players loot.
 LootTableSeed             | long          | Seed for generating the loot table. 0 or omitted uses a random seed. Setting a seed means that the generated loot will always be the same
 
 
