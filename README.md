@@ -82,12 +82,13 @@ Inventory                 | list of items | Analog vanilla shulker chests. Defin
 
 Handle some combinations with care. Or do you really want players to have portable containers that generate new loot every minute?
 
-## Example
-
-Following examples use a Rare Chest Loot Crate named "Bastion Treasure Crate" containing the vanilla bastion_treasure loot table, that is locked and will be restocked every 60 ticks (3 seconds).
-
 ## How Loot Crates work internally
 ![Untitled Diagram](https://user-images.githubusercontent.com/26429514/134002391-1b9e0e91-6fec-4355-98b3-3d50582b82c0.png)
+
+## Examples
+Following examples use a Rare Chest Loot Crate named "Bastion Treasure Crate" containing the vanilla bastion_treasure loot table, that is locked and will be restocked every 60 ticks (3 seconds).
+
+You can find more examples, like a documented worldgen replacement config file and demo datapack under [./example_datapacks/](https://github.com/DaFuqs/LootCrates/tree/main/example_datapacks)
 
 ### Give-Command
 
