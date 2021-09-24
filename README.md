@@ -1,4 +1,5 @@
 # Loot Crates
+![loot_crates](https://user-images.githubusercontent.com/26429514/134697417-3d8f9cdd-2401-4c0c-9ca2-b2b0d4aacfa2.png)
 
 ## About
 
@@ -26,9 +27,6 @@ All the loot bundles, crates, shulker crates and keys come in these rarities, ea
 - Blazing
 
 # Loot Bundles
-
-![Loot Bundles](./images/loot_bundles.jpg)
-
 Loot bundles come in all rarities. They can be used by players to get random content of a set loot table in their inventory.
 
 https://user-images.githubusercontent.com/26429514/133820478-b6ddfea9-5b03-41af-ab50-f85598c2e4f0.mp4
@@ -39,27 +37,22 @@ Tag                       | NBT Type      | Effect
 LootTable                 | loot table    | The loot table identifier to be used for the players loot.
 LootTableSeed             | long          | Seed for generating the loot table. 0 or omitted uses a random seed. Setting a seed means that the generated loot will always be the same
 
-
-# Loot Crates
-
-## Screenshots
-
-![All the Loot Crates, Shulkers and keys](./images/crates.png)
-
-## Loot Crate Chests
-Loot crates cannot be broken or moved. Instead, they generate loot over time!
-
-## Shulker Crates
-Shulker crates, like their loot crate counterparts, can generate loot.
-But unlike their unbreakable counterparts they can be broken and picked up.
-They also retain their items and can be used as backpacks.
-
-## Loot Barrels
-By default, these behave exactly like loot crates.
+## Keys & Loot Crates
 
 ## Keys
 Crates may be locked, requiring a key with matching rarity to unlock.
 Other than that the keys themselves are rather unspectacular.
+
+### Chest Loot Crates & Loot Barrels
+
+Chest loot crates cannot be broken or moved. Instead, they can be configured to generate loot over time, once per player, ...! By default, loot barrels behave exactly like chest loot crates.
+
+### Shulker Loot Crates
+Shulker crates, like their loot crate counterparts, can generate loot.
+But unlike their unbreakable counterparts they can be broken and picked up.
+They also retain their items and can be used as backpacks.
+
+![Untitled Diagram](https://user-images.githubusercontent.com/26429514/134002391-1b9e0e91-6fec-4355-98b3-3d50582b82c0.png)
 
 # Customization
 
@@ -81,9 +74,6 @@ Inventory                 | list of items | Analog vanilla shulker chests. Defin
 **Warning:**
 
 Handle some combinations with care. Or do you really want players to have portable containers that generate new loot every minute?
-
-## How Loot Crates work internally
-![Untitled Diagram](https://user-images.githubusercontent.com/26429514/134002391-1b9e0e91-6fec-4355-98b3-3d50582b82c0.png)
 
 ## Examples
 Following examples use a Rare Chest Loot Crate named "Bastion Treasure Crate" containing the vanilla bastion_treasure loot table, that is locked and will be restocked every 60 ticks (3 seconds).
