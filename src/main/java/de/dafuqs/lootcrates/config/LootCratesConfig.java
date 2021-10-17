@@ -54,10 +54,6 @@ public class LootCratesConfig implements ConfigData {
             Restocking is only evaluated when players actually open chests, no performance impact besides that.
             So feel free to leave it at 1 if you want loot to be available instantly for every unique player.""")
     public boolean ReplaceVanillaWorldgenChests = true;
-    /*@ConfigEntry.Category("worldgen")
-    public boolean ReplacedWorldgenChestsAreOncePerPlayer = true;
-    @ConfigEntry.Category("worldgen")
-    public int ReplacedWorldgenChestsRestockEveryXTicks = 1; // <= 0: disabled*/
     @ConfigEntry.Category("worldgen")
     public List<String> ReplaceVanillaWorldgenChestsDimensionsBlacklist = List.of("spectrum:deeper_down");
 

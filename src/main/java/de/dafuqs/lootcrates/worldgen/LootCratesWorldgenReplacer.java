@@ -23,25 +23,7 @@ import java.util.*;
 public class LootCratesWorldgenReplacer {
 
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-
-    public static List<LootCrateReplacementPosition> replacements = new ArrayList<>();
-
-    private static WeightedLootCrateEntryList DefaultLootCrateProviderList = new WeightedLootCrateEntryList(1, new ArrayList<>() {{
-        add(new LootCrateReplacementEntry(null, null, true, 1, LockType.NONE, 1));
-    }});
-    private static final Map<Identifier, WeightedLootCrateEntryList> LootCrateProviders = new HashMap<>();
-
-    public static void initialize() {
-        File configFile = new File(FabricLoader.INSTANCE.getConfigDirectory(), "LootCratesWorldgenSettings.json5");
-        FileReader configReader;
-        try {
-            configReader = new FileReader(configFile);
-        } catch (Exception e) {
-            try {
-                configFile.createNewFile();
-
-                FileWriter myWriter = new FileWriter(configFile);
-                myWriter.write("""
+    private static final String DEFAULT_CONFIG = """
 [
 	{
 		"loot_table": "",
@@ -81,8 +63,139 @@ public class LootCratesWorldgenReplacer {
 				"weight": 1
 			}
 		]
+	},
+	{
+		"loot_table": "minecraft:chests/bastion_bridge",
+		"entries": [{
+			"crate_rarity": "blaze",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/bastion_bridge",
+		"entries": [{
+			"crate_rarity": "blaze",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/bastion_hoglin_stable",
+		"entries": [{
+			"crate_rarity": "blaze",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/bastion_other",
+		"entries": [{
+			"crate_rarity": "blaze",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/bastion_treasure",
+		"entries": [{
+			"crate_rarity": "blaze",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/buried_treasure",
+		"entries": [{
+			"crate_rarity": "rare",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/end_city_treasure",
+		"entries": [{
+			"crate_rarity": "epic",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/simple_dungeon",
+		"entries": [{
+			"crate_rarity": "uncommon",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/stronghold_corridor",
+		"entries": [{
+			"crate_rarity": "uncommon",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/stronghold_corridor",
+		"entries": [{
+			"crate_rarity": "uncommon",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/stronghold_corridor",
+		"entries": [{
+			"crate_rarity": "uncommon",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/underwater_ruin_big",
+		"entries": [{
+			"crate_rarity": "rare",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/underwater_ruin_small",
+		"entries": [{
+			"crate_rarity": "rare",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
+	},
+	{
+		"loot_table": "minecraft:chests/woodland_mansion",
+		"entries": [{
+			"crate_rarity": "ghost",
+			"once_per_player": true,
+			"replenish_time_ticks": 1
+		}]
 	}
-]""");
+]""";
+
+    public static List<LootCrateReplacementPosition> replacements = new ArrayList<>();
+
+    private static WeightedLootCrateEntryList DefaultLootCrateProviderList = new WeightedLootCrateEntryList(1, new ArrayList<>() {{
+        add(new LootCrateReplacementEntry(null, null, true, 1, LockType.NONE, 1));
+    }});
+    private static final Map<Identifier, WeightedLootCrateEntryList> LootCrateProviders = new HashMap<>();
+
+    public static void initialize() {
+        File configFile = new File(FabricLoader.INSTANCE.getConfigDirectory(), "LootCratesWorldgenSettings.json5");
+        FileReader configReader;
+        try {
+            configReader = new FileReader(configFile);
+        } catch (Exception e) {
+            try {
+                configFile.createNewFile();
+
+                FileWriter myWriter = new FileWriter(configFile);
+                myWriter.write(DEFAULT_CONFIG);
                 myWriter.close();
 
                 configReader = new FileReader(configFile);
@@ -171,7 +284,10 @@ public class LootCratesWorldgenReplacer {
                 try {
                     ServerWorld serverWorld = server.getWorld(replacementPosition.worldKey);
                     if (serverWorld != null) {
-                        serverWorld.removeBlockEntity(replacementPosition.blockPos);
+                        BlockEntity blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
+                        if(blockEntity != null && !(blockEntity instanceof LootCrateBlockEntity)) {
+                            serverWorld.removeBlockEntity(replacementPosition.blockPos);
+                        }
 
                         BlockState sourceBlockState = serverWorld.getBlockState(replacementPosition.blockPos);
                         Block sourceBlock = sourceBlockState.getBlock();
@@ -196,7 +312,7 @@ public class LootCratesWorldgenReplacer {
                                 continue;
                             }
 
-                            BlockEntity blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
+                            blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
                             if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
                                 if(replacementTargetData.lootTable == null) {
                                     // keep the original loot table
