@@ -69,6 +69,7 @@ Locked                    | boolean       | When true a key with matching rarity
 Trapped                   | boolean       | When true the crate will output a redstone signal when opened, similar to a Trapped Chest
 DoNotConsumeKeyOnUnlock   | boolean       | When true opening a locked crate will not consume the key.
 OncePerPlayer             | boolean       | When true every player can only use the crate once to generate loot. "ReplenishTimeTicks" has to be set to >0.
+RelocksWhenNewLoot        | boolean       | When true and the crate will be locked when new loot is generated. Superseded the "Locked" property, when true
 Inventory                 | list of items | Analog vanilla shulker chests. Defines the items stored in the crate. Can be used to define items that are always present in a crate at first opening. (chest crates can have this set, too. They just don't set it when broken, because they are meant to be unbreakable outside creative)
 
 **Warning:**

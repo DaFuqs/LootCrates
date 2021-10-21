@@ -262,7 +262,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public void checkRelock(PlayerEntity player) {
-        if(!this.locked && this.shouldGenerateNewLoot(player, false) && (!this.oncePerPlayer || !this.registeredPlayerUUIDs.contains(player.getUuid()))) {
+        if(!this.locked && this.shouldGenerateNewLoot(player, false)) {
             this.locked = true;
         }
     }
@@ -276,12 +276,8 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public boolean doesUnlock(Item item) {
-        if(world == null) {
-            return false;
-        }
-        Block block = getBlock();
-
-        if(item instanceof LootKeyItem) {
+        if(world != null && item instanceof LootKeyItem) {
+            Block block = getBlock();
             LootCrateRarity itemRarity = LootCrateAtlas.getKeyRarity((LootKeyItem) item);
             LootCrateRarity blockRarity = LootCrateBlock.getCrateRarity(block);
             return itemRarity.equals(blockRarity);
