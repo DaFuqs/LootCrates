@@ -150,7 +150,7 @@ public class LootCrateItem extends BlockItem {
         }
     }
 
-    public static @NotNull NbtCompound getLootCrateItemCompoundTag(@NotNull Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer, boolean trapped) {
+    public static @NotNull NbtCompound getLootCrateItemCompoundTag(@NotNull Identifier lootTable, boolean locked, boolean doNotConsumeKeyOnUnlock, long lootGenerationTimeInTicks, long lootTableSeed, boolean oncePerPlayer, boolean relock, boolean trapped) {
         NbtCompound compoundTag = new NbtCompound();
         NbtCompound blockEntityTag = new NbtCompound();
 
@@ -170,6 +170,9 @@ public class LootCrateItem extends BlockItem {
         }
         if(oncePerPlayer) {
             blockEntityTag.putBoolean(LootCrateTagNames.OncePerPlayer.toString(), true);
+        }
+        if(relock) {
+            blockEntityTag.putBoolean(LootCrateTagNames.RelocksWhenNewLoot.toString(), true);
         }
         if(trapped) {
             blockEntityTag.putBoolean(LootCrateTagNames.Trapped.toString(), true);

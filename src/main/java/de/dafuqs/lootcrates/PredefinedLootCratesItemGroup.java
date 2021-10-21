@@ -68,10 +68,12 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
                                             if (doNotConsumeKeyOnUnlock && !locked) {
                                                 // no use in that tag when there is no lock, is there?
                                             } else {
-                                                NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, replenishTimeTicks, 0, oncePerPlayer, trapped);
-                                                ItemStack itemStack = new ItemStack(lootCrateItem);
-                                                itemStack.setNbt(compound);
-                                                stacks.add(itemStack);
+                                                for(boolean relock : booleans) {
+                                                    NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, replenishTimeTicks, 0, oncePerPlayer, relock, trapped);
+                                                    ItemStack itemStack = new ItemStack(lootCrateItem);
+                                                    itemStack.setNbt(compound);
+                                                    stacks.add(itemStack);
+                                                }
                                             }
                                         }
                                     }

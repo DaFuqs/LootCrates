@@ -31,10 +31,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -57,6 +54,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     private List<UUID> registeredPlayerUUIDs;
     private ScheduledTickEvent scheduledTickEvent;
     private boolean trapped;
+    private boolean relocksForNewLoot;
 
     private long replenishTimeTicks;
     private long lastReplenishTimeTick;
@@ -117,7 +115,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
-    public boolean shouldGenerateNewLoot(PlayerEntity player) {
+    public boolean shouldGenerateNewLoot(PlayerEntity player, boolean rememberPlayer) {
         if(hasWorld()) {
             // if replenish time is set to <=0: just generate loot once
             if(this.replenishTimeTicks <= 0) {
@@ -135,8 +133,10 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
                             return false;
                         } else {
                             this.lastReplenishTimeTick = world.getTime();
-                            this.registeredPlayerUUIDs.add(player.getUuid());
-                            this.markDirty();
+                            if(rememberPlayer) {
+                                this.registeredPlayerUUIDs.add(player.getUuid());
+                                this.markDirty();
+                            }
                             return true;
                         }
                     } else {
@@ -162,7 +162,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     @Override
     public void checkLootInteraction(@Nullable PlayerEntity player) {
         // only players can generate container loot
-        if (player != null && this.lootTableId != null && this.world.getServer() != null && shouldGenerateNewLoot(player)) {
+        if (player != null && this.lootTableId != null && this.world.getServer() != null && shouldGenerateNewLoot(player, true)) {
             LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
             if (player instanceof ServerPlayerEntity) {
                 Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test((ServerPlayerEntity)player, this.lootTableId);
@@ -183,9 +183,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
         if(this.locked) {
             tag.putBoolean(LootCrateTagNames.Locked.toString(), true);
-            if(this.doNotConsumeKeyOnUnlock) {
-                tag.putBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString(), true);
-            }
+        }
+        if(this.doNotConsumeKeyOnUnlock) {
+            tag.putBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString(), true);
+        }
+        if(this.relocksForNewLoot) {
+            tag.putBoolean(LootCrateTagNames.RelocksWhenNewLoot.toString(), true);
         }
         if(this.trapped) {
             tag.putBoolean(LootCrateTagNames.Trapped.toString(), true);
@@ -221,16 +224,10 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             this.lastReplenishTimeTick = 0;
         }
 
-        if(tag.contains(LootCrateTagNames.Locked.toString()) && tag.getBoolean(LootCrateTagNames.Locked.toString())) {
-            this.locked = true;
-            this.doNotConsumeKeyOnUnlock = tag.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString()) && tag.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString());
-        } else {
-            this.locked = false;
-            this.doNotConsumeKeyOnUnlock = false;
-        }
-        if(tag.contains(LootCrateTagNames.Trapped.toString()) && tag.getBoolean(LootCrateTagNames.Trapped.toString())) {
-            this.trapped = true;
-        }
+        this.locked = tag.contains(LootCrateTagNames.Locked.toString()) && tag.getBoolean(LootCrateTagNames.Locked.toString());
+        this.doNotConsumeKeyOnUnlock = tag.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString()) && tag.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString());
+        this.relocksForNewLoot = tag.contains(LootCrateTagNames.RelocksWhenNewLoot.toString()) && tag.getBoolean(LootCrateTagNames.RelocksWhenNewLoot.toString());
+        this.trapped = tag.contains(LootCrateTagNames.Trapped.toString()) && tag.getBoolean(LootCrateTagNames.Trapped.toString());
 
         if(tag.contains(LootCrateTagNames.OncePerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
             this.oncePerPlayer = true;
@@ -264,8 +261,14 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
+    public void checkRelock(PlayerEntity player) {
+        if(!this.locked && this.shouldGenerateNewLoot(player, false) && (!this.oncePerPlayer || !this.registeredPlayerUUIDs.contains(player.getUuid()))) {
+            this.locked = true;
+        }
+    }
+
     public boolean isLocked() {
-        return this.locked;
+        return locked;
     }
 
     public boolean isTrapped() {
@@ -375,4 +378,5 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             }
         }
     }
+
 }
