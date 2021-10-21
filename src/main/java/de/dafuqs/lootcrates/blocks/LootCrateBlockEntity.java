@@ -363,14 +363,27 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             case NONE -> {
                 this.locked = false;
                 this.doNotConsumeKeyOnUnlock = true;
+                this.relocksForNewLoot = false;
             }
             case CONSUME_KEY -> {
                 this.locked = true;
                 this.doNotConsumeKeyOnUnlock = false;
+                this.relocksForNewLoot = false;
+            }
+            case CONSUME_KEY_RELOCK -> {
+                this.locked = true;
+                this.doNotConsumeKeyOnUnlock = false;
+                this.relocksForNewLoot = true;
+            }
+            case REQUIRE_KEY -> {
+                this.locked = true;
+                this.doNotConsumeKeyOnUnlock = true;
+                this.relocksForNewLoot = false;
             }
             default -> {
                 this.locked = true;
                 this.doNotConsumeKeyOnUnlock = true;
+                this.relocksForNewLoot = true;
             }
         }
     }
