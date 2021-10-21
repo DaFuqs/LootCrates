@@ -84,6 +84,26 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
         NbtCompound tag = stack.getSubNbt("BlockEntityTag");
         if (tag != null) {
             tag.putBoolean(LootCrateTagNames.Locked.toString(), false);
+            tag.putLong(LootCrateTagNames.LastUnlockTimeTick.toString(), player.getEntityWorld().getTime());
+        }
+    }
+
+    public void checkRelock(PlayerEntity player, ItemStack stack) {
+        NbtCompound tag = stack.getSubNbt("BlockEntityTag");
+        if(tag.contains(LootCrateTagNames.RelocksWhenNewLoot.toString()) && tag.getBoolean(LootCrateTagNames.RelocksWhenNewLoot.toString())) {
+            if(tag.contains(LootCrateTagNames.Locked.toString()) && !tag.getBoolean(LootCrateTagNames.Locked.toString())) {
+                long lastUnlockTimeTick = 0;
+                long lastReplenishTimeTick = 0;
+                if(tag.contains(LootCrateTagNames.LastUnlockTimeTick.toString())) {
+                    lastUnlockTimeTick = tag.getLong(LootCrateTagNames.LastUnlockTimeTick.toString());
+                }
+                if(tag.contains(LootCrateTagNames.LastReplenishTimeTick.toString())) {
+                    lastReplenishTimeTick = tag.getLong(LootCrateTagNames.LastReplenishTimeTick.toString());
+                }
+                if(lastUnlockTimeTick < lastReplenishTimeTick && shouldGenerateNewLoot(stack, player, true)) {
+                    tag.putBoolean(LootCrateTagNames.Locked.toString(), true);
+                }
+            }
         }
     }
 
@@ -123,7 +143,7 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
         }
 
         // only players can generate container loot
-        if (player != null && lootTableId != null && player.getServer() != null && shouldGenerateNewLoot(stack, player)) {
+        if (player != null && lootTableId != null && player.getServer() != null && shouldGenerateNewLoot(stack, player, false)) {
             LootTable lootTable = player.getServer().getLootManager().getTable(lootTableId);
 
             Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test( player, lootTableId);
@@ -136,7 +156,7 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
         }
     }
 
-    public boolean shouldGenerateNewLoot(ItemStack stack, PlayerEntity player) {
+    public boolean shouldGenerateNewLoot(ItemStack stack, PlayerEntity player, boolean test) {
         long replenishTimeTicks = -1;
         long lastReplenishTimeTick = 0;
         boolean oncePerPlayer = false;
@@ -151,10 +171,12 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
 
             if (tag.contains(LootCrateTagNames.OncePerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
                 oncePerPlayer = true;
-                if (tag.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
-                    NbtList playerUUIDs = tag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
-                    for (NbtElement playerUUID : playerUUIDs) {
-                        registeredPlayerUUIDs.add(NbtHelper.toUuid(playerUUID));
+                if(!test) {
+                    if (tag.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
+                        NbtList playerUUIDs = tag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
+                        for (NbtElement playerUUID : playerUUIDs) {
+                            registeredPlayerUUIDs.add(NbtHelper.toUuid(playerUUID));
+                        }
                     }
                 }
             }
@@ -164,7 +186,9 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
         if (replenishTimeTicks <= 0) {
             if (lastReplenishTimeTick == 0) {
                 lastReplenishTimeTick = player.world.getTime();
-                saveNbtToStack(stack, lastReplenishTimeTick, oncePerPlayer, registeredPlayerUUIDs);
+                if(!test) {
+                    saveNbtToStack(stack, lastReplenishTimeTick, oncePerPlayer, registeredPlayerUUIDs);
+                }
                 return true;
             } else {
                 return false;
@@ -176,14 +200,18 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
                     if (registeredPlayerUUIDs.contains(player.getUuid())) {
                         return false;
                     } else {
-                        lastReplenishTimeTick = player.world.getTime();
-                        registeredPlayerUUIDs.add(player.getUuid());
-                        saveNbtToStack(stack, lastReplenishTimeTick, oncePerPlayer, registeredPlayerUUIDs);
+                        if(!test) {
+                            lastReplenishTimeTick = player.world.getTime();
+                            registeredPlayerUUIDs.add(player.getUuid());
+                            saveNbtToStack(stack, lastReplenishTimeTick, oncePerPlayer, registeredPlayerUUIDs);
+                        }
                         return true;
                     }
                 } else {
-                    lastReplenishTimeTick = player.world.getTime();
-                    saveNbtToStack(stack, lastReplenishTimeTick, oncePerPlayer, registeredPlayerUUIDs);
+                    if(!test) {
+                        lastReplenishTimeTick = player.world.getTime();
+                        saveNbtToStack(stack, lastReplenishTimeTick, oncePerPlayer, registeredPlayerUUIDs);
+                    }
                     return true;
                 }
             }

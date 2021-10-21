@@ -48,6 +48,10 @@ public class LootCrateItem extends BlockItem {
                 locked = true;
                 tooltip.add(LootCrateAtlas.getItemLockedTooltip(itemStack, compound));
             }
+            if (compound.contains(LootCrateTagNames.RelocksWhenNewLoot.toString()) && compound.getBoolean(LootCrateTagNames.RelocksWhenNewLoot.toString())) {
+                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.relocks"));
+            }
+
 
             if (compound.contains(LootCrateTagNames.Trapped.toString()) && compound.getBoolean(LootCrateTagNames.Trapped.toString())) {
                 tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.trapped"));

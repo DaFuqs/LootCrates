@@ -58,6 +58,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
     private long replenishTimeTicks;
     private long lastReplenishTimeTick;
+    private long lastUnlockTimeTick; // for the relock to not lock right back up
 
     protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
@@ -115,7 +116,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
-    public boolean shouldGenerateNewLoot(PlayerEntity player, boolean rememberPlayer) {
+    public boolean shouldGenerateNewLoot(PlayerEntity player, boolean test) {
         if(hasWorld()) {
             // if replenish time is set to <=0: just generate loot once
             if(this.replenishTimeTicks <= 0) {
@@ -133,7 +134,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
                             return false;
                         } else {
                             this.lastReplenishTimeTick = world.getTime();
-                            if(rememberPlayer) {
+                            if(!test) {
                                 this.registeredPlayerUUIDs.add(player.getUuid());
                                 this.markDirty();
                             }
@@ -189,6 +190,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
         if(this.relocksForNewLoot) {
             tag.putBoolean(LootCrateTagNames.RelocksWhenNewLoot.toString(), true);
+            tag.putLong(LootCrateTagNames.LastUnlockTimeTick.toString(), this.lastUnlockTimeTick);
         }
         if(this.trapped) {
             tag.putBoolean(LootCrateTagNames.Trapped.toString(), true);
@@ -222,6 +224,11 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             this.lastReplenishTimeTick = tag.getLong(LootCrateTagNames.LastReplenishTimeTick.toString());
         } else {
             this.lastReplenishTimeTick = 0;
+        }
+        if(tag.contains(LootCrateTagNames.LastUnlockTimeTick.toString())) {
+            this.lastUnlockTimeTick = tag.getLong(LootCrateTagNames.LastUnlockTimeTick.toString());
+        } else {
+            this.lastUnlockTimeTick = 0;
         }
 
         this.locked = tag.contains(LootCrateTagNames.Locked.toString()) && tag.getBoolean(LootCrateTagNames.Locked.toString());
@@ -262,7 +269,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public void checkRelock(PlayerEntity player) {
-        if(!this.locked && this.shouldGenerateNewLoot(player, false)) {
+        if(this.relocksForNewLoot && !this.locked && this.lastUnlockTimeTick < this.lastReplenishTimeTick && this.shouldGenerateNewLoot(player, true)) {
             this.locked = true;
         }
     }
@@ -290,8 +297,9 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         return !doNotConsumeKeyOnUnlock;
     }
 
-    public void unlock() {
+    public void unlock(World world) {
         this.locked = false;
+        this.lastUnlockTimeTick = world.getTime();
         this.playSound(LootCrates.CHEST_UNLOCKS_SOUND_EVENT);
     }
 

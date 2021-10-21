@@ -97,6 +97,7 @@
   "item.lootcrates.loot_crate.tooltip.locked_consume_blaze": "Locked (unlocking will use up an §6Blazing Crate Key)",
   "item.lootcrates.loot_crate.tooltip.already_looted": "§7Already looted",
   "item.lootcrates.loot_crate.tooltip.trapped": "§e⚠ Trapped",
+  "item.lootcrates.loot_crate.tooltip.relocks": "§e⚠Will lock itself back up for new loot",
   "item.lootcrates.loot_crate.tooltip.loot_table": "Loot Table: %s",
   "item.lootcrates.loot_crate.tooltip.replenish_time_ticks": "Generates new loot every §o%d§r ticks",
   "item.lootcrates.loot_crate.tooltip.replenish_time_minutes": "Generates new loot every §o%f§r minutes",

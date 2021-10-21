@@ -8,5 +8,6 @@ public enum LootCrateTagNames {
         OncePerPlayer,
         Trapped,
         RegisteredPlayerUUIDs,
-    RelocksWhenNewLoot
+        RelocksWhenNewLoot,
+        LastUnlockTimeTick
 }
