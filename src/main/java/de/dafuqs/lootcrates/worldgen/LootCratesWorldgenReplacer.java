@@ -284,7 +284,13 @@ public class LootCratesWorldgenReplacer {
                 try {
                     ServerWorld serverWorld = server.getWorld(replacementPosition.worldKey);
                     if (serverWorld != null) {
-                        BlockEntity blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
+                        BlockEntity blockEntity;
+                        try {
+                            blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
+                        } catch (Exception e) {
+                            LootCrates.LOGGER.error("[LootCrates] Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "' ) + " + e.getLocalizedMessage());
+                            continue;
+                        }
                         if(blockEntity != null && !(blockEntity instanceof LootCrateBlockEntity)) {
                             serverWorld.removeBlockEntity(replacementPosition.blockPos);
                         }
