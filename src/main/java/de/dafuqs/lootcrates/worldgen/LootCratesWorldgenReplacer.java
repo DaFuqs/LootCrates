@@ -283,7 +283,7 @@ public class LootCratesWorldgenReplacer {
             for (LootCrateReplacementPosition replacementPosition : list) {
                 try {
                     ServerWorld serverWorld = server.getWorld(replacementPosition.worldKey);
-                    if (serverWorld != null) {
+                    if (serverWorld != null && serverWorld.isChunkLoaded(replacementPosition.blockPos)) {
                         BlockEntity blockEntity;
                         try {
                             blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
@@ -339,6 +339,8 @@ public class LootCratesWorldgenReplacer {
                                 }
                             }
                         }
+                    } else {
+                        LootCrates.LOGGER.error("[LootCrates] Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "' ). The chunk at that pos is not loaded.");
                     }
                 } catch (Exception e) {
                     LootCrates.LOGGER.error("[LootCrates] Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "' ) + " + e.getLocalizedMessage());
