@@ -42,6 +42,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity {
@@ -284,13 +285,15 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
     public boolean doesUnlock(Item item) {
         if(world != null && item instanceof LootKeyItem) {
-            Block block = getBlock();
-            LootCrateRarity itemRarity = LootCrateAtlas.getKeyRarity((LootKeyItem) item);
-            LootCrateRarity blockRarity = LootCrateBlock.getCrateRarity(block);
-            return itemRarity.equals(blockRarity);
-        } else {
-            return false;
+            Optional<LootCrateBlock> block = getBlock();
+            if(block.isPresent()) {
+                LootCrateRarity itemRarity = LootCrateAtlas.getKeyRarity((LootKeyItem) item);
+                LootCrateRarity blockRarity = LootCrateBlock.getCrateRarity(block.get());
+                return itemRarity.equals(blockRarity);
+            }
         }
+        
+        return false;
     }
 
     public boolean doesConsumeKeyOnUnlock() {
@@ -303,13 +306,25 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         this.playSound(LootCrates.CHEST_UNLOCKS_SOUND_EVENT);
     }
 
-    public LootCrateBlock getBlock() {
-        return (LootCrateBlock) this.world.getBlockState(this.pos).getBlock();
+    public Optional<LootCrateBlock> getBlock() {
+        if(this.world == null) {
+            return Optional.empty();
+        } else {
+            Block block = this.world.getBlockState(this.pos).getBlock();
+            if(block instanceof LootCrateBlock lootCrateBlock) {
+                return Optional.of(lootCrateBlock);
+            } else {
+                return Optional.empty();
+            }
+        }
     }
 
     public ScheduledTickEvent getRandomTickEvent() {
         if(this.scheduledTickEvent == null) {
-            scheduledTickEvent = LootCrateAtlas.getRandomTickEvent(getBlock());
+            Optional<LootCrateBlock> block = getBlock();
+            if(block.isPresent()) {
+                scheduledTickEvent = LootCrateAtlas.getRandomTickEvent(block.get());
+            }
         }
         return this.scheduledTickEvent;
     }
@@ -323,7 +338,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
 
         // also play custom sound, if set
-        SoundEvent customSoundEvent = LootCrateAtlas.getCustomOpenSoundEvent(getBlock());
+        SoundEvent customSoundEvent = null;
+        Optional<LootCrateBlock> block = getBlock();
+        if(block.isPresent()) {
+            customSoundEvent = LootCrateAtlas.getCustomOpenSoundEvent(block.get());
+        }
+
         if(customSoundEvent != null) {
             playSound(customSoundEvent, 0.4F);
         }
@@ -338,7 +358,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
 
         // also play custom sound, if set
-        SoundEvent customSoundEvent = LootCrateAtlas.getCustomCloseSoundEvent(getBlock());
+        SoundEvent customSoundEvent = null;
+        Optional<LootCrateBlock> block = getBlock();
+        if(block.isPresent()) {
+            customSoundEvent = LootCrateAtlas.getCustomCloseSoundEvent(block.get());
+        }
+        
         if(customSoundEvent != null) {
             playSound(customSoundEvent, 0.4F);
         }

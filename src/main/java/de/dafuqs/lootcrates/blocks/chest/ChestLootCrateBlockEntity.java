@@ -38,11 +38,11 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements C
         this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
         this.stateManager = new ChestStateManager() {
             protected void onChestOpened(World world, BlockPos pos, BlockState state) {
-                playSound(world, pos, state, SoundEvents.BLOCK_CHEST_OPEN);
+                playOpenSoundEffect();
             }
 
             protected void onChestClosed(World world, BlockPos pos, BlockState state) {
-                playSound(world, pos, state, SoundEvents.BLOCK_CHEST_CLOSE);
+                playCloseSoundEffect();
             }
 
             protected void onInteracted(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
