@@ -5,6 +5,8 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Config(name = "LootCrates")
@@ -55,6 +57,8 @@ public class LootCratesConfig implements ConfigData {
             So feel free to leave it at 1 if you want loot to be available instantly for every unique player.""")
     public boolean ReplaceVanillaWorldgenChests = true;
     @ConfigEntry.Category("worldgen")
-    public List<String> ReplaceVanillaWorldgenChestsDimensionsBlacklist = List.of("spectrum:deeper_down");
+    @Comment(value = """
+            Dimension identifiers where chests will not be replaced""")
+    public final List<String> ReplaceVanillaWorldgenChestsDimensionsBlacklist = new ArrayList<>();
 
 }
