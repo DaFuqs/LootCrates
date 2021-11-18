@@ -13,7 +13,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.ProtoChunk;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,13 +30,23 @@ public abstract class LootableContainerBlockEntityMixin {
     @Inject(method = "setLootTable(Lnet/minecraft/world/BlockView;Ljava/util/Random;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Identifier;)V", at = @At("TAIL"))
     private static void noteChestForLootCrateConversion(BlockView world, Random random, BlockPos pos, Identifier id, CallbackInfo ci) {
         if(LootCrates.CONFIG.ReplaceVanillaWorldgenChests) {
-
             RegistryKey<World> worldRegistryKey;
-            if (world instanceof ChunkRegion chunkRegion) {
+            if(world instanceof ProtoChunk protoChunk) {
+                ProtoChunkAccessor protoChunkAccessor = ((ProtoChunkAccessor) protoChunk);
+                HeightLimitView heightLimitView = protoChunkAccessor.getWorld();
+                if(heightLimitView instanceof ChunkRegion chunkRegion) {
+                    worldRegistryKey = chunkRegion.toServerWorld().getRegistryKey();
+                } else if(heightLimitView instanceof ServerWorld serverWorld) {
+                    worldRegistryKey = serverWorld.getRegistryKey();
+                } else {
+                    return;
+                }
+            } else if (world instanceof ChunkRegion chunkRegion) {
                 worldRegistryKey = chunkRegion.toServerWorld().getRegistryKey();
-            } else {
-                ServerWorld serverWorld = (ServerWorld) world;
+            } else if(world instanceof ServerWorld serverWorld) {
                 worldRegistryKey = serverWorld.getRegistryKey();
+            } else {
+                return;
             }
 
             if (!LootCrates.CONFIG.ReplaceVanillaWorldgenChestsDimensionsBlacklist.contains(worldRegistryKey.getValue().toString())) {

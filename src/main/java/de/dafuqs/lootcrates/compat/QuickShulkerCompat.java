@@ -146,7 +146,7 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
         if (player != null && lootTableId != null && player.getServer() != null && shouldGenerateNewLoot(stack, player, false)) {
             LootTable lootTable = player.getServer().getLootManager().getTable(lootTableId);
 
-            Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test( player, lootTableId);
+            Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger( player, lootTableId);
 
             LootContext.Builder builder = (new LootContext.Builder((ServerWorld) player.world)).parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(player.getBlockPos())).random(lootTableSeed);
             builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);

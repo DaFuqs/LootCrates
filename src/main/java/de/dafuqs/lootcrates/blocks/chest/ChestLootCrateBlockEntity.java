@@ -11,7 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestLidAnimator;
-import net.minecraft.block.entity.ChestStateManager;
+import net.minecraft.block.entity.ViewerCountManager;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,9 +19,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -29,23 +26,23 @@ import net.minecraft.world.World;
 
 public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements ChestAnimationProgress {
 
-    private final ChestStateManager stateManager;
+    private final ViewerCountManager stateManager;
     private final ChestLidAnimator lidAnimator;
 
     public ChestLootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
 
         this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
-        this.stateManager = new ChestStateManager() {
-            protected void onChestOpened(World world, BlockPos pos, BlockState state) {
+        this.stateManager = new ViewerCountManager() {
+            protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
                 playOpenSoundEffect();
             }
 
-            protected void onChestClosed(World world, BlockPos pos, BlockState state) {
+            protected void onContainerClose(World world, BlockPos pos, BlockState state) {
                 playCloseSoundEffect();
             }
 
-            protected void onInteracted(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+            protected void onViewerCountUpdate(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
                 onInvOpenOrClose(world, pos, state, oldViewerCount, newViewerCount);
             }
 
@@ -88,14 +85,14 @@ public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements C
     @Override
     public void onOpen(PlayerEntity player) {
         if (!this.removed && !player.isSpectator()) {
-            this.stateManager.openChest(player, this.getWorld(), this.getPos(), this.getCachedState());
+            this.stateManager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
         }
     }
 
     @Override
     public void onClose(PlayerEntity player) {
         if (!this.removed && !player.isSpectator()) {
-            this.stateManager.closeChest(player, this.getWorld(), this.getPos(), this.getCachedState());
+            this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
         }
     }
 
