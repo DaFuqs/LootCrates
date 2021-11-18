@@ -281,7 +281,6 @@ public class LootCratesWorldgenReplacer {
 
             // Some protection against concurrent modifications
             List<LootCrateReplacementPosition> list = new ArrayList<>(replacements);
-            List<LootCrateReplacementPosition> tryAgainList = new ArrayList<>();
             replacements.clear();
 
             for (LootCrateReplacementPosition replacementPosition : list) {
@@ -293,7 +292,6 @@ public class LootCratesWorldgenReplacer {
                             blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
                         } catch (Exception e) {
                             LootCrates.LOGGER.error("[LootCrates] Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "' ) + " + e.getLocalizedMessage());
-                            tryAgainList.add(replacementPosition);
                             continue;
                         }
                         if(blockEntity != null && !(blockEntity instanceof LootCrateBlockEntity)) {
@@ -344,16 +342,11 @@ public class LootCratesWorldgenReplacer {
                                 }
                             }
                         }
-                    } else {
-                        tryAgainList.add(replacementPosition);
                     }
                 } catch (Exception e) {
                     LootCrates.LOGGER.error("[LootCrates] Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "') + " + e.getLocalizedMessage());
-                    tryAgainList.add(replacementPosition);
                 }
             }
-            
-            replacements = tryAgainList;
         }
     }
 
