@@ -1,6 +1,8 @@
 # Loot Crates
 ![loot_crates](https://user-images.githubusercontent.com/26429514/134697417-3d8f9cdd-2401-4c0c-9ca2-b2b0d4aacfa2.png)
 
+https://www.curseforge.com/minecraft/mc-mods/fabric-loot-crates
+
 ## About
 
 LootCrates is a Minecraft mod for the fabric mod loader. The mod adds additional chests and shulker boxes, with a twist.
