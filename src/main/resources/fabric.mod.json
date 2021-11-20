@@ -8,8 +8,9 @@
     "DaFuqs"
   ],
   "contact": {
-    "website": "github.com/DaFuqs",
-    "repo": "github.com/DaFuqs/LootCrates"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/fabric-loot-crates",
+    "sources": "github.com/DaFuqs/LootCrates",
+    "issues": "github.com/DaFuqs/LootCrates/issues"
   },
   "license": "MIT",
   "icon": "assets/lootcrates/icon.png",
