@@ -96,7 +96,7 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
         if (entity.getAnimationStage() != ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
             return true;
         } else {
-            Box box = ShulkerEntity.method_33347(state.get(FACING), 0.0F, 0.5F).offset(pos).contract(1.0E-6D);
+            Box box = ShulkerEntity.calculateBoundingBox(state.get(FACING), 0.0F, 0.5F).offset(pos).contract(1.0E-6D);
             return world.isSpaceEmpty(box);
         }
     }

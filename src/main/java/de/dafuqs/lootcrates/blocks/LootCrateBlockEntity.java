@@ -68,13 +68,11 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
+    public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
         Inventories.writeNbt(tag, this.inventory, false);
-        tag = addLootCrateBlockTags(tag);
-
-        return tag;
+        addLootCrateBlockTags(tag);
     }
 
     @Override

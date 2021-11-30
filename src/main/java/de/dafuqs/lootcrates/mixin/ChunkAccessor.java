@@ -1,14 +1,14 @@
 package de.dafuqs.lootcrates.mixin;
 
 import net.minecraft.world.HeightLimitView;
-import net.minecraft.world.chunk.ProtoChunk;
+import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ProtoChunk.class)
-public interface ProtoChunkAccessor {
+@Mixin(Chunk.class)
+public interface ChunkAccessor {
 
-    @Accessor("world")
+    @Accessor("heightLimitView")
     HeightLimitView getWorld();
     
 }

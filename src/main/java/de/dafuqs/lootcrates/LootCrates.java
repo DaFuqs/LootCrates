@@ -30,6 +30,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,7 +39,7 @@ import java.util.List;
 public class LootCrates implements ModInitializer {
 
     public static final String MOD_ID = "lootcrates";
-    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+    private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     public static LootCratesConfig CONFIG;
 
     public static final ItemGroup ITEM_GROUP = FabricItemGroupBuilder.build(
@@ -86,12 +87,12 @@ public class LootCrates implements ModInitializer {
     public void onInitialize() {
 
         // Config
-        LOGGER.info("[LootCrates] Loading config...");
+        log(Level.INFO, "Loading config...");
         AutoConfig.register(LootCratesConfig.class, JanksonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(LootCratesConfig.class).getConfig();
 
         // All the different types of crates
-        LOGGER.info("[LootCrates] Loading crate definitions...");
+        log(Level.INFO, "Loading crate definitions...");
         LootCrateDefinition commonLootCrate = new LootCrateDefinition(LootCrateRarity.COMMON, Rarity.COMMON, MapColor.DIRT_BROWN, 0, false, false);
         LootCrateDefinition uncommonLootCrate = new LootCrateDefinition(LootCrateRarity.UNCOMMON, Rarity.UNCOMMON, MapColor.YELLOW, 0, false, false);
         LootCrateDefinition rareLootCrate = new LootCrateDefinition(LootCrateRarity.RARE, Rarity.RARE, MapColor.BLUE, 0, false, false);
@@ -113,22 +114,23 @@ public class LootCrates implements ModInitializer {
 
         // The block entity type
         LootCratesBlockEntityType.register();
-
-        LOGGER.info("[LootCrates] Registering sounds...");
+    
+        log(Level.INFO, "Registering sounds...");
         Registry.register(Registry.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
-
-        LOGGER.info("[LootCrates] Loading LootCratesWorldgenSettings.json...");
-
+    
+        log(Level.INFO, "Loading LootCratesWorldgenSettings.json and registering the replacer");
         LootCratesWorldgenReplacer.initialize();
-
-        LOGGER.info("[LootCrates] Finished LootCratesWorldgenSettings.json...");
-
         if(CONFIG.ReplaceVanillaWorldgenChests) {
             ServerTickEvents.END_SERVER_TICK.register(server -> {
                 LootCratesWorldgenReplacer.tick(server);
             });
         }
 
-        LOGGER.info("[LootCrates] Finished!");
+        log(Level.INFO, "Finished!");
     }
+    
+    public static void log(Level logLevel, String message) {
+        LOGGER.log(logLevel, "[LootCrates] " + message);
+    }
+    
 }

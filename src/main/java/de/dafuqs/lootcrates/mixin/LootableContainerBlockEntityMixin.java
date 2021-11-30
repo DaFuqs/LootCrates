@@ -16,7 +16,6 @@ import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ProtoChunk;
-import org.apache.logging.log4j.core.jmx.Server;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,7 +31,7 @@ public abstract class LootableContainerBlockEntityMixin {
         if(LootCrates.CONFIG.ReplaceVanillaWorldgenChests) {
             RegistryKey<World> worldRegistryKey;
             if(world instanceof ProtoChunk protoChunk) {
-                ProtoChunkAccessor protoChunkAccessor = ((ProtoChunkAccessor) protoChunk);
+                ChunkAccessor protoChunkAccessor = ((ChunkAccessor) protoChunk);
                 HeightLimitView heightLimitView = protoChunkAccessor.getWorld();
                 if(heightLimitView instanceof ChunkRegion chunkRegion) {
                     worldRegistryKey = chunkRegion.toServerWorld().getRegistryKey();

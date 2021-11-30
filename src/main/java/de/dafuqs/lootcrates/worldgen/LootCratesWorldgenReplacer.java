@@ -203,7 +203,7 @@ public class LootCratesWorldgenReplacer {
 
                 configReader = new FileReader(configFile);
             } catch (IOException ioException) {
-                LootCrates.LOGGER.log(Level.ERROR, "[LootCrates] Could not generate config file under " + configFile.getAbsolutePath() + ".\n" + ioException.getLocalizedMessage());
+                LootCrates.log(Level.ERROR, "Could not generate config file under " + configFile.getAbsolutePath() + ".\n" + ioException.getLocalizedMessage());
                 return;
             }
         }
@@ -212,7 +212,7 @@ public class LootCratesWorldgenReplacer {
         try {
             jsonElement = (JsonElement) JsonHelper.deserialize(GSON, configReader, (Class) JsonElement.class);
         } catch (Exception e) {
-            LootCrates.LOGGER.error("[LootCrates] Could not parse the LootCratesWorldgenSettings.json5: " + e.getLocalizedMessage());
+            LootCrates.log(Level.ERROR, "Could not parse the LootCratesWorldgenSettings.json5: " + e.getLocalizedMessage());
             return;
         }
 
@@ -291,7 +291,7 @@ public class LootCratesWorldgenReplacer {
                         try {
                             blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
                         } catch (Exception e) {
-                            LootCrates.LOGGER.error("[LootCrates] Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "' ) + " + e.getLocalizedMessage());
+                            LootCrates.log(Level.ERROR, "Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "' ) + " + e.getLocalizedMessage());
                             continue;
                         }
                         if(blockEntity != null && !(blockEntity instanceof LootCrateBlockEntity)) {
@@ -344,7 +344,7 @@ public class LootCratesWorldgenReplacer {
                         }
                     }
                 } catch (Exception e) {
-                    LootCrates.LOGGER.error("[LootCrates] Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "') + " + e.getLocalizedMessage());
+                    LootCrates.log(Level.ERROR, "Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "') + " + e.getLocalizedMessage());
                 }
             }
         }

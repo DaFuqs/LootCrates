@@ -99,7 +99,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     private void pushEntities(World world, BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof ShulkerLootCrateBlock) {
             Direction direction = state.get(ShulkerBoxBlock.FACING);
-            Box box = ShulkerEntity.method_33347(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
+            Box box = ShulkerEntity.calculateBoundingBox(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
             List<Entity> list = world.getOtherEntities(null, box);
             if (!list.isEmpty()) {
                 for (Entity entity : list) {

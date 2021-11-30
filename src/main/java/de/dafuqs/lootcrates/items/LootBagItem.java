@@ -91,9 +91,9 @@ public class LootBagItem extends Item {
     public List<ItemStack> getLootTableContents(ServerPlayerEntity player, ItemStack lootBagItemStack) {
         Identifier lootTableId = getLootTableIdentifier(lootBagItemStack);
         if(lootTableId != null) {
-            LootTable lootTable = player.getServerWorld().getServer().getLootManager().getTable(lootTableId);
+            LootTable lootTable = player.getWorld().getServer().getLootManager().getTable(lootTableId);
             if(lootTable != null) {
-                LootContext.Builder builder = (new LootContext.Builder(player.getServerWorld()).parameter(LootContextParameters.ORIGIN, player.getPos())).random(getLootTableSeed(lootBagItemStack));
+                LootContext.Builder builder = (new LootContext.Builder(player.getWorld()).parameter(LootContextParameters.ORIGIN, player.getPos())).random(getLootTableSeed(lootBagItemStack));
                 builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
                 return lootTable.generateLoot(builder.build(LootContextTypes.CHEST));
             }

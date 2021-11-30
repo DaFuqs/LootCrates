@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -91,7 +90,7 @@ public class LootCrateDefinition {
         }
 
         public FabricBlockSettings getChestBlockSettings() {
-            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.METAL, mapColor).luminance(luminance).breakByTool(FabricToolTags.PICKAXES);
+            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.METAL, mapColor).luminance(luminance);
 
             if(LootCrates.CONFIG.ChestCrateHardness < 0) {
                 blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
@@ -110,7 +109,7 @@ public class LootCrateDefinition {
         }
 
         public FabricBlockSettings getShulkerBlockSettings() {
-            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, mapColor).luminance(luminance).breakByTool(FabricToolTags.PICKAXES);
+            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, mapColor).luminance(luminance);
 
             if(LootCrates.CONFIG.ShulkerCrateHardness < 0) {
                 blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
@@ -126,7 +125,7 @@ public class LootCrateDefinition {
         }
 
     public FabricBlockSettings getLootBarrelBlockSettings() {
-        FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.WOOD, mapColor).luminance(luminance).breakByTool(FabricToolTags.PICKAXES);
+        FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.WOOD, mapColor).luminance(luminance);
 
         if(LootCrates.CONFIG.LootBarrelHardness < 0) {
             blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();

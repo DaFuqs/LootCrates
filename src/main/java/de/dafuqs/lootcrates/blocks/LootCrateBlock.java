@@ -145,7 +145,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        world.getBlockTickScheduler().schedule(pos, this, getRandomTickTime(world.random));
+        world.createAndScheduleBlockTick(pos, this, getRandomTickTime(world.random));
 
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity) {
@@ -175,7 +175,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             ScheduledTickEvent scheduledTickEvent = ((LootCrateBlockEntity) blockEntity).getRandomTickEvent();
 
             if(scheduledTickEvent != ScheduledTickEvent.NONE) {
-                world.getBlockTickScheduler().schedule(pos, this, getRandomTickTime(world.random));
+                world.createAndScheduleBlockTick(pos, this, getRandomTickTime(world.random));
             }
         }
     }

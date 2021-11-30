@@ -1,8 +1,8 @@
 package de.dafuqs.lootcrates.worldgen;
 
-import blue.endless.jankson.annotation.Nullable;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 public class LootCrateReplacementEntry {
 
@@ -23,4 +23,5 @@ public class LootCrateReplacementEntry {
         this.lockType = lockType;
         this.weight = weight;
     }
+    
 }
