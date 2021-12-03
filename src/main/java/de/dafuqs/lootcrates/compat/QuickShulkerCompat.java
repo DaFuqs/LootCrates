@@ -1,7 +1,8 @@
-/*package de.dafuqs.lootcrates.compat;
+package de.dafuqs.lootcrates.compat;
 
 import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.LootCrates;
+import de.dafuqs.lootcrates.blocks.barrel.LootBarrelBlock;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
@@ -42,6 +43,7 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
     public void registerProviders() {
         QuickOpenableRegistry.register(ShulkerLootCrateBlock.class, true, false, ((player, stack) -> {
             if (LootCrates.CONFIG.ShulkerCratesKeepTheirInventory) {
+                checkRelock(player, stack);
                 if (isLocked(stack)) {
                     if(consumeKey(player, LootCrateAtlas.getCrateItemRarity(stack.getItem()))) {
                         unlock(player, stack);
@@ -58,6 +60,7 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
 
         QuickOpenableRegistry.register(ChestLootCrateBlock.class, true, false, ((player, stack) -> {
             if (LootCrates.CONFIG.ChestCratesKeepTheirInventory) {
+                checkRelock(player, stack);
                 if (isLocked(stack)) {
                     if(consumeKey(player, LootCrateAtlas.getCrateItemRarity(stack.getItem()))) {
                         unlock(player, stack);
@@ -68,6 +71,23 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
                     checkLootInteraction(stack, (ServerPlayerEntity) player);
                     player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
                             new ShulkerBoxScreenHandler(i, player.getInventory(), ShulkerUtils.getInventoryFromShulker(stack)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.lootcrates.loot_crate")));
+                }
+            }
+        }));
+        
+        QuickOpenableRegistry.register(LootBarrelBlock.class, true, false, ((player, stack) -> {
+            if (LootCrates.CONFIG.LootBarrelsKeepTheirInventory) {
+                checkRelock(player, stack);
+                if (isLocked(stack)) {
+                    if(consumeKey(player, LootCrateAtlas.getCrateItemRarity(stack.getItem()))) {
+                        unlock(player, stack);
+                    } else {
+                        printLockedMessage(player, stack);
+                    }
+                } else {
+                    checkLootInteraction(stack, (ServerPlayerEntity) player);
+                    player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
+                            new ShulkerBoxScreenHandler(i, player.getInventory(), ShulkerUtils.getInventoryFromShulker(stack)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.lootcrates.loot_barrel")));
                 }
             }
         }));
@@ -237,4 +257,4 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
             }
         }
     }
-}*/
+}
