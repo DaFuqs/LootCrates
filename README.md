@@ -81,29 +81,48 @@ Following examples use a Rare Chest Loot Crate named "Bastion Treasure Crate" co
 
 You can find more examples, like a documented worldgen replacement config file and demo datapack under [./example_datapacks/](https://github.com/DaFuqs/LootCrates/tree/main/example_datapacks)
 
-### Give-Command
+### Give-Command for a Loot Crate
 
     /give @p lootcrates:rare_chest_loot_crate{BlockEntityTag: {LootTable: "minecraft:chests/bastion_treasure", Locked: 1b, ReplenishTimeTicks: 60L}, display: {Name: '{"text":"Bastion Treasure Crate"}'}} 1
     
-### SetBlock-Command
+### SetBlock-Command for a Loot Crate
 
     /setblock ~ ~ ~ lootcrates:rare_chest_loot_crate{LootTable: "minecraft:chests/bastion_treasure", Locked: 1b, ReplenishTimeTicks: 60L, CustomName: '{"text":"Bastion Treasure Crate"}'}
     
-### Loot table
+### Loot table for a Loot Crate
 
 ```json
 {
-	"pools": [{
-		"rolls": 1,
-		"entries": [{
-			"type": "item",
-			"name": "lootcrates:rare_chest_loot_crate",
-			"weight": 1,
-			"functions": [{
-				"function": "set_nbt",
-				"tag": "{BlockEntityTag: {LootTable: \"minecraft:chests/bastion_treasure\", Locked: 1b, ReplenishTimeTicks: 60L}, display: {Name: '{\"text\":\"Bastion Treasure Crate\"}'}}"
-			}]
-		}]
-	}]
+  "type": "minecraft:entity",
+  "pools": [{
+    "rolls": 1,
+    "entries": [{
+      "type": "item",
+      "name": "lootcrates:rare_chest_loot_crate",
+      "functions": [{
+        "function": "set_nbt",
+        "tag": "{BlockEntityTag: {LootTable: \"minecraft:chests/bastion_treasure\", Locked: 1b, ReplenishTimeTicks: 60L}, display: {Name: '{\"text\":\"Bastion Treasure Crate\"}'}}"
+      }]
+    }]
+  }]
+}
+```
+
+### Loot table for a Loot Bag
+
+```json
+{
+  "type": "minecraft:entity",
+  "pools": [{
+    "rolls": 1,
+    "entries": [{
+      "type": "minecraft:item",
+      "name": "lootcrates:common_loot_bag",
+      "functions": [{
+        "function": "minecraft:set_nbt",
+        "tag": "{ LootTable: \"minecraft:chests/bastion_treasure\", display: {Name: '{\"text\":\"Bastion Loot Bag\"}'}}"
+      }]
+    }]
+  }]
 }
 ```
