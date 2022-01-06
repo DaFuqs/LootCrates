@@ -15,15 +15,12 @@ public class WeightedLootCrateEntryList {
     }
 
     public LootCrateReplacementEntry getWeightedRandom(@NotNull Random random) {
-        int r = random.nextInt(totalWeight);
-        int c = 0;
-        for (LootCrateReplacementEntry weightedEntry : this.weightedEntries) {
-            if (r < c) {
-                return weightedEntry;
-            }
-            c += weightedEntry.weight;
+        int idx = 0;
+        for (double r = random.nextDouble() * totalWeight; idx < this.weightedEntries.size() - 1; ++idx) {
+            r -= this.weightedEntries.get(idx).weight;
+            if (r <= 0.0) break;
         }
-        return this.weightedEntries.get(this.weightedEntries.size()-1);
+        return this.weightedEntries.get(idx);
     }
 
 }
