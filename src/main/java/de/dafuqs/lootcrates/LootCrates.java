@@ -121,9 +121,7 @@ public class LootCrates implements ModInitializer {
         log(Level.INFO, "Loading LootCratesWorldgenSettings.json and registering the replacer");
         LootCratesWorldgenReplacer.initialize();
         if(CONFIG.ReplaceVanillaWorldgenChests) {
-            ServerTickEvents.END_SERVER_TICK.register(server -> {
-                LootCratesWorldgenReplacer.tick(server);
-            });
+            ServerTickEvents.END_SERVER_TICK.register(LootCratesWorldgenReplacer::tick);
         }
 
         log(Level.INFO, "Finished!");

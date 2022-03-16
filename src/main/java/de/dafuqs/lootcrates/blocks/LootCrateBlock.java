@@ -60,15 +60,15 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         if (blockEntity instanceof LootCrateBlockEntity) {
             LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) blockEntity;
             lootCrateBlockEntity.checkRelock(player);
-            if(lootCrateBlockEntity.isLocked()) {
+            if(lootCrateBlockEntity.isLocked(player)) {
                 for(ItemStack itemStack : player.getItemsHand()) {
                     if(lootCrateBlockEntity.doesUnlock(itemStack.getItem())) {
                         if(!player.isCreative()) {
-                            if (lootCrateBlockEntity.doesConsumeKeyOnUnlock()) {
+                            if (lootCrateBlockEntity.getLockType().consumesKey()) {
                                 itemStack.decrement(1);
                             }
                         }
-                        lootCrateBlockEntity.unlock(world);
+                        lootCrateBlockEntity.unlock(world, player);
                         return ActionResult.CONSUME; // just consume the action and play unlock sound.
                     }
                 }

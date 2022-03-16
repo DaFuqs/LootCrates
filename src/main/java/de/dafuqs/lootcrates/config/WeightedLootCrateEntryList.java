@@ -1,4 +1,4 @@
-package de.dafuqs.lootcrates.worldgen;
+package de.dafuqs.lootcrates.config;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -6,10 +6,15 @@ import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
+import de.dafuqs.lootcrates.blocks.modes.LockMode;
+import de.dafuqs.lootcrates.config.LootCrateReplacementEntry;
+import de.dafuqs.lootcrates.config.WeightedLootCrateEntryList;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
+import de.dafuqs.lootcrates.mixin.LootTableAccessor;
 import net.fabricmc.loader.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
@@ -184,7 +189,7 @@ public class LootCratesWorldgenReplacer {
     public static List<LootCrateReplacementPosition> replacements = new ArrayList<>();
 
     private static WeightedLootCrateEntryList DefaultLootCrateProviderList = new WeightedLootCrateEntryList(1, new ArrayList<>() {{
-        add(new LootCrateReplacementEntry(null, null, true, 1, LockType.NONE, 1));
+        add(new LootCrateReplacementEntry(null, null, true, 1, LockMode.NONE, 1));
     }});
     private static final Map<Identifier, WeightedLootCrateEntryList> LootCrateProviders = new HashMap<>();
 
@@ -231,7 +236,7 @@ public class LootCratesWorldgenReplacer {
                 Identifier lootTable = null; // null => keep the original loot table
                 boolean oncePerPlayer = false;
                 int replenishTimeTicks = 0;
-                LockType lockType = LockType.NONE;
+                LockMode lockMode = LockMode.NONE;
                 int weight = 1;
 
                 if(JsonHelper.hasString(targetEntry, "crate_rarity")) {
@@ -247,14 +252,14 @@ public class LootCratesWorldgenReplacer {
                     replenishTimeTicks = JsonHelper.getInt(targetEntry, "replenish_time_ticks");
                 }
                 if(JsonHelper.hasString(targetEntry, "lock")) {
-                    lockType = LockType.valueOf(JsonHelper.getString(targetEntry, "lock").toUpperCase(Locale.ROOT));
+                    lockMode = LockMode.valueOf(JsonHelper.getString(targetEntry, "lock").toUpperCase(Locale.ROOT));
                 }
                 if(JsonHelper.hasNumber(targetEntry, "weight")) {
                     weight = JsonHelper.getInt(targetEntry, "weight");
                 }
                 totalWeight += weight;
 
-                lootCrateEntries.add(new LootCrateReplacementEntry(lootCrateRarity, lootTable, oncePerPlayer, replenishTimeTicks, lockType, weight));
+                lootCrateEntries.add(new LootCrateReplacementEntry(lootCrateRarity, lootTable, oncePerPlayer, replenishTimeTicks, lockMode, weight));
 
             }
 
@@ -286,65 +291,73 @@ public class LootCratesWorldgenReplacer {
             for (LootCrateReplacementPosition replacementPosition : list) {
                 try {
                     ServerWorld serverWorld = server.getWorld(replacementPosition.worldKey);
-                    if (serverWorld != null && serverWorld.isChunkLoaded(replacementPosition.blockPos)) {
+                    if (serverWorld != null) {
                         BlockEntity blockEntity;
                         try {
                             blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
                         } catch (Exception e) {
-                            LootCrates.log(Level.ERROR, "Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "' ) + " + e.getLocalizedMessage());
+                            LootCrates.log(Level.ERROR, "Error while replacing a container in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "' ) + " + e.getLocalizedMessage());
                             continue;
                         }
-                        if(blockEntity != null && !(blockEntity instanceof LootCrateBlockEntity)) {
-                            serverWorld.removeBlockEntity(replacementPosition.blockPos);
-                        }
-
-                        BlockState sourceBlockState = serverWorld.getBlockState(replacementPosition.blockPos);
-                        Block sourceBlock = sourceBlockState.getBlock();
-
-                        boolean trapped = false;
-                        if(!(sourceBlock instanceof LootCrateBlock)) {
-                            LootCrateReplacementEntry replacementTargetData = getEntryForLootTable(replacementPosition.lootTable, new Random(replacementPosition.lootTableSeed));
-
-                            if (sourceBlock instanceof ChestBlock) {
-                                if (sourceBlock instanceof TrappedChestBlock) {
-                                    trapped = true;
-                                }
-                                serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getLootCrate(replacementTargetData.lootCrateRarity).getDefaultState().with(ChestLootCrateBlock.FACING, sourceBlockState.get(ChestBlock.FACING)), 3);
-                            } else if (sourceBlock instanceof BarrelBlock) {
-                                serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getLootBarrel(replacementTargetData.lootCrateRarity).getDefaultState().with(net.minecraft.state.property.Properties.FACING, sourceBlockState.get(Properties.FACING)), 3);
-                            } else if (sourceBlock instanceof ShulkerBoxBlock) {
-                                serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getShulkerCrate(replacementTargetData.lootCrateRarity).getDefaultState().with(net.minecraft.state.property.Properties.FACING, sourceBlockState.get(Properties.FACING)), 3);
-                            } else {
-                                // the worldgen may have been replaced by other blocks.
-                                // Like a mineshaft cutting into a dungeon, replacing the chest with air again
-                                // => do not replace
-                                continue;
-                            }
-
-                            blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
-                            if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
-                                if(replacementTargetData.lootTable == null) {
-                                    // keep the original loot table
-                                    lootCrateBlockEntity.setLootTable(replacementPosition.lootTable, replacementPosition.lootTableSeed);
-                                } else {
-                                    // overwrite with an alternate loot table
-                                    lootCrateBlockEntity.setLootTable(replacementTargetData.lootTable, replacementPosition.lootTableSeed);
-                                }
-                                if(replacementTargetData.oncePerPlayer) {
-                                    lootCrateBlockEntity.setOncePerPlayer(true);
-                                }
-
-                                lootCrateBlockEntity.setLock(replacementTargetData.lockType);
-                                lootCrateBlockEntity.setReplenishTimeTicks(replacementTargetData.replenishTimeTicks);
-
-                                if (trapped) {
-                                    lootCrateBlockEntity.setTrapped(true);
+                        
+                        if(serverWorld.isPosLoaded(replacementPosition.blockPos.getX(), replacementPosition.blockPos.getZ())) {
+                            Identifier lootTableIdentifier;
+                            long lootTableSeed;
+                            if(blockEntity instanceof LootableContainerBlockEntity && !(blockEntity instanceof LootCrateBlockEntity)) {
+                                LootTableAccessor lootTableAccessor = ((LootTableAccessor) blockEntity);
+                                lootTableIdentifier = lootTableAccessor.getLootTableIdentifier();
+                                lootTableSeed = lootTableAccessor.getLootTableSeed();
+        
+                                serverWorld.removeBlockEntity(replacementPosition.blockPos);
+        
+                                BlockState sourceBlockState = serverWorld.getBlockState(replacementPosition.blockPos);
+                                Block sourceBlock = sourceBlockState.getBlock();
+                                if (!(sourceBlock instanceof LootCrateBlock)) {
+                                    boolean trapped = false;
+                                    LootCrateReplacementEntry replacementTargetData = getEntryForLootTable(lootTableIdentifier, new Random(lootTableSeed));
+            
+                                    if (sourceBlock instanceof ChestBlock) {
+                                        if (sourceBlock instanceof TrappedChestBlock) {
+                                            trapped = true;
+                                        }
+                                        serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getLootCrate(replacementTargetData.lootCrateRarity).getDefaultState().with(ChestLootCrateBlock.FACING, sourceBlockState.get(ChestBlock.FACING)), 3);
+                                    } else if (sourceBlock instanceof BarrelBlock) {
+                                        serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getLootBarrel(replacementTargetData.lootCrateRarity).getDefaultState().with(net.minecraft.state.property.Properties.FACING, sourceBlockState.get(Properties.FACING)), 3);
+                                    } else if (sourceBlock instanceof ShulkerBoxBlock) {
+                                        serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getShulkerCrate(replacementTargetData.lootCrateRarity).getDefaultState().with(net.minecraft.state.property.Properties.FACING, sourceBlockState.get(Properties.FACING)), 3);
+                                    } else {
+                                        // the worldgen may have been replaced by other blocks.
+                                        // Like a mineshaft cutting into a dungeon, replacing the chest with air again
+                                        // => do not replace
+                                        continue;
+                                    }
+            
+                                    blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
+                                    if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
+                                        if (replacementTargetData.lootTable == null) {
+                                            // keep the original loot table
+                                            lootCrateBlockEntity.setLootTable(lootTableIdentifier, lootTableSeed);
+                                        } else {
+                                            // overwrite with an alternate loot table
+                                            lootCrateBlockEntity.setLootTable(replacementTargetData.lootTable, lootTableSeed);
+                                        }
+                                        if (replacementTargetData.oncePerPlayer) {
+                                            lootCrateBlockEntity.setTrackedPerPlayer(true);
+                                        }
+                
+                                        lootCrateBlockEntity.setLockMode(replacementTargetData.lockMode);
+                                        lootCrateBlockEntity.setReplenishTimeTicks(replacementTargetData.replenishTimeTicks);
+                
+                                        if (trapped) {
+                                            lootCrateBlockEntity.setTrapped(true);
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 } catch (Exception e) {
-                    LootCrates.log(Level.ERROR, "Error while replacing a container with loot table '" + replacementPosition.lootTable + "' in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "') + " + e.getLocalizedMessage());
+                    LootCrates.log(Level.ERROR, "Error while replacing a container in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "') + " + e.getLocalizedMessage());
                 }
             }
         }

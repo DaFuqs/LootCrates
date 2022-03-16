@@ -9,14 +9,10 @@ public class LootCrateReplacementPosition {
 
     public RegistryKey<World> worldKey;
     public BlockPos blockPos;
-    public Identifier lootTable;
-    public long lootTableSeed;
 
-    public LootCrateReplacementPosition(RegistryKey<World> worldKey, BlockPos blockPos, Identifier lootTable, long lootTableSeed) {
+    public LootCrateReplacementPosition(RegistryKey<World> worldKey, BlockPos blockPos) {
         this.worldKey = worldKey;
         this.blockPos = blockPos;
-        this.lootTable = lootTable;
-        this.lootTableSeed = lootTableSeed;
     }
 
 }

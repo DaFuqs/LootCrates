@@ -51,8 +51,7 @@ public abstract class LootableContainerBlockEntityMixin {
             if (!LootCrates.CONFIG.ReplaceVanillaWorldgenChestsDimensionsBlacklist.contains(worldRegistryKey.getValue().toString())) {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if ((blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity) && world instanceof ChunkRegion || world instanceof ServerWorld) {
-                    LootTableAccessor lootTableAccessor = ((LootTableAccessor) blockEntity);
-                    LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition(worldRegistryKey, pos, lootTableAccessor.getLootTableIdentifier(), lootTableAccessor.getLootTableSeed()));
+                    LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition(worldRegistryKey, pos));
                 }
             }
         }

@@ -3,11 +3,13 @@ package de.dafuqs.lootcrates.blocks;
 import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
+import de.dafuqs.lootcrates.blocks.modes.LockMode;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import de.dafuqs.lootcrates.items.LootKeyItem;
-import de.dafuqs.lootcrates.worldgen.LockType;
+import de.dafuqs.lootcrates.blocks.modes.InventoryDeletionMode;
+import de.dafuqs.lootcrates.blocks.modes.ReplenishMode;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -37,34 +39,42 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity {
 
+    public class PlayerCrateData {
+        private UUID playerUUID;
+        private long lastReplenishTime;
+        private long lastUnlockTime; // for the relock to only lock back up when there is new loot to generate
+        private boolean unlocked;
+        
+        public PlayerCrateData(UUID playerUUID, long time) {
+            this.playerUUID = playerUUID;
+            this.lastReplenishTime = time;
+            this.lastUnlockTime = time;
+            this.unlocked = true;
+        }
+    }
+    
     protected DefaultedList<ItemStack> inventory;
 
-    private boolean locked;
-    private boolean doNotConsumeKeyOnUnlock;
-    private boolean oncePerPlayer;
-    private List<UUID> registeredPlayerUUIDs;
-    private ScheduledTickEvent scheduledTickEvent;
+    private LockMode lockMode;
+    private ReplenishMode replenishMode;
+    private InventoryDeletionMode inventoryDeletionMode;
     private boolean trapped;
-    private boolean relocksForNewLoot;
-
     private long replenishTimeTicks;
-    private long lastReplenishTimeTick;
-    private long lastUnlockTimeTick; // for the relock to not lock right back up
+    private boolean trackedPerPlayer;
+    private List<PlayerCrateData> playerCrateData;
 
+    private ScheduledTickEvent scheduledTickEvent;
+    
     protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
         this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
-        registeredPlayerUUIDs = new ArrayList<>();
+        this.playerCrateData = new ArrayList<>();
     }
 
     @Override
@@ -118,6 +128,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     public boolean shouldGenerateNewLoot(PlayerEntity player, boolean test) {
         if(hasWorld()) {
             // if replenish time is set to <=0: just generate loot once
+            
             if(this.replenishTimeTicks <= 0) {
                 if(this.lastReplenishTimeTick == 0) {
                     this.lastReplenishTimeTick = world.getTime();
@@ -128,13 +139,13 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             } else {
                 // check if there was enough time since the last opening
                 if (lastReplenishTimeTick == 0 || this.world.getTime() > this.lastReplenishTimeTick + this.replenishTimeTicks) {
-                    if (this.oncePerPlayer) {
-                        if (this.registeredPlayerUUIDs.contains(player.getUuid())) {
+                    if (this.trackedPerPlayer) {
+                        if (this.registeredPlayerUUIDsAndLastLootReplenishTime.contains(player.getUuid())) {
                             return false;
                         } else {
                             this.lastReplenishTimeTick = world.getTime();
                             if(!test) {
-                                this.registeredPlayerUUIDs.add(player.getUuid());
+                                this.registeredPlayerUUIDsAndLastLootReplenishTime.add(player.getUuid());
                                 this.markDirty();
                             }
                             return true;
@@ -194,11 +205,11 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(this.trapped) {
             tag.putBoolean(LootCrateTagNames.Trapped.toString(), true);
         }
-        if(this.oncePerPlayer) {
+        if(this.trackedPerPlayer) {
             tag.putBoolean(LootCrateTagNames.OncePerPlayer.toString(), true);
-            if(this.registeredPlayerUUIDs.size() > 0) {
+            if(this.registeredPlayerUUIDsAndLastLootReplenishTime.size() > 0) {
                 NbtList registeredPlayers = new NbtList();
-                for (UUID uuid : this.registeredPlayerUUIDs) {
+                for (UUID uuid : this.registeredPlayerUUIDsAndLastLootReplenishTime) {
                     registeredPlayers.add(NbtHelper.fromUuid(uuid));
                 }
                 tag.put(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), registeredPlayers);
@@ -210,7 +221,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public void setLootCrateBlockTags(NbtCompound tag) {
-        this.registeredPlayerUUIDs = new ArrayList<>();
+        this.registeredPlayerUUIDsAndLastLootReplenishTime = new ArrayList<>();
 
         this.deserializeLootTable(tag);
 
@@ -236,15 +247,15 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         this.trapped = tag.contains(LootCrateTagNames.Trapped.toString()) && tag.getBoolean(LootCrateTagNames.Trapped.toString());
 
         if(tag.contains(LootCrateTagNames.OncePerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.OncePerPlayer.toString())) {
-            this.oncePerPlayer = true;
+            this.trackedPerPlayer = true;
             if(tag.contains(LootCrateTagNames.RegisteredPlayerUUIDs.toString())) {
                 NbtList playerUUIDs = tag.getList(LootCrateTagNames.RegisteredPlayerUUIDs.toString(), 11);
                 for (NbtElement playerUUID : playerUUIDs) {
-                    this.registeredPlayerUUIDs.add(NbtHelper.toUuid(playerUUID));
+                    this.registeredPlayerUUIDsAndLastLootReplenishTime.add(NbtHelper.toUuid(playerUUID));
                 }
             }
         } else {
-            this.oncePerPlayer = false;
+            this.trackedPerPlayer = false;
         }
     }
 
@@ -273,7 +284,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
-    public boolean isLocked() {
+    public boolean isLocked(PlayerEntity player) {
         return locked;
     }
 
@@ -294,11 +305,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         return false;
     }
 
-    public boolean doesConsumeKeyOnUnlock() {
-        return !doNotConsumeKeyOnUnlock;
+    public LockMode getLockType() {
+        return this.lockMode;
     }
 
-    public void unlock(World world) {
+    public void unlock(World world, PlayerEntity playerEntity) {
+        
         this.locked = false;
         this.lastUnlockTimeTick = world.getTime();
         this.playSound(LootCrates.CHEST_UNLOCKS_SOUND_EVENT);
@@ -375,8 +387,8 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
     }
 
-    public void setOncePerPlayer(boolean oncePerPlayer) {
-        this.oncePerPlayer = oncePerPlayer;
+    public void setTrackedPerPlayer(boolean trackedPerPlayer) {
+        this.trackedPerPlayer = trackedPerPlayer;
     }
 
     public void setReplenishTimeTicks(int ticks) {
@@ -388,35 +400,5 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public abstract int getCurrentLookingPlayers(BlockView world, BlockPos pos);
-
-    public void setLock(@NotNull LockType lockType) {
-        switch (lockType) {
-            case NONE -> {
-                this.locked = false;
-                this.doNotConsumeKeyOnUnlock = true;
-                this.relocksForNewLoot = false;
-            }
-            case CONSUME_KEY -> {
-                this.locked = true;
-                this.doNotConsumeKeyOnUnlock = false;
-                this.relocksForNewLoot = false;
-            }
-            case CONSUME_KEY_RELOCK -> {
-                this.locked = true;
-                this.doNotConsumeKeyOnUnlock = false;
-                this.relocksForNewLoot = true;
-            }
-            case REQUIRE_KEY -> {
-                this.locked = true;
-                this.doNotConsumeKeyOnUnlock = true;
-                this.relocksForNewLoot = false;
-            }
-            default -> {
-                this.locked = true;
-                this.doNotConsumeKeyOnUnlock = true;
-                this.relocksForNewLoot = true;
-            }
-        }
-    }
 
 }

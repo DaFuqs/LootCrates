@@ -69,7 +69,9 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
                                                 // no use in that tag when there is no lock, is there?
                                             } else {
                                                 for(boolean relock : booleans) {
-                                                    if(replenishTimeTicks > 0) {
+                                                    if(relock && !locked) {
+                                                        // relockable crates should be locked by default
+                                                    } else {
                                                         NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, replenishTimeTicks, 0, oncePerPlayer, relock, trapped);
                                                         ItemStack itemStack = new ItemStack(lootCrateItem);
                                                         itemStack.setNbt(compound);
