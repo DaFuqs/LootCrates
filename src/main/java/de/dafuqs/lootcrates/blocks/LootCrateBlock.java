@@ -6,11 +6,11 @@ import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -44,11 +44,6 @@ import java.util.List;
 import java.util.Random;
 
 public abstract class LootCrateBlock extends BlockWithEntity {
-
-    @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        super.onStateReplaced(state, world, pos, newState, moved);
-    }
 
     protected LootCrateBlock(Settings settings) {
         super(settings);
@@ -184,88 +179,24 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     private static int getRandomTickTime(Random random) {
         return 20 + random.nextInt(10);
     }
-
-    /**
-     * Called when the block is broken
-     * Used to add Block NBT to the item stack
-     * @param world The world, client and server
-     * @param pos BlockPos where the block is
-     * @param state The block state
-     * @param player The player that has broken the block
-     */
-    @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof LootCrateBlockEntity) {
-
+        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             // if creative: If there is block data add those and drop a block with all those tags
             // No tags = No drop. Just like vanilla shulker chests
-            if (!world.isClient) {
+            if (!world.isClient && !lootCrateBlockEntity.isEmpty()) {
                 BlockBreakAction blockBreakAction = getBlockBreakAction();
-                if (player.isCreative()) {
+                if (blockBreakAction == BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY) {
+                    ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
+                } else if (blockBreakAction == BlockBreakAction.DROP_AND_SCATTER_INVENTORY) {
+                    ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
+                    dropAsItemWithTags(world, pos, false);
+                } else if (blockBreakAction == BlockBreakAction.KEEP_INVENTORY) {
                     dropAsItemWithTags(world, pos, true);
-                } else {
-                    if (blockBreakAction == BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY) {
-                        ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
-                    } else if (blockBreakAction == BlockBreakAction.DROP_AND_SCATTER_INVENTORY) {
-                        ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
-                        dropAsItemWithTags(world, pos, false);
-                    } else if (blockBreakAction == BlockBreakAction.KEEP_INVENTORY) {
-                        dropAsItemWithTags(world, pos, true);
-                    }
                 }
             }
         }
-
-        super.onBreak(world, pos, state, player);
-    }
-
-    public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
-        BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
-        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
-            BlockBreakAction blockBreakAction = getBlockBreakAction();
-            if (blockBreakAction == BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY) {
-                return lootCrateBlockEntity.getInvStackList();
-            } else if (blockBreakAction == BlockBreakAction.DROP_AND_SCATTER_INVENTORY) {
-                ArrayList<ItemStack> list = new ArrayList<>();
-                list.addAll(lootCrateBlockEntity.getInvStackList());
-                lootCrateBlockEntity.getInvStackList().clear();
-                ItemStack crateItemStack = new ItemStack(this);
-                if (lootCrateBlockEntity.hasCustomName()) {
-                    crateItemStack.setCustomName(lootCrateBlockEntity.getCustomName());
-                }
-                NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
-                if (!compoundTag.isEmpty()) {
-                    crateItemStack.setSubNbt("BlockEntityTag", compoundTag);
-                }
-                list.add(crateItemStack);
-                return list;
-            } else if (blockBreakAction == BlockBreakAction.KEEP_INVENTORY) {
-                ArrayList<ItemStack> list = new ArrayList<>();
-
-                for(int i = 0; i < lootCrateBlockEntity.inventory.size(); i++) {
-                    if(!lootCrateBlockEntity.inventory.get(i).getItem().canBeNested()) {
-                        list.add(lootCrateBlockEntity.inventory.get(i));
-                        lootCrateBlockEntity.inventory.set(i, ItemStack.EMPTY);
-                    }
-                }
-
-                ItemStack crateItemStack = new ItemStack(this);
-                if (lootCrateBlockEntity.hasCustomName()) {
-                    crateItemStack.setCustomName(lootCrateBlockEntity.getCustomName());
-                }
-                NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
-                lootCrateBlockEntity.serializeInventory(compoundTag);
-                if (!compoundTag.isEmpty()) {
-                    crateItemStack.setSubNbt("BlockEntityTag", compoundTag);
-                }
-
-                list.add(crateItemStack);
-                return list;
-            }
-        }
-
-        return super.getDroppedStacks(state, builder);
     }
 
     public boolean hasComparatorOutput(BlockState state) {
@@ -320,7 +251,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     }
 
     protected abstract BlockBreakAction getBlockBreakAction();
-
+    
     @Override
     @Environment(EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {

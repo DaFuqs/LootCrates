@@ -44,6 +44,9 @@ public class LootCratesConfig implements ConfigData {
     public boolean LootBarrelsKeepTheirInventory = false;
     @ConfigEntry.Category("general")
     public boolean ShulkerCratesKeepTheirInventory = true;
+    
+    @ConfigEntry.Category("general")
+    public boolean BlazingCratesCauseFire = true;
 
     @ConfigEntry.Category("worldgen")
     @Comment(value = """
