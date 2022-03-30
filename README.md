@@ -88,7 +88,10 @@ You can find more examples, like a documented worldgen replacement config file a
 ### SetBlock-Command for a Loot Crate
 
     /setblock ~ ~ ~ lootcrates:rare_chest_loot_crate{LootTable: "minecraft:chests/bastion_treasure", Locked: 1b, ReplenishTimeTicks: 60L, CustomName: '{"text":"Bastion Treasure Crate"}'}
-    
+
+### Give-Command for a Loot Bag
+    /give @p lootcrates:rare_loot_bag{LootTable: "minecraft:chests/bastion_treasure", display: {Name: '{"text":"Bastion Loot Bag"}'}} 1
+
 ### Loot table for a Loot Crate
 
 ```json
