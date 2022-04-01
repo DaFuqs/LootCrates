@@ -185,18 +185,21 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             // if creative: If there is block data add those and drop a block with all those tags
             // No tags = No drop. Just like vanilla shulker chests
-            if (!world.isClient && !lootCrateBlockEntity.isEmpty()) {
+            if (!world.isClient) {
                 BlockBreakAction blockBreakAction = getBlockBreakAction();
                 if (blockBreakAction == BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY) {
-                    ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
+                    ItemScatterer.spawn(world, pos, lootCrateBlockEntity);
                 } else if (blockBreakAction == BlockBreakAction.DROP_AND_SCATTER_INVENTORY) {
-                    ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
+                    ItemScatterer.spawn(world, pos, lootCrateBlockEntity);
                     dropAsItemWithTags(world, pos, false);
                 } else if (blockBreakAction == BlockBreakAction.KEEP_INVENTORY) {
                     dropAsItemWithTags(world, pos, true);
                 }
             }
         }
+    
+        world.updateComparators(pos, state.getBlock());
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     public boolean hasComparatorOutput(BlockState state) {
@@ -211,18 +214,14 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) world.getBlockEntity(pos);
         if(lootCrateBlockEntity != null) {
             ItemStack itemStack = new ItemStack(this);
-
-            boolean shouldDropItem = false;
-
+            
             if (lootCrateBlockEntity.hasCustomName()) {
                 itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
-                shouldDropItem = true;
             }
 
             NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
                 itemStack.setSubNbt("BlockEntityTag", compoundTag);
-                shouldDropItem = true;
             }
 
             if (keepInventory && !lootCrateBlockEntity.isEmpty()) {
@@ -239,14 +238,11 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 }
 
                 lootCrateBlockEntity.serializeInventory(compoundTag);
-                shouldDropItem = true;
             }
-
-            if (shouldDropItem) {
-                ItemEntity itemEntity = new ItemEntity(world, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
-                itemEntity.setToDefaultPickupDelay();
-                world.spawnEntity(itemEntity);
-            }
+            
+            ItemEntity itemEntity = new ItemEntity(world, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
+            itemEntity.setToDefaultPickupDelay();
+            world.spawnEntity(itemEntity);
         }
     }
 
@@ -277,6 +273,5 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         double f = blockPos.getZ() + 0.5D;
         world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
     }
-
-
+    
 }
