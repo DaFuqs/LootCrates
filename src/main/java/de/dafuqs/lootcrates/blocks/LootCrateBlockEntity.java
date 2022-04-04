@@ -193,8 +193,18 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     public boolean tryGenerateLoot(PlayerEntity player) {
         boolean canGenerateNewLoot = canGenerateNewLoot(player);
         if(canGenerateNewLoot) {
+            if(inventoryDeletionMode == InventoryDeletionMode.WHEN_REPLENISHED) {
+                this.clear();
+            }
+            
             if(trackedPerPlayer) {
-                playerCrateData.put(player.getUuid(), new PlayerCrateData(world.getTime(), world.getTime(), false));
+                if(this.playerCrateData.containsKey(player.getUuid())) {
+                    PlayerCrateData playerCrateData = this.playerCrateData.get(player.getUuid());
+                    playerCrateData.lastReplenishTime = world.getTime();
+                } else {
+                    playerCrateData.put(player.getUuid(), new PlayerCrateData(world.getTime(), -1, false));
+                    
+                }
             } else {
                 if(defaultCrateData == null) {
                     defaultCrateData = new PlayerCrateData(world.getTime(), -1, false);
