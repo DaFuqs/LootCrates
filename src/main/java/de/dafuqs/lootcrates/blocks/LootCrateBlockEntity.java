@@ -55,12 +55,6 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             this.lastUnlockTime = lastUnlockTime;
             this.unlocked = unlocked;
         }
-        
-        public PlayerCrateData(long time) {
-            this.lastReplenishTime = time;
-            this.lastUnlockTime = time;
-            this.unlocked = true;
-        }
     
         public long getLastReplenishTime() {
             return lastReplenishTime;
@@ -491,24 +485,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
-    protected static void playSound(World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
+    protected static void playSound(@NotNull World world, @NotNull BlockPos pos, BlockState state, SoundEvent soundEvent) {
         double d = (double)pos.getX() + 0.5D;
         double e = (double)pos.getY() + 0.5D;
         double f = (double)pos.getZ() + 0.5D;
 
         world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
-    }
-
-    public void setTrackedPerPlayer(boolean trackedPerPlayer) {
-        this.trackedPerPlayer = trackedPerPlayer;
-    }
-
-    public void setReplenishTimeTicks(int ticks) {
-        this.replenishTimeTicks = ticks;
-    }
-
-    public void setTrapped(boolean trapped) {
-        this.trapped = trapped;
     }
 
     public abstract int getCurrentLookingPlayers(BlockView world, BlockPos pos);
