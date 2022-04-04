@@ -196,19 +196,19 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
     
-    public void setPlayerCrateData(PlayerEntity playerEntity, long time) {
-        if(trackedPerPlayer) {
-            playerCrateData.put(playerEntity.getUuid(), new PlayerCrateData(time));
-        } else {
-            defaultCrateData = new PlayerCrateData(time);
-        }
-        this.markDirty();
-    }
-    
     public boolean tryGenerateLoot(PlayerEntity player) {
         boolean canGenerateNewLoot = canGenerateNewLoot(player);
         if(canGenerateNewLoot) {
-            setPlayerCrateData(player, world.getTime());
+            if(trackedPerPlayer) {
+                playerCrateData.put(player.getUuid(), new PlayerCrateData(world.getTime(), world.getTime(), false));
+            } else {
+                if(defaultCrateData == null) {
+                    defaultCrateData = new PlayerCrateData(world.getTime(), -1, false);
+                } else {
+                    defaultCrateData.lastReplenishTime = world.getTime();
+                }
+            }
+            this.markDirty();
         }
         return canGenerateNewLoot;
     }
@@ -220,20 +220,25 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
                 return true;
             } else {
                 PlayerCrateData playerCrateData = playerCrateDataOptional.get();
-                switch (this.replenishMode) {
-                    case NEVER -> {
-                        // crate was opened before (in general or by that player)
-                        // => just generate loot once
-                        return false;
-                    }
-                    case INVERVAL -> {
-                        long currMod = this.world.getTime() / this.replenishTimeTicks;
-                        long lastMod = playerCrateData.getLastReplenishTime() / this.replenishTimeTicks;
-                        return currMod > lastMod;
-                    }
-                    case PASSED_TIME_SINCE_LAST_OPEN -> {
-                        // check if there was enough time since the last opening
-                        return this.world.getTime() > playerCrateData.getLastReplenishTime() + this.replenishTimeTicks;
+                if(playerCrateData.getLastReplenishTime() < 0) {
+                    // unlocked, but never opened
+                    return true;
+                } else {
+                    switch (this.replenishMode) {
+                        case NEVER -> {
+                            // crate was opened before (in general or by that player)
+                            // => just generate loot once
+                            return false;
+                        }
+                        case INVERVAL -> {
+                            long currMod = this.world.getTime() / this.replenishTimeTicks;
+                            long lastMod = playerCrateData.getLastReplenishTime() / this.replenishTimeTicks;
+                            return currMod > lastMod;
+                        }
+                        case PASSED_TIME_SINCE_LAST_OPEN -> {
+                            // check if there was enough time since the last opening
+                            return this.world.getTime() > playerCrateData.getLastReplenishTime() + this.replenishTimeTicks;
+                        }
                     }
                 }
             }
@@ -381,7 +386,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         if(optionalPlayerCrateData.isPresent()) {
             return optionalPlayerCrateData.get().isUnlocked();
         }
-        return this.lockMode.requiresKey();
+        return !this.lockMode.requiresKey();
     }
 
     public boolean isTrapped() {
@@ -406,7 +411,20 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
 
     public void unlock(World world, PlayerEntity player) {
-        setPlayerCrateData(player, world.getTime()); // TODO: unlock
+        Optional<PlayerCrateData> optionalPlayerCrateData = getPlayerCrateData(player);
+        
+        if(optionalPlayerCrateData.isPresent()) {
+            PlayerCrateData playerCrateData = optionalPlayerCrateData.get();
+            playerCrateData.setUnlocked(true, world.getTime());
+        } else {
+            if (trackedPerPlayer) {
+                playerCrateData.put(player.getUuid(), new PlayerCrateData(-1, world.getTime(), true));
+            } else {
+                defaultCrateData = new PlayerCrateData(-1, world.getTime(), true);
+            }
+        }
+        
+        this.markDirty();
         this.playSound(LootCrates.CHEST_UNLOCKS_SOUND_EVENT);
     }
 
