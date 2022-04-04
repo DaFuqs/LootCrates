@@ -191,9 +191,15 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
     
     public boolean tryGenerateLoot(PlayerEntity player) {
+        boolean inventoryCleared = false;
+        if(inventoryDeletionMode == InventoryDeletionMode.ON_OPEN) {
+            this.clear();
+            inventoryCleared = true;
+        }
+        
         boolean canGenerateNewLoot = canGenerateNewLoot(player);
         if(canGenerateNewLoot) {
-            if(inventoryDeletionMode == InventoryDeletionMode.WHEN_REPLENISHED) {
+            if(!inventoryCleared && inventoryDeletionMode == InventoryDeletionMode.WHEN_REPLENISHED) {
                 this.clear();
             }
             
