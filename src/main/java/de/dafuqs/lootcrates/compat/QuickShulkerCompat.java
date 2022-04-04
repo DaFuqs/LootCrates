@@ -39,7 +39,13 @@ import java.util.List;
 import java.util.UUID;
 
 public class QuickShulkerCompat implements RegisterQuickShulker {
-    @Override
+	
+	@Override
+	public void registerProviders() {
+	
+	}
+	
+    /*@Override
     public void registerProviders() {
         QuickOpenableRegistry.register(ShulkerLootCrateBlock.class, true, false, ((player, stack) -> {
             if (LootCrates.CONFIG.ShulkerCratesKeepTheirInventory) {
@@ -256,5 +262,5 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
                 }
             }
         }
-    }
+    }*/
 }

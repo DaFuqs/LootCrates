@@ -1,5 +1,8 @@
 package de.dafuqs.lootcrates;
 
+import de.dafuqs.lootcrates.blocks.modes.InventoryDeletionMode;
+import de.dafuqs.lootcrates.blocks.modes.LockMode;
+import de.dafuqs.lootcrates.blocks.modes.ReplenishMode;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.items.LootCrateItem;
 import net.fabricmc.api.EnvType;
@@ -11,6 +14,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +51,8 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
         replenishTimeTicksValues.add(1728000L); // 1 day
 
         ArrayList<Boolean> booleans = new ArrayList<>() {{
-            add(true);
             add(false);
+            add(true);
         }};
 
         List<Item> allLootCrates = LootCrateAtlas.getAllCrateItems();
@@ -56,28 +60,20 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
 
         for(Item lootCrateItem : allLootCrates) {
             for (Identifier lootTable : allLootTables) {
-                if(!lootTable.getPath().contains("entities")) { // to reduce the lists size a bit
+                if(lootTable.getNamespace().equals("minecraft") && lootTable.getPath().contains("chests")) { // to reduce the lists size. These are just examples, after all
                     for (Long replenishTimeTicks : replenishTimeTicksValues) {
-                        for (boolean locked : booleans) {
-                            for (boolean trapped : booleans) {
-                                for (boolean doNotConsumeKeyOnUnlock : booleans) {
-                                    for (boolean oncePerPlayer : booleans) {
-                                        if (oncePerPlayer && replenishTimeTicks < 0) {
-                                            // oncePerPlayer really is only useful when replenish time is positive
-                                        } else {
-                                            if (doNotConsumeKeyOnUnlock && !locked) {
-                                                // no use in that tag when there is no lock, is there?
+                        for (ReplenishMode replenishMode : ReplenishMode.values()) {
+                            for (LockMode lockMode : LockMode.values()) {
+                                for (InventoryDeletionMode inventoryDeletionMode : InventoryDeletionMode.values()) {
+                                    for (boolean trapped : booleans) {
+                                        for (boolean trackedPerPlayer : booleans) {
+                                            if (trackedPerPlayer && replenishTimeTicks < 0) {
+                                                // oncePerPlayer really is only useful when replenish time is positive
                                             } else {
-                                                for(boolean relock : booleans) {
-                                                    if(relock && !locked) {
-                                                        // relockable crates should be locked by default
-                                                    } else {
-                                                        NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, locked, doNotConsumeKeyOnUnlock, replenishTimeTicks, 0, oncePerPlayer, relock, trapped);
-                                                        ItemStack itemStack = new ItemStack(lootCrateItem);
-                                                        itemStack.setNbt(compound);
-                                                        stacks.add(itemStack);
-                                                    }
-                                                }
+                                                NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, lockMode, replenishMode, inventoryDeletionMode, replenishTimeTicks, trackedPerPlayer, trapped);
+                                                ItemStack itemStack = new ItemStack(lootCrateItem);
+                                                itemStack.setNbt(compound);
+                                                stacks.add(itemStack);
                                             }
                                         }
                                     }

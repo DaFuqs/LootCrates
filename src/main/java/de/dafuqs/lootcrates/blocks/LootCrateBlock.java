@@ -60,7 +60,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         if (blockEntity instanceof LootCrateBlockEntity) {
             LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) blockEntity;
             lootCrateBlockEntity.checkRelock(player);
-            if(lootCrateBlockEntity.isLocked(player)) {
+            if(!lootCrateBlockEntity.isUnlocked(player)) {
                 for(ItemStack itemStack : player.getItemsHand()) {
                     if(lootCrateBlockEntity.doesUnlock(itemStack.getItem())) {
                         if(!player.isCreative()) {
@@ -234,7 +234,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 if (lootCrateBlockEntity.hasCustomName()) {
                     crateItemStack.setCustomName(lootCrateBlockEntity.getCustomName());
                 }
-                NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
+                NbtCompound compoundTag = lootCrateBlockEntity.putLootCrateBlockTags(new NbtCompound());
                 if (!compoundTag.isEmpty()) {
                     crateItemStack.setSubNbt("BlockEntityTag", compoundTag);
                 }
@@ -254,7 +254,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 if (lootCrateBlockEntity.hasCustomName()) {
                     crateItemStack.setCustomName(lootCrateBlockEntity.getCustomName());
                 }
-                NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
+                NbtCompound compoundTag = lootCrateBlockEntity.putLootCrateBlockTags(new NbtCompound());
                 lootCrateBlockEntity.serializeInventory(compoundTag);
                 if (!compoundTag.isEmpty()) {
                     crateItemStack.setSubNbt("BlockEntityTag", compoundTag);
@@ -288,7 +288,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 shouldDropItem = true;
             }
 
-            NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
+            NbtCompound compoundTag = lootCrateBlockEntity.putLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
                 itemStack.setSubNbt("BlockEntityTag", compoundTag);
                 shouldDropItem = true;
@@ -332,7 +332,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
             }
 
-            NbtCompound compoundTag = lootCrateBlockEntity.addLootCrateBlockTags(new NbtCompound());
+            NbtCompound compoundTag = lootCrateBlockEntity.putLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
                 itemStack.setSubNbt("BlockEntityTag", compoundTag);
             }

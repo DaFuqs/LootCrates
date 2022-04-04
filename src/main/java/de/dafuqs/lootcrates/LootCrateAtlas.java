@@ -6,6 +6,7 @@ import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.barrel.LootBarrelBlock;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
+import de.dafuqs.lootcrates.blocks.modes.LockMode;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock;
 import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlockEntity;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
@@ -188,13 +189,13 @@ public class LootCrateAtlas {
         }
     }
 
-    public static Text getItemLockedTooltip(ItemStack itemStack, NbtCompound compound) {
+    public static Text getItemLockedTooltip(ItemStack itemStack, LockMode lockMode) {
         LootCrateRarity itemRarity = getCrateItemRarity((LootCrateItem) itemStack.getItem());
 
-        if (compound.contains(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString()) && compound.getBoolean(LootCrateTagNames.DoNotConsumeKeyOnUnlock.toString())) {
-            return lootCrateDefinitions.get(itemRarity).lockedTooltip;
-        } else {
+        if (lockMode.consumesKey()) {
             return lootCrateDefinitions.get(itemRarity).lockedConsumeTooltip;
+        } else {
+            return lootCrateDefinitions.get(itemRarity).lockedTooltip;
         }
     }
 

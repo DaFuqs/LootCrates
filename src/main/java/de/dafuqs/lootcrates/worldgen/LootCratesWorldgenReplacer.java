@@ -6,7 +6,9 @@ import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.blocks.LootCrateBlock;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
+import de.dafuqs.lootcrates.blocks.modes.InventoryDeletionMode;
 import de.dafuqs.lootcrates.blocks.modes.LockMode;
+import de.dafuqs.lootcrates.blocks.modes.ReplenishMode;
 import de.dafuqs.lootcrates.config.LootCrateReplacementEntry;
 import de.dafuqs.lootcrates.config.WeightedLootCrateEntryList;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
@@ -189,7 +191,7 @@ public class LootCratesWorldgenReplacer {
     public static List<LootCrateReplacementPosition> replacements = new ArrayList<>();
 
     private static WeightedLootCrateEntryList DefaultLootCrateProviderList = new WeightedLootCrateEntryList(1, new ArrayList<>() {{
-        add(new LootCrateReplacementEntry(null, null, true, 1, LockMode.NONE, 1));
+        add(new LootCrateReplacementEntry(null, null, ReplenishMode.PASSED_TIME_SINCE_LAST_OPEN, 1, LockMode.NONE, InventoryDeletionMode.NEVER, true, 1));
     }});
     private static final Map<Identifier, WeightedLootCrateEntryList> LootCrateProviders = new HashMap<>();
 
@@ -234,9 +236,11 @@ public class LootCratesWorldgenReplacer {
 
                 LootCrateRarity lootCrateRarity = LootCrateRarity.COMMON;
                 Identifier lootTable = null; // null => keep the original loot table
-                boolean oncePerPlayer = false;
+                boolean trackedPerPlayer = false;
                 int replenishTimeTicks = 0;
                 LockMode lockMode = LockMode.NONE;
+                ReplenishMode replenishMode = ReplenishMode.NEVER;
+                InventoryDeletionMode inventoryDeletionMode = InventoryDeletionMode.NEVER;
                 int weight = 1;
 
                 if(JsonHelper.hasString(targetEntry, "crate_rarity")) {
@@ -245,21 +249,27 @@ public class LootCratesWorldgenReplacer {
                 if(JsonHelper.hasString(targetEntry, "loot_table")) {
                     lootTable = Identifier.tryParse(JsonHelper.getString(targetEntry, "loot_table"));
                 }
-                if(JsonHelper.hasBoolean(targetEntry, "once_per_player")) {
-                    oncePerPlayer = JsonHelper.getBoolean(targetEntry, "once_per_player");
+                if(JsonHelper.hasBoolean(targetEntry, "tracked_per_player")) {
+                    trackedPerPlayer = JsonHelper.getBoolean(targetEntry, "tracked_per_player");
                 }
                 if(JsonHelper.hasNumber(targetEntry, "replenish_time_ticks")) {
                     replenishTimeTicks = JsonHelper.getInt(targetEntry, "replenish_time_ticks");
                 }
-                if(JsonHelper.hasString(targetEntry, "lock")) {
-                    lockMode = LockMode.valueOf(JsonHelper.getString(targetEntry, "lock").toUpperCase(Locale.ROOT));
+                if(JsonHelper.hasString(targetEntry, "replenish_mode")) {
+                    replenishMode = ReplenishMode.valueOf(JsonHelper.getString(targetEntry, "replenish_mode").toUpperCase(Locale.ROOT));
+                }
+                if(JsonHelper.hasString(targetEntry, "lock_mode")) {
+                    lockMode = LockMode.valueOf(JsonHelper.getString(targetEntry, "lock_mode").toUpperCase(Locale.ROOT));
+                }
+                if(JsonHelper.hasString(targetEntry, "inventory_deletion_mode")) {
+                    inventoryDeletionMode = InventoryDeletionMode.valueOf(JsonHelper.getString(targetEntry, "inventory_deletion_mode").toUpperCase(Locale.ROOT));
                 }
                 if(JsonHelper.hasNumber(targetEntry, "weight")) {
                     weight = JsonHelper.getInt(targetEntry, "weight");
                 }
                 totalWeight += weight;
 
-                lootCrateEntries.add(new LootCrateReplacementEntry(lootCrateRarity, lootTable, oncePerPlayer, replenishTimeTicks, lockMode, weight));
+                lootCrateEntries.add(new LootCrateReplacementEntry(lootCrateRarity, lootTable, replenishMode, replenishTimeTicks, lockMode, inventoryDeletionMode, trackedPerPlayer, weight));
 
             }
 
@@ -341,16 +351,8 @@ public class LootCratesWorldgenReplacer {
                                             // overwrite with an alternate loot table
                                             lootCrateBlockEntity.setLootTable(replacementTargetData.lootTable, lootTableSeed);
                                         }
-                                        if (replacementTargetData.oncePerPlayer) {
-                                            lootCrateBlockEntity.setTrackedPerPlayer(true);
-                                        }
-                
-                                        lootCrateBlockEntity.setLockMode(replacementTargetData.lockMode);
-                                        lootCrateBlockEntity.setReplenishTimeTicks(replacementTargetData.replenishTimeTicks);
-                
-                                        if (trapped) {
-                                            lootCrateBlockEntity.setTrapped(true);
-                                        }
+                                        
+                                        lootCrateBlockEntity.setData(replacementTargetData.replenishMode, replacementTargetData.replenishTimeTicks, replacementTargetData.trackedPerPlayer, replacementTargetData.lockMode, replacementTargetData.inventoryDeletionMode, trapped);
                                     }
                                 }
                             }
