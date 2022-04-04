@@ -191,7 +191,7 @@ public class LootCratesWorldgenReplacer {
     public static List<LootCrateReplacementPosition> replacements = new ArrayList<>();
 
     private static WeightedLootCrateEntryList DefaultLootCrateProviderList = new WeightedLootCrateEntryList(1, new ArrayList<>() {{
-        add(new LootCrateReplacementEntry(null, null, ReplenishMode.PASSED_TIME_SINCE_LAST_OPEN, 1, LockMode.NONE, InventoryDeletionMode.NEVER, true, 1));
+        add(new LootCrateReplacementEntry(null, null, ReplenishMode.GAME_TIME, 1, LockMode.NONE, InventoryDeletionMode.NEVER, true, 1));
     }});
     private static final Map<Identifier, WeightedLootCrateEntryList> LootCrateProviders = new HashMap<>();
 

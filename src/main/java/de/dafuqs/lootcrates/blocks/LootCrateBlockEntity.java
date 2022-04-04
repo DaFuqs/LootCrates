@@ -41,6 +41,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.Time;
 import java.util.*;
 
 public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity {
@@ -209,13 +210,13 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
                     playerCrateData.lastReplenishTime = world.getTime();
                 } else {
                     playerCrateData.put(player.getUuid(), new PlayerCrateData(world.getTime(), -1, false));
-                    
                 }
             } else {
+                long time = this.replenishMode.usesRealTime ? Calendar.getInstance().getTime().getTime() : world.getTime();
                 if(defaultCrateData == null) {
-                    defaultCrateData = new PlayerCrateData(world.getTime(), -1, false);
+                    defaultCrateData = new PlayerCrateData(time, -1, false);
                 } else {
-                    defaultCrateData.lastReplenishTime = world.getTime();
+                    defaultCrateData.lastReplenishTime =time;
                 }
             }
             this.markDirty();
@@ -238,14 +239,29 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
                         case NEVER -> {
                             // crate was opened before (in general or by that player)
                             // => just generate loot once
-                            return false;
+                            return this.replenishTimeTicks > 0;
                         }
-                        case INVERVAL -> {
-                            long currMod = this.world.getTime() / this.replenishTimeTicks;
-                            long lastMod = playerCrateData.getLastReplenishTime() / this.replenishTimeTicks;
-                            return currMod > lastMod;
+                        case HOURLY -> {
+                            Calendar calendar = GregorianCalendar.getInstance();
+                            Date lastDate = new Date(playerCrateData.getLastReplenishTime());
+                            Date currentDate = calendar.getTime(); // Milliseconds since unix epoch
+        
+                            return currentDate.getYear() >= lastDate.getYear() && currentDate.getMonth() >= lastDate.getMonth() && currentDate.getDay() >= lastDate.getDay() && currentDate.getHours() >= lastDate.getHours();
                         }
-                        case PASSED_TIME_SINCE_LAST_OPEN -> {
+                        case DAILY -> {
+                            Calendar calendar = GregorianCalendar.getInstance();
+                            Date lastDate = new Date(playerCrateData.getLastReplenishTime());
+                            Date currentDate = calendar.getTime(); // Milliseconds since unix epoch
+    
+                            return currentDate.getYear() >= lastDate.getYear() && currentDate.getMonth() >= lastDate.getMonth() && currentDate.getDay() > lastDate.getDay();
+                        }
+                        case REAL_TIME -> {
+                            Calendar calendar = GregorianCalendar.getInstance();
+                            long currentTime = calendar.getTime().getTime(); // Milliseconds since unix epoch
+                            
+                            return currentTime > playerCrateData.getLastReplenishTime() + this.replenishTimeTicks;
+                        }
+                        case GAME_TIME -> {
                             // check if there was enough time since the last opening
                             return this.world.getTime() > playerCrateData.getLastReplenishTime() + this.replenishTimeTicks;
                         }
@@ -427,10 +443,11 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             PlayerCrateData playerCrateData = optionalPlayerCrateData.get();
             playerCrateData.setUnlocked(true, world.getTime());
         } else {
+            long time = this.replenishMode.usesRealTime ? Calendar.getInstance().getTime().getTime() : world.getTime();
             if (trackedPerPlayer) {
-                playerCrateData.put(player.getUuid(), new PlayerCrateData(-1, world.getTime(), true));
+                playerCrateData.put(player.getUuid(), new PlayerCrateData(-1, time, true));
             } else {
-                defaultCrateData = new PlayerCrateData(-1, world.getTime(), true);
+                defaultCrateData = new PlayerCrateData(-1, time, true);
             }
         }
         

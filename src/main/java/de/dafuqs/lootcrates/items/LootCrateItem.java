@@ -75,14 +75,18 @@ public class LootCrateItem extends BlockItem {
             }
             
             if (compound.contains(LootCrateTagNames.ReplenishMode.toString())) {
-                replenishMode = ReplenishMode.valueOf(compound.getString(LootCrateTagNames.ReplenishMode.toString()));
+                try {
+                    replenishMode = ReplenishMode.valueOf(compound.getString(LootCrateTagNames.ReplenishMode.toString()));
+                } catch (IllegalArgumentException ignored) { } // nonexistant value
             }
             if (compound.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
                 replenishTimeTicks = compound.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
             }
 
             if (compound.contains(LootCrateTagNames.LockMode.toString())) {
-                lockMode = LockMode.valueOf(compound.getString(LootCrateTagNames.LockMode.toString()));
+                try {
+                    lockMode = LockMode.valueOf(compound.getString(LootCrateTagNames.LockMode.toString()));
+                } catch (IllegalArgumentException ignored) { } // nonexistant value
             }
             if(lockMode != LockMode.NONE) {
                 tooltip.add(LootCrateAtlas.getItemLockedTooltip(itemStack, lockMode));
@@ -92,7 +96,9 @@ public class LootCrateItem extends BlockItem {
             }
             
             if (compound.contains(LootCrateTagNames.InventoryDeletionMode.toString())) {
-                inventoryDeletionMode = InventoryDeletionMode.valueOf(compound.getString(LootCrateTagNames.InventoryDeletionMode.toString()));
+                try {
+                    inventoryDeletionMode = InventoryDeletionMode.valueOf(compound.getString(LootCrateTagNames.InventoryDeletionMode.toString()));
+                } catch (IllegalArgumentException ignored) { } // nonexistant value
             }
             switch (inventoryDeletionMode) {
                 case ON_OPEN -> {
@@ -114,16 +120,22 @@ public class LootCrateItem extends BlockItem {
                         tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.already_looted"));
                     }
                 }
-                case PASSED_TIME_SINCE_LAST_OPEN -> {
+                case HOURLY -> {
+                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_hourly"));
+                }
+                case DAILY -> {
+                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_daily"));
+                }
+                case GAME_TIME -> {
                     tooltip.add(getReplenishTimeSinceLastOpenHumanReadableText(replenishTimeTicks));
                 }
-                case INVERVAL -> {
+                case REAL_TIME -> {
                     tooltip.add(getReplenishTimeIntervalHumanReadableText(replenishTimeTicks));
                 }
             }
             
-            if(trackedPerPlayer) {
-                if(replenishTimeTicks <= 0 && wasOpened) {
+            if(trackedPerPlayer && replenishTimeTicks <= 0) {
+                if(wasOpened) {
                     tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player_already_opened_by_you"));
                 } else {
                     tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player"));

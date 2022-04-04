@@ -97,7 +97,7 @@
   "item.lootcrates.loot_crate.tooltip.locked_consume_blaze": "Locked (uses up an §6Blazing Crate Key)",
   "item.lootcrates.loot_crate.tooltip.already_looted": "§7Already looted",
   "item.lootcrates.loot_crate.tooltip.trapped": "§e⚠ Trapped",
-  "item.lootcrates.loot_crate.tooltip.relocks": "§e⚠Will lock itself back up for new loot",
+  "item.lootcrates.loot_crate.tooltip.relocks": "§e⚠ Will lock itself back up for new loot",
   "item.lootcrates.loot_crate.tooltip.loot_table": "Loot Table: %s",
   "item.lootcrates.loot_crate.tooltip.replenish_time_ticks": "Generates new loot every §o%d§r ticks",
   "item.lootcrates.loot_crate.tooltip.replenish_time_minutes": "Generates new loot every §o%f§r minutes",
@@ -108,11 +108,12 @@
   "item.lootcrates.loot_crate.tooltip.replenish_time_passed_hours": "Generates new loot when §o%f§r hours have passed",
   "item.lootcrates.loot_crate.tooltip.replenish_time_passed_days": "Generates new loot when §o%f§r days have passed",
   "item.lootcrates.loot_crate.tooltip.replenish_time_once": "Generates loot once",
+  "item.lootcrates.loot_crate.tooltip.replenish_time_hourly": "Generates new loot Hourly",
+  "item.lootcrates.loot_crate.tooltip.replenish_time_daily": "Generates new loot Daily",
   "item.lootcrates.loot_crate.tooltip.fixed_seed": "Fixed seed: %d",
   "item.lootcrates.loot_crate.tooltip.once_per_player": "Once per player",
   "item.lootcrates.loot_crate.tooltip.once_per_player_already_opened_by_you": "Once per player §o(you opened already)",
   "item.lootcrates.loot_crate.tooltip.no_data_set": "No data set",
-
-  "item.lootcrates.loot_crate.tooltip.inventory_deletes_on_open": "§e⚠Voids its inventory",
-  "item.lootcrates.loot_crate.tooltip.inventory_deletes_when_replenished": "§e⚠Voids last loot when generating new"
+  "item.lootcrates.loot_crate.tooltip.inventory_deletes_on_open": "§e⚠ Voids its inventory",
+  "item.lootcrates.loot_crate.tooltip.inventory_deletes_when_replenished": "§e⚠ Voids last loot when generating new"
 }
