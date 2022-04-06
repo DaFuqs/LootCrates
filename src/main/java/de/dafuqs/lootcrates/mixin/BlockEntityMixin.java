@@ -23,11 +23,14 @@ public class BlockEntityMixin {
     @Shadow @Nullable protected World world;
 
     @Inject(method = "setWorld(Lnet/minecraft/world/World;)V", at = @At("RETURN"))
-    protected void noteCcontainerForLootCrateConversion(World world, CallbackInfo ci) {
+    protected void noteContainerForLootCrateConversion(World world, CallbackInfo ci) {
         if(LootCrates.CONFIG.ReplaceVanillaWorldgenChests && this.world instanceof ServerWorld && ((Object) this instanceof LootableContainerBlockEntity lootableContainerBlockEntity)) {
             RegistryKey<World> worldRegistryKey = world.getRegistryKey();
             if (!LootCrates.CONFIG.ReplaceVanillaWorldgenChestsDimensionsBlacklist.contains(worldRegistryKey.getValue().toString())) {
-                LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition(worldRegistryKey, lootableContainerBlockEntity.getPos()));
+                LootTableAccessor lootTableAccessor = ((LootTableAccessor) this);
+                if (lootTableAccessor.getLootTableIdentifier() != null) {
+                    LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition(worldRegistryKey, lootableContainerBlockEntity.getPos()));
+                }
             }
         }
     }
