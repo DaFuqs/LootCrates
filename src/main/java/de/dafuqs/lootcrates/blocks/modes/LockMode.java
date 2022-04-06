@@ -27,11 +27,7 @@ public enum LockMode {
 				return false;
 			} else {
 				PlayerCrateData playerCrateData1 = playerCrateData.get();
-				if (relocks()) {
-					return playerCrateData1.unlockTime > 0 && playerCrateData1.unlockTime > playerCrateData1.replenishTime;
-				} else {
-					return playerCrateData1.unlockTime > 0;
-				}
+				return playerCrateData1.unlockTime > 0;
 			}
 		} else {
 			return true;

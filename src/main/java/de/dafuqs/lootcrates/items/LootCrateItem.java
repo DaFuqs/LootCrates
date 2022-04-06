@@ -97,6 +97,12 @@ public class LootCrateItem extends BlockItem {
                 case DAILY -> {
                     tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_daily"));
                 }
+                case WEEKLY -> {
+                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_weekly"));
+                }
+                case MONTHLY -> {
+                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_monthly"));
+                }
                 case GAME_TIME -> {
                     Text text = getReplenishTimeGameTimeHumanReadableText(replenishTimeTicks);
                     if(text != null) {
