@@ -1,42 +1,6 @@
 package de.dafuqs.lootcrates.compat;
 
-import de.dafuqs.lootcrates.LootCrateAtlas;
-import de.dafuqs.lootcrates.LootCrates;
-import de.dafuqs.lootcrates.blocks.barrel.LootBarrelBlock;
-import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
-import de.dafuqs.lootcrates.blocks.shulker.ShulkerLootCrateBlock;
-import de.dafuqs.lootcrates.enums.LootCrateRarity;
-import de.dafuqs.lootcrates.enums.LootCrateTagNames;
-import de.dafuqs.lootcrates.items.LootCrateItem;
-import net.kyrptonaught.quickshulker.api.QuickOpenableRegistry;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
-import net.kyrptonaught.shulkerutils.ItemStackInventory;
-import net.kyrptonaught.shulkerutils.ShulkerUtils;
-import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.screen.ShulkerBoxScreenHandler;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class QuickShulkerCompat implements RegisterQuickShulker {
 	
