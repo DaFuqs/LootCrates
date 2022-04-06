@@ -57,16 +57,20 @@ public class LootCrateItem extends BlockItem {
                     playerCrateData = Optional.of(PlayerCrateData.fromCompoundWithoutUUID(compound.getCompound("Data")));
                 }
             }
-    
+            
             ReplenishMode replenishMode = ReplenishMode.NEVER;
             if (compound.contains(LootCrateTagNames.ReplenishMode.toString())) {
                 try {
                     replenishMode = ReplenishMode.valueOf(compound.getString(LootCrateTagNames.ReplenishMode.toString()));
                 } catch (IllegalArgumentException ignored) { } // nonexistant value
             }
-
-
-            if(playerCrateData.isEmpty() || replenishMode.canReplenish(world, playerCrateData, 0)) {
+    
+            long replenishTimeTicks = -1;
+            if (compound.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
+                replenishTimeTicks = compound.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
+            }
+            
+            if(playerCrateData.isEmpty() || playerCrateData.get().replenishTime < 0 || replenishMode.canReplenish(world, playerCrateData, replenishTimeTicks)) {
                 tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.contains_loot"));
             } else {
                 if(trackedPerPlayer) {
@@ -75,31 +79,31 @@ public class LootCrateItem extends BlockItem {
                     tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.already_looted"));
                 }
             }
+    
+            LockMode lockMode = LockMode.NONE; // DONE
+            if (compound.contains(LootCrateTagNames.LockMode.toString())) {
+                try {
+                    lockMode = LockMode.valueOf(compound.getString(LootCrateTagNames.LockMode.toString()));
+                } catch (IllegalArgumentException ignored) { } // nonexistant value
+            }
+            if(!lockMode.isUnlocked(playerCrateData)) {
+                tooltip.add(LootCrateAtlas.getItemLockedTooltip(itemStack, lockMode));
+            }
 
             switch (replenishMode) {
                 case HOURLY -> {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_hourly"));
+                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_hourly"));
                 }
                 case DAILY -> {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_daily"));
+                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_daily"));
                 }
                 case GAME_TIME -> {
-                    long replenishTimeTicks = -1;
-                    if (compound.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
-                        replenishTimeTicks = compound.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
-                    }
-                    
                     Text text = getReplenishTimeGameTimeHumanReadableText(replenishTimeTicks);
                     if(text != null) {
                         tooltip.add(text);
                     }
                 }
                 case REAL_TIME -> {
-                    long replenishTimeTicks = -1;
-                    if (compound.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
-                        replenishTimeTicks = compound.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
-                    }
-    
                     Text text = getReplenishTimeRealTimeHumanReadableText(replenishTimeTicks);
                     if(text != null) {
                         tooltip.add(text);
@@ -110,17 +114,8 @@ public class LootCrateItem extends BlockItem {
                 tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.tracked_per_player"));
             }
     
-            LockMode lockMode = LockMode.NONE; // DONE
-            if (compound.contains(LootCrateTagNames.LockMode.toString())) {
-                try {
-                    lockMode = LockMode.valueOf(compound.getString(LootCrateTagNames.LockMode.toString()));
-                } catch (IllegalArgumentException ignored) { } // nonexistant value
-            }
-            if(lockMode != LockMode.NONE) {
-                tooltip.add(LootCrateAtlas.getItemLockedTooltip(itemStack, lockMode));
-                if(lockMode.relocks()) {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.relocks"));
-                }
+            if(lockMode.relocks()) {
+                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.relocks"));
             }
     
             InventoryDeletionMode inventoryDeletionMode = InventoryDeletionMode.NEVER;
@@ -189,31 +184,31 @@ public class LootCrateItem extends BlockItem {
     
     private @Nullable TranslatableText getReplenishTimeGameTimeHumanReadableText(long replenishTime) {
         if(replenishTime >= 1728000) { // 1 day
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_days", replenishTime / 1728000F);
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_game_time_days", replenishTime / 1728000F);
         } else if(replenishTime >= 72000) { // 1 hour
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_hours", replenishTime / 72000F);
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_game_time_hours", replenishTime / 72000F);
         } else if(replenishTime >= 1200) { // 1 minute
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_minutes", replenishTime / 1200F);
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_game_time_minutes", replenishTime / 1200F);
         } else if(replenishTime <= 0) {
             // does not replenish
             return null;
         } else { // in ticks
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_ticks", replenishTime);
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_game_time_ticks", replenishTime);
         }
     }
     
     private @Nullable TranslatableText getReplenishTimeRealTimeHumanReadableText(long replenishTime) {
         if(replenishTime >= 1728000) { // 1 day
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_passed_days", replenishTime / 1728000F);
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_real_time_days", replenishTime / 1728000F);
         } else if(replenishTime >= 72000) { // 1 hour
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_passed_hours", replenishTime / 72000F);
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_real_time_hours", replenishTime / 72000F);
         } else if(replenishTime >= 1200) { // 1 minute
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_passed_minutes", replenishTime / 1200F);
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_real_time_minutes", replenishTime / 1200F);
         } else if(replenishTime <= 0) {
             // does not replenish
             return null;
         } else { // in ticks
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_passed_ticks", replenishTime);
+            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_real_time_ticks", replenishTime);
         }
     }
 
