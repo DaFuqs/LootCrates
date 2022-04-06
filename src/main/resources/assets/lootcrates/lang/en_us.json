@@ -95,8 +95,9 @@
   "item.lootcrates.loot_crate.tooltip.locked_consume_epic": "Locked (uses up an §dEpic Crate Key)",
   "item.lootcrates.loot_crate.tooltip.locked_consume_ghost": "Locked (uses up an §aGhastly Crate Key)",
   "item.lootcrates.loot_crate.tooltip.locked_consume_blaze": "Locked (uses up an §6Blazing Crate Key)",
-  "item.lootcrates.loot_crate.tooltip.contains_loot": "§aContains Loot!",
+  "item.lootcrates.loot_crate.tooltip.contains_loot": "§aLoot Available!",
   "item.lootcrates.loot_crate.tooltip.already_looted": "§7Already looted",
+  "item.lootcrates.loot_crate.tooltip.already_looted_by_you": "§7§o(already looted by you)",
   "item.lootcrates.loot_crate.tooltip.trapped": "§e⚠ Trapped",
   "item.lootcrates.loot_crate.tooltip.relocks": "§e⚠ Will lock itself back up for new loot",
   "item.lootcrates.loot_crate.tooltip.loot_table": "§7Loot Table: %s",
@@ -114,7 +115,6 @@
   "item.lootcrates.loot_crate.tooltip.replenish_monthly": "§7Generates new loot §7each new Month",
   "item.lootcrates.loot_crate.tooltip.fixed_seed": "§7Fixed seed: %d",
   "item.lootcrates.loot_crate.tooltip.tracked_per_player": "§7Tracked per player",
-  "item.lootcrates.loot_crate.tooltip.already_looted_by_you": "§7§o(already looted by you)",
   "item.lootcrates.loot_crate.tooltip.no_data_set": "§7No data set",
   "item.lootcrates.loot_crate.tooltip.inventory_deletes_on_open": "§e⚠ Voids its inventory",
   "item.lootcrates.loot_crate.tooltip.inventory_deletes_when_replenished": "§e⚠ Voids last loot when generating new"
