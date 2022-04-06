@@ -37,12 +37,12 @@ public class LootBagItem extends Item {
     @Override
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         super.appendTooltip(itemStack, world, tooltip, tooltipContext);
-        tooltip.add(LootCrateAtlas.getLootBagItemToolTip(itemStack));
 
         Identifier lootTableIdentifier = getLootTableIdentifier(itemStack);
         if(lootTableIdentifier == null) {
             tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.no_loot_table"));
         } else {
+            tooltip.add(LootCrateAtlas.getLootBagItemToolTip(itemStack));
             tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.loot_table", lootTableIdentifier.toString()));
         }
     }
