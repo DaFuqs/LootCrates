@@ -46,8 +46,8 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
         ArrayList<ItemStack> stacks = new ArrayList<>();
 
         ArrayList<Long> replenishTimeTicksValues = new ArrayList<>();
-        replenishTimeTicksValues.add(-1L);      // once
         replenishTimeTicksValues.add(1L);       // 1 tick
+        replenishTimeTicksValues.add(72000L);   // 1 hour
         replenishTimeTicksValues.add(1728000L); // 1 day
         
         ArrayList<Boolean> booleans = new ArrayList<>() {{

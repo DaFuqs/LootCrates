@@ -24,6 +24,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -108,13 +109,15 @@ public class LootCrateItem extends BlockItem {
                 } catch (IllegalArgumentException ignored) { } // nonexistant value
             }
 
-            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player"));
+            if(replenishMode != ReplenishMode.NEVER && trackedPerPlayer) {
+                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.tracked_per_player"));
+            }
             switch (replenishMode) {
                 case NEVER -> {
                     if(playerCrateData.isPresent()) {
                         // cannot generate more loot
                         if(trackedPerPlayer) {
-                            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player_already_opened_by_you"));
+                            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.already_looted_by_you"));
                         } else {
                             tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.already_looted"));
                         }
@@ -134,15 +137,21 @@ public class LootCrateItem extends BlockItem {
                         replenishTimeTicks = compound.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
                     }
                     
-                    tooltip.add(getReplenishTimeGameTimeHumanReadableText(replenishTimeTicks));
+                    Text text = getReplenishTimeGameTimeHumanReadableText(replenishTimeTicks);
+                    if(text != null) {
+                        tooltip.add(text);
+                    }
                 }
                 case REAL_TIME -> {
                     long replenishTimeTicks = -1;
                     if (compound.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
                         replenishTimeTicks = compound.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
                     }
-                    
-                    tooltip.add(getReplenishTimeRealTimeHumanReadableText(replenishTimeTicks));
+    
+                    Text text = getReplenishTimeRealTimeHumanReadableText(replenishTimeTicks);
+                    if(text != null) {
+                        tooltip.add(text);
+                    }
                 }
             }
     
@@ -190,8 +199,7 @@ public class LootCrateItem extends BlockItem {
         }
     }
     
-    @Contract("_ -> new")
-    private @NotNull TranslatableText getReplenishTimeGameTimeHumanReadableText(long replenishTime) {
+    private @Nullable TranslatableText getReplenishTimeGameTimeHumanReadableText(long replenishTime) {
         if(replenishTime >= 1728000) { // 1 day
             return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_days", replenishTime / 1728000F);
         } else if(replenishTime >= 72000) { // 1 hour
@@ -200,14 +208,13 @@ public class LootCrateItem extends BlockItem {
             return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_minutes", replenishTime / 1200F);
         } else if(replenishTime <= 0) {
             // does not replenish
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_once");
+            return null;
         } else { // in ticks
             return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_ticks", replenishTime);
         }
     }
     
-    @Contract("_ -> new")
-    private @NotNull TranslatableText getReplenishTimeRealTimeHumanReadableText(long replenishTime) {
+    private @Nullable TranslatableText getReplenishTimeRealTimeHumanReadableText(long replenishTime) {
         if(replenishTime >= 1728000) { // 1 day
             return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_passed_days", replenishTime / 1728000F);
         } else if(replenishTime >= 72000) { // 1 hour
@@ -216,7 +223,7 @@ public class LootCrateItem extends BlockItem {
             return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_passed_minutes", replenishTime / 1200F);
         } else if(replenishTime <= 0) {
             // does not replenish
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_once");
+            return null;
         } else { // in ticks
             return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_passed_ticks", replenishTime);
         }
