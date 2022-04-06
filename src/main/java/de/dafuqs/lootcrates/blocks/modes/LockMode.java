@@ -1,5 +1,9 @@
 package de.dafuqs.lootcrates.blocks.modes;
 
+import de.dafuqs.lootcrates.blocks.PlayerCrateData;
+
+import java.util.Optional;
+
 public enum LockMode {
 	NONE(false, false, false),
 	REQUIRE_KEY(true, false, false),
@@ -15,6 +19,23 @@ public enum LockMode {
 		this.requiresKey = requiresKey;
 		this.consumesKey = consumesKey;
 		this.relocks = relocks;
+	}
+	
+	public boolean isUnlocked(Optional<PlayerCrateData> playerCrateData) {
+		if(requiresKey) {
+			if(playerCrateData.isEmpty()) {
+				return false;
+			} else {
+				PlayerCrateData playerCrateData1 = playerCrateData.get();
+				if (relocks()) {
+					return playerCrateData1.unlockTime > 0 && playerCrateData1.unlockTime > playerCrateData1.replenishTime;
+				} else {
+					return playerCrateData1.unlockTime > 0;
+				}
+			}
+		} else {
+			return true;
+		}
 	}
 	
 	public boolean requiresKey() {

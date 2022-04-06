@@ -61,7 +61,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             lootCrateBlockEntity.checkRelock(player);
             if(!lootCrateBlockEntity.isUnlocked(player)) {
                 for(ItemStack itemStack : player.getItemsHand()) {
-                    if(lootCrateBlockEntity.doesUnlock(itemStack.getItem())) {
+                    if(lootCrateBlockEntity.doesItemUnlock(itemStack.getItem())) {
                         if(!player.isCreative()) {
                             if (lootCrateBlockEntity.getLockType().consumesKey()) {
                                 itemStack.decrement(1);

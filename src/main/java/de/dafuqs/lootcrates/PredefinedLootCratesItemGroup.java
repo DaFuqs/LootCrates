@@ -64,8 +64,8 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
                     for (LockMode lockMode : LockMode.values()) {
                         for (boolean trackedPerPlayer : booleans) {
                             for (ReplenishMode replenishMode : ReplenishMode.values()) {
-                                if(trackedPerPlayer && replenishMode != ReplenishMode.NEVER) {
-                                    continue;
+                                if(!trackedPerPlayer && lockMode.relocks() && replenishMode == ReplenishMode.NEVER) {
+                                    continue; // there is nothing to relock
                                 }
                                 
                                 if(replenishMode.usesTickData) {
