@@ -141,7 +141,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             inventoryCleared = true;
         }
         
-        boolean canGenerateNewLoot = canGenerateNewLoot(player);
+        boolean canGenerateNewLoot = canReplenish(player);
         if(canGenerateNewLoot) {
             if(!inventoryCleared && inventoryDeletionMode == InventoryDeletionMode.WHEN_REPLENISHED) {
                 this.clear();
@@ -167,49 +167,13 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         return canGenerateNewLoot;
     }
 
-    public boolean canGenerateNewLoot(PlayerEntity player) {
+    public boolean canReplenish(PlayerEntity player) {
         if(hasWorld()) {
             Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
             if(playerCrateDataOptional.isEmpty()) {
                 return true;
             } else {
-                PlayerCrateData playerCrateData = playerCrateDataOptional.get();
-                if(playerCrateData.replenishTime < 0) {
-                    // unlocked, but never opened
-                    return true;
-                } else {
-                    switch (this.replenishMode) {
-                        case NEVER -> {
-                            // crate was opened before (in general or by that player)
-                            // => just generate loot once
-                            return this.replenishTimeTicks > 0;
-                        }
-                        case HOURLY -> {
-                            Calendar calendar = GregorianCalendar.getInstance();
-                            Date lastDate = new Date(playerCrateData.replenishTime);
-                            Date currentDate = calendar.getTime(); // Milliseconds since unix epoch
-        
-                            return currentDate.getYear() >= lastDate.getYear() && currentDate.getMonth() >= lastDate.getMonth() && currentDate.getDay() >= lastDate.getDay() && currentDate.getHours() >= lastDate.getHours();
-                        }
-                        case DAILY -> {
-                            Calendar calendar = GregorianCalendar.getInstance();
-                            Date lastDate = new Date(playerCrateData.replenishTime);
-                            Date currentDate = calendar.getTime(); // Milliseconds since unix epoch
-    
-                            return currentDate.getYear() >= lastDate.getYear() && currentDate.getMonth() >= lastDate.getMonth() && currentDate.getDay() > lastDate.getDay();
-                        }
-                        case REAL_TIME -> {
-                            Calendar calendar = GregorianCalendar.getInstance();
-                            long currentTime = calendar.getTime().getTime(); // Milliseconds since unix epoch
-                            
-                            return currentTime > playerCrateData.replenishTime + this.replenishTimeTicks;
-                        }
-                        case GAME_TIME -> {
-                            // check if there was enough time since the last opening
-                            return this.world.getTime() > playerCrateData.replenishTime + this.replenishTimeTicks;
-                        }
-                    }
-                }
+                return this.replenishMode.canReplenish(world, playerCrateDataOptional, replenishTimeTicks);
             }
         }
         return false;
@@ -341,7 +305,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
             if(playerCrateDataOptional.isPresent()) {
                 PlayerCrateData playerCrateData = playerCrateDataOptional.get();
-                 if(playerCrateData.unlockTime < playerCrateData.replenishTime && this.canGenerateNewLoot(player)) {
+                 if(playerCrateData.unlockTime < playerCrateData.replenishTime && this.canReplenish(player)) {
                      playerCrateData.unlockTime = -1;
                      this.markDirty();
                 }
