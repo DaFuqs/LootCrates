@@ -49,7 +49,7 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
         replenishTimeTicksValues.add(-1L);      // once
         replenishTimeTicksValues.add(1L);       // 1 tick
         replenishTimeTicksValues.add(1728000L); // 1 day
-
+        
         ArrayList<Boolean> booleans = new ArrayList<>() {{
             add(false);
             add(true);
@@ -60,23 +60,26 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
 
         for(Item lootCrateItem : allLootCrates) {
             for (Identifier lootTable : allLootTables) {
-                if(lootTable.getNamespace().equals("minecraft") && lootTable.getPath().contains("chests")) { // to reduce the lists size. These are just examples, after all
-                    for (Long replenishTimeTicks : replenishTimeTicksValues) {
-                        for (ReplenishMode replenishMode : ReplenishMode.values()) {
-                            for (LockMode lockMode : LockMode.values()) {
-                                for (InventoryDeletionMode inventoryDeletionMode : InventoryDeletionMode.values()) {
-                                    for (boolean trapped : booleans) {
-                                        for (boolean trackedPerPlayer : booleans) {
-                                            if (trackedPerPlayer && replenishTimeTicks < 0) {
-                                                // oncePerPlayer really is only useful when replenish time is positive
-                                            } else {
-                                                NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, lockMode, replenishMode, inventoryDeletionMode, replenishTimeTicks, trackedPerPlayer, trapped);
-                                                ItemStack itemStack = new ItemStack(lootCrateItem);
-                                                itemStack.setNbt(compound);
-                                                stacks.add(itemStack);
-                                            }
-                                        }
+                if(lootTable.getNamespace().equals("minecraft") && lootTable.getPath().startsWith("chests/")) { // to reduce the lists size. These are just examples, after all
+                    for (LockMode lockMode : LockMode.values()) {
+                        for (boolean trackedPerPlayer : booleans) {
+                            for (ReplenishMode replenishMode : ReplenishMode.values()) {
+                                if(trackedPerPlayer && replenishMode != ReplenishMode.NEVER) {
+                                    continue;
+                                }
+                                
+                                if(replenishMode.usesTickData) {
+                                    for (Long replenishTimeTicks : replenishTimeTicksValues) {
+                                        NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, lockMode, replenishMode, InventoryDeletionMode.NEVER, replenishTimeTicks, trackedPerPlayer, false);
+                                        ItemStack itemStack = new ItemStack(lootCrateItem);
+                                        itemStack.setNbt(compound);
+                                        stacks.add(itemStack);
                                     }
+                                } else {
+                                    NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, lockMode, replenishMode, InventoryDeletionMode.NEVER, 0, trackedPerPlayer, false);
+                                    ItemStack itemStack = new ItemStack(lootCrateItem);
+                                    itemStack.setNbt(compound);
+                                    stacks.add(itemStack);
                                 }
                             }
                         }

@@ -49,7 +49,7 @@ public final class PredefinedLootBagsItemGroup extends ItemGroup {
 
         for(Item lootBagItem : allLootBags) {
             for (Identifier lootTable : allLootTables) {
-                if(!lootTable.getPath().contains("entities")) { // to reduce the lists size a bit
+                if(lootTable.getNamespace().equals("minecraft") && lootTable.getPath().startsWith("chests/")) { // to reduce the lists size
                     NbtCompound compound = LootBagItem.getItemCompoundTag(lootTable, 0);
                     ItemStack itemStack = new ItemStack(lootBagItem);
                     itemStack.setNbt(compound);
