@@ -49,12 +49,10 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     public static class PlayerCrateData {
         private long lastReplenishTime;
         private long lastUnlockTime; // for the relock to only lock back up when there is new loot to generate
-        private boolean unlocked;
         
-        public PlayerCrateData(long lastReplenishTime, long lastUnlockTime, boolean unlocked) {
+        public PlayerCrateData(long lastReplenishTime, long lastUnlockTime) {
             this.lastReplenishTime = lastReplenishTime;
             this.lastUnlockTime = lastUnlockTime;
-            this.unlocked = unlocked;
         }
     
         public long getLastReplenishTime() {
@@ -64,17 +62,6 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         public long getLastUnlockTime() {
             return lastUnlockTime;
         }
-    
-        public boolean isUnlocked() {
-            return unlocked;
-        }
-        
-        public void setUnlocked(boolean unlocked, long time) {
-            if(!this.unlocked && unlocked) {
-                this.lastUnlockTime = time;
-            }
-            this.unlocked = unlocked;
-        }
         
         public NbtCompound toCompound(@Nullable UUID uuid) {
             NbtCompound nbtCompound = new NbtCompound();
@@ -83,7 +70,6 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             }
             nbtCompound.putLong("LastReplenishTime", getLastReplenishTime());
             nbtCompound.putLong("LastUnlockTime", getLastUnlockTime());
-            nbtCompound.putBoolean("Unlocked", isUnlocked());
             return nbtCompound;
         }
         
@@ -98,7 +84,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         
         @Contract("_ -> new")
         public static @NotNull PlayerCrateData fromCompoundWithoutUUID(@NotNull NbtCompound nbtCompound) {
-            return new PlayerCrateData(nbtCompound.getLong("LastReplenishTime"), nbtCompound.getLong("LastUnlockTime"), nbtCompound.getBoolean("Unlocked"));
+            return new PlayerCrateData(nbtCompound.getLong("LastReplenishTime"), nbtCompound.getLong("LastUnlockTime"));
         }
         
     }
@@ -209,12 +195,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
                     PlayerCrateData playerCrateData = this.playerCrateData.get(player.getUuid());
                     playerCrateData.lastReplenishTime = world.getTime();
                 } else {
-                    playerCrateData.put(player.getUuid(), new PlayerCrateData(world.getTime(), -1, false));
+                    playerCrateData.put(player.getUuid(), new PlayerCrateData(world.getTime(), -1));
                 }
             } else {
                 long time = this.replenishMode.usesRealTime ? Calendar.getInstance().getTime().getTime() : world.getTime();
                 if(defaultCrateData == null) {
-                    defaultCrateData = new PlayerCrateData(time, -1, false);
+                    defaultCrateData = new PlayerCrateData(time, -1);
                 } else {
                     defaultCrateData.lastReplenishTime =time;
                 }
@@ -400,19 +386,28 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             
             if(playerCrateDataOptional.isPresent()) {
                 PlayerCrateData playerCrateData = playerCrateDataOptional.get();
-                 if(playerCrateData.isUnlocked() && playerCrateData.getLastUnlockTime() < playerCrateData.getLastReplenishTime() && this.canGenerateNewLoot(player)) {
-                     playerCrateData.setUnlocked(false, world.getTime());
+                 if(playerCrateData.getLastUnlockTime() < playerCrateData.getLastReplenishTime() && this.canGenerateNewLoot(player)) {
+                     playerCrateData.lastUnlockTime = -1;
+                     this.markDirty();
                 }
             }
         }
     }
 
     public boolean isUnlocked(PlayerEntity player) {
-        Optional<PlayerCrateData> optionalPlayerCrateData = getPlayerCrateData(player);
-        if(optionalPlayerCrateData.isPresent()) {
-            return optionalPlayerCrateData.get().isUnlocked();
+        if(lockMode.requiresKey()) {
+            Optional<PlayerCrateData> optionalPlayerCrateData = getPlayerCrateData(player);
+            if(optionalPlayerCrateData.isEmpty()) {
+                return false;
+            } else {
+                if (lockMode.relocks()) {
+                    return optionalPlayerCrateData.get().lastUnlockTime > 0 && optionalPlayerCrateData.get().lastUnlockTime > optionalPlayerCrateData.get().lastReplenishTime;
+                } else {
+                    return optionalPlayerCrateData.get().lastUnlockTime > 0;
+                }
+            }
         }
-        return !this.lockMode.requiresKey();
+        return true;
     }
 
     public boolean isTrapped() {
@@ -441,13 +436,13 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         
         if(optionalPlayerCrateData.isPresent()) {
             PlayerCrateData playerCrateData = optionalPlayerCrateData.get();
-            playerCrateData.setUnlocked(true, world.getTime());
+            playerCrateData.lastUnlockTime = world.getTime();
         } else {
             long time = this.replenishMode.usesRealTime ? Calendar.getInstance().getTime().getTime() : world.getTime();
             if (trackedPerPlayer) {
-                playerCrateData.put(player.getUuid(), new PlayerCrateData(-1, time, true));
+                playerCrateData.put(player.getUuid(), new PlayerCrateData(-1, time));
             } else {
-                defaultCrateData = new PlayerCrateData(-1, time, true);
+                defaultCrateData = new PlayerCrateData(-1, time);
             }
         }
         

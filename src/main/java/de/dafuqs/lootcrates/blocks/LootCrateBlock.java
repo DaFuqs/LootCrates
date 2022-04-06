@@ -57,8 +57,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof LootCrateBlockEntity) {
-            LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) blockEntity;
+        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             lootCrateBlockEntity.checkRelock(player);
             if(!lootCrateBlockEntity.isUnlocked(player)) {
                 for(ItemStack itemStack : player.getItemsHand()) {
