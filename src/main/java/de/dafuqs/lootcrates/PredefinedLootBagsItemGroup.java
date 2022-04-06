@@ -44,17 +44,15 @@ public final class PredefinedLootBagsItemGroup extends ItemGroup {
     private @NotNull ArrayList<ItemStack> getPredefinedLootBags() {
         ArrayList<ItemStack> stacks = new ArrayList<>();
 
-        List<Item> allLootBags = LootCrateAtlas.getAllLootBagItems();
+        Item lootBagItem = LootCrateAtlas.getAllLootBagItems().get(0);
         Set<Identifier> allLootTables = LootTables.getAll();
-
-        for(Item lootBagItem : allLootBags) {
-            for (Identifier lootTable : allLootTables) {
-                if(lootTable.getNamespace().equals("minecraft") && lootTable.getPath().startsWith("chests/")) { // to reduce the lists size
-                    NbtCompound compound = LootBagItem.getItemCompoundTag(lootTable, 0);
-                    ItemStack itemStack = new ItemStack(lootBagItem);
-                    itemStack.setNbt(compound);
-                    stacks.add(itemStack);
-                }
+    
+        for (Identifier lootTable : allLootTables) {
+            if(lootTable.getNamespace().equals("minecraft") && lootTable.getPath().startsWith("chests/")) { // to reduce the lists size
+                NbtCompound compound = LootBagItem.getItemCompoundTag(lootTable, 0);
+                ItemStack itemStack = new ItemStack(lootBagItem);
+                itemStack.setNbt(compound);
+                stacks.add(itemStack);
             }
         }
 

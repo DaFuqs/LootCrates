@@ -116,10 +116,9 @@ public class LootCrateItem extends BlockItem {
                     }
                 }
             }
-            if(replenishMode != ReplenishMode.NEVER && trackedPerPlayer) {
+            if(trackedPerPlayer) {
                 tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.tracked_per_player"));
             }
-    
             if(lockMode.relocks()) {
                 tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.relocks"));
             }
