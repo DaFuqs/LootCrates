@@ -39,37 +39,19 @@ public class LootCratesWorldgenReplacer {
 		"loot_table": "",
 		"entries": [
 			{
-				"once_per_player": true,
-				"replenish_time_ticks": 1,
-				"lock": "none",
-				"weight": 1
-			}
-		]
-	},
-	{
-		"loot_table": "minecraft:example_loot_table",
-		"entries": [
-			{
 				"crate_rarity": "common",
-				"once_per_player": true,
-				"replenish_time_ticks": 1,
-				"lock": "require_key",
-				"weight": 3
+				"tracked_per_player": true,
+				"lock_mode": "none",
+				"inventory_deletion_mode": "never",
+				"replenish_mode": "never",
+				"weight": 5
 			},
 			{
-				"crate_rarity": "uncommon",
-				"loot_table": "minecraft:example_loot_table_uncommon",
-				"once_per_player": true,
-				"replenish_time_ticks": 1,
-				"lock": "consume_key",
-				"weight": 2
-			},
-			{
-				"crate_rarity": "rare",
-				"loot_table": "minecraft:example_loot_table_rare",
-				"once_per_player": true,
-				"replenish_time_ticks": 1,
-				"lock": "consume_key",
+				"crate_rarity": "epic",
+				"tracked_per_player": true,
+				"lock_mode": "none",
+				"inventory_deletion_mode": "never",
+				"replenish_mode": "never",
 				"weight": 1
 			}
 		]
@@ -78,112 +60,110 @@ public class LootCratesWorldgenReplacer {
 		"loot_table": "minecraft:chests/bastion_bridge",
 		"entries": [{
 			"crate_rarity": "blaze",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
-		}]
-	},
-	{
-		"loot_table": "minecraft:chests/bastion_bridge",
-		"entries": [{
-			"crate_rarity": "blaze",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	},
 	{
 		"loot_table": "minecraft:chests/bastion_hoglin_stable",
 		"entries": [{
 			"crate_rarity": "blaze",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	},
 	{
 		"loot_table": "minecraft:chests/bastion_other",
 		"entries": [{
 			"crate_rarity": "blaze",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	},
 	{
 		"loot_table": "minecraft:chests/bastion_treasure",
 		"entries": [{
 			"crate_rarity": "blaze",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	},
 	{
 		"loot_table": "minecraft:chests/buried_treasure",
 		"entries": [{
 			"crate_rarity": "rare",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	},
 	{
 		"loot_table": "minecraft:chests/end_city_treasure",
 		"entries": [{
 			"crate_rarity": "epic",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	},
 	{
 		"loot_table": "minecraft:chests/simple_dungeon",
 		"entries": [{
 			"crate_rarity": "uncommon",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	},
 	{
 		"loot_table": "minecraft:chests/stronghold_corridor",
 		"entries": [{
 			"crate_rarity": "uncommon",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
-		}]
-	},
-	{
-		"loot_table": "minecraft:chests/stronghold_corridor",
-		"entries": [{
-			"crate_rarity": "uncommon",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
-		}]
-	},
-	{
-		"loot_table": "minecraft:chests/stronghold_corridor",
-		"entries": [{
-			"crate_rarity": "uncommon",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	},
 	{
 		"loot_table": "minecraft:chests/underwater_ruin_big",
 		"entries": [{
 			"crate_rarity": "rare",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	},
 	{
 		"loot_table": "minecraft:chests/underwater_ruin_small",
 		"entries": [{
 			"crate_rarity": "rare",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	},
 	{
 		"loot_table": "minecraft:chests/woodland_mansion",
 		"entries": [{
 			"crate_rarity": "ghost",
-			"once_per_player": true,
-			"replenish_time_ticks": 1
+			"tracked_per_player": true,
+			"lock_mode": "none",
+			"inventory_deletion_mode": "never",
+			"replenish_mode": "never"
 		}]
 	}
 ]""";
@@ -237,7 +217,7 @@ public class LootCratesWorldgenReplacer {
                 LootCrateRarity lootCrateRarity = LootCrateRarity.COMMON;
                 Identifier lootTable = null; // null => keep the original loot table
                 boolean trackedPerPlayer = false;
-                int replenishTimeTicks = 0;
+                int replenishTimeTicks = -1;
                 LockMode lockMode = LockMode.NONE;
                 ReplenishMode replenishMode = ReplenishMode.NEVER;
                 InventoryDeletionMode inventoryDeletionMode = InventoryDeletionMode.NEVER;
