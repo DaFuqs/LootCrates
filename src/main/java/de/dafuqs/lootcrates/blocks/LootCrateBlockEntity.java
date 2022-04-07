@@ -60,8 +60,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     
     @Nullable
     private PlayerCrateData defaultCrateData = null;
-    @Nullable
-    private HashMap<UUID, PlayerCrateData> playerCrateData = null;
+    private HashMap<UUID, PlayerCrateData> playerCrateData = new HashMap<>();
 
     
     protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {

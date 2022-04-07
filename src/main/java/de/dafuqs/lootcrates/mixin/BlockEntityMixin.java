@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates.mixin;
 
 import de.dafuqs.lootcrates.LootCrates;
+import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.worldgen.LootCrateReplacementPosition;
 import de.dafuqs.lootcrates.worldgen.LootCratesWorldgenReplacer;
 import net.minecraft.block.entity.BlockEntity;
@@ -18,7 +19,7 @@ public class BlockEntityMixin {
 
     @Inject(method = "setWorld(Lnet/minecraft/world/World;)V", at = @At("RETURN"))
     protected void noteContainerForLootCrateConversion(World world, CallbackInfo ci) {
-        if(LootCrates.CONFIG.ReplaceVanillaWorldgenChests && world instanceof ServerWorld && ((Object) this instanceof LootableContainerBlockEntity lootableContainerBlockEntity)) {
+        if(!((Object) this instanceof LootCrateBlockEntity) && LootCrates.CONFIG.ReplaceVanillaWorldgenChests && world instanceof ServerWorld && ((Object) this instanceof LootableContainerBlockEntity lootableContainerBlockEntity)) {
             RegistryKey<World> worldRegistryKey = world.getRegistryKey();
             if (!LootCrates.CONFIG.ReplaceVanillaWorldgenChestsDimensionsBlacklist.contains(worldRegistryKey.getValue().toString())) {
                 LootTableAccessor lootTableAccessor = ((LootTableAccessor) this);

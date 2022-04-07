@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates.mixin;
 
 import de.dafuqs.lootcrates.LootCrates;
+import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.worldgen.LootCrateReplacementPosition;
 import de.dafuqs.lootcrates.worldgen.LootCratesWorldgenReplacer;
 import net.minecraft.block.entity.BarrelBlockEntity;
@@ -50,7 +51,7 @@ public abstract class LootableContainerBlockEntityMixin {
 
             if (!LootCrates.CONFIG.ReplaceVanillaWorldgenChestsDimensionsBlacklist.contains(worldRegistryKey.getValue().toString())) {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
-                if ((blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity) && world instanceof ChunkRegion || world instanceof ServerWorld) {
+                if (!(blockEntity instanceof LootCrateBlockEntity) && (blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity) && world instanceof ChunkRegion || world instanceof ServerWorld) {
                     LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition(worldRegistryKey, pos));
                 }
             }
