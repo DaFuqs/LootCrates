@@ -2,7 +2,7 @@
   "text.autoconfig.LootCrates.title": "Modular Loot Crates Configuration",
   "text.autoconfig.LootCrates.category.general": "General",
   "text.autoconfig.LootCrates.category.worldgen": "Vanilla Treasure Chest Replacement",
-  "text.autoconfig.LootCrates.option.ChestCrateHardness.@PrefixText": "How long Loot Crates take to break. <1 makes them indestructible.Obsidian has 50. 150 makes them very much breakable, but taking ages.\nLong enough to be not breakable by accident, but still possible to remove them if they are in the way somehow.",
+  "text.autoconfig.LootCrates.option.ChestCrateHardness.@PrefixText": "How long Loot Crates take to break. -1 makes them indestructible. Obsidian has 50. 150 makes them very much breakable, but taking ages.\nLong enough to be not breakable by accident, but still possible to remove them if they are in the way somehow.",
   "text.autoconfig.LootCrates.option.ChestCrateHardness": "Chest Crate hardness",
   "text.autoconfig.LootCrates.option.LootBarrelHardness": "Loot Barrel hardness",
   "text.autoconfig.LootCrates.option.ShulkerCrateHardness": "Shulker Crate hardness",
