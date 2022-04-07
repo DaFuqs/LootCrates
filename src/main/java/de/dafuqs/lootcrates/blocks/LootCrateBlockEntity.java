@@ -256,17 +256,17 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         this.trapped = tag.contains(LootCrateTagNames.Trapped.toString()) && tag.getBoolean(LootCrateTagNames.Trapped.toString());
     
         if(tag.contains(LootCrateTagNames.LockMode.toString())) {
-            this.lockMode = LockMode.valueOf(tag.getString(LootCrateTagNames.LockMode.toString()));
+            this.lockMode = LockMode.valueOf(tag.getString(LootCrateTagNames.LockMode.toString()).toUpperCase(Locale.ROOT));
         } else {
             this.lockMode = LockMode.NONE;
         }
         if(tag.contains(LootCrateTagNames.ReplenishMode.toString())) {
-            this.replenishMode = ReplenishMode.valueOf(tag.getString(LootCrateTagNames.ReplenishMode.toString()));
+            this.replenishMode = ReplenishMode.valueOf(tag.getString(LootCrateTagNames.ReplenishMode.toString()).toUpperCase(Locale.ROOT));
         } else {
             this.replenishMode = ReplenishMode.NEVER;
         }
         if(tag.contains(LootCrateTagNames.InventoryDeletionMode.toString())) {
-            this.inventoryDeletionMode = InventoryDeletionMode.valueOf(tag.getString(LootCrateTagNames.InventoryDeletionMode.toString()));
+            this.inventoryDeletionMode = InventoryDeletionMode.valueOf(tag.getString(LootCrateTagNames.InventoryDeletionMode.toString()).toUpperCase(Locale.ROOT));
         } else {
             this.inventoryDeletionMode = InventoryDeletionMode.NEVER;
         }
