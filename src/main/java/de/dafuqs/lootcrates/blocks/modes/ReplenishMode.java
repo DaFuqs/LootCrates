@@ -4,19 +4,20 @@ import de.dafuqs.lootcrates.blocks.PlayerCrateData;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 public enum ReplenishMode {
 	NEVER(false, false),
-	GAME_TIME(false, true), // time since last opening
+	GAME_TIME(false, true), // in game ticks since last opening
 	HOURLY(true, false), // each new hour
 	DAILY(true, false), // each new day
 	WEEKLY(true, false), // each new week
 	MONTHLY(true, false), // each new month
-	REAL_TIME(true, true); // real life hours, like after 24h
+	REAL_TIME(true, true); // real life milliseconds, like after 24h
 	
 	public final boolean usesRealTime; // real time = computer clock. Else ingame ticks
 	public final boolean usesTickData; // if "replenishTimeTicks" is needed for that mode to work
@@ -37,41 +38,43 @@ public enum ReplenishMode {
 				return world.getTime() > playerCrateData.get().replenishTime + replenishTimeTicks;
 			}
 			case HOURLY -> {
-				Calendar calendar = GregorianCalendar.getInstance();
-				Date lastDate = new Date(playerCrateData.get().replenishTime);
-				calendar.add(Calendar.HOUR, -1);
-				Date currentDate = calendar.getTime();
+				ZonedDateTime now = ZonedDateTime.now();
+				ZonedDateTime then = Instant.ofEpochMilli(playerCrateData.get().replenishTime).atZone(ZoneId.systemDefault());
 				
-				return currentDate.after(lastDate);
+				now = now.truncatedTo(ChronoUnit.HOURS);
+				then = then.truncatedTo(ChronoUnit.HOURS);
+				
+				return now.isAfter(then);
 			}
 			case DAILY -> {
-				Calendar calendar = GregorianCalendar.getInstance();
-				Date lastDate = new Date(playerCrateData.get().replenishTime);
-				calendar.add(Calendar.DAY_OF_MONTH, -1);
-				Date currentDate = calendar.getTime();
+				ZonedDateTime now = ZonedDateTime.now();
+				ZonedDateTime then = Instant.ofEpochMilli(playerCrateData.get().replenishTime).atZone(ZoneId.systemDefault());
 				
-				return currentDate.after(lastDate);
+				now = now.truncatedTo(ChronoUnit.DAYS);
+				then = then.truncatedTo(ChronoUnit.DAYS);
+				
+				return now.isAfter(then);
 			}
 			case WEEKLY -> {
-				Calendar calendar = GregorianCalendar.getInstance();
-				Date lastDate = new Date(playerCrateData.get().replenishTime);
-				calendar.add(Calendar.WEEK_OF_YEAR, -1);
-				Date currentDate = calendar.getTime();
+				ZonedDateTime now = ZonedDateTime.now();
+				ZonedDateTime then = Instant.ofEpochMilli(playerCrateData.get().replenishTime).atZone(ZoneId.systemDefault());
 				
-				return currentDate.after(lastDate);
+				now = now.truncatedTo(ChronoUnit.WEEKS);
+				then = then.truncatedTo(ChronoUnit.WEEKS);
+				
+				return now.isAfter(then);
 			}
 			case MONTHLY -> {
-				Calendar calendar = GregorianCalendar.getInstance();
-				Date lastDate = new Date(playerCrateData.get().replenishTime);
-				calendar.add(Calendar.MONTH, -1);
-				Date currentDate = calendar.getTime();
+				ZonedDateTime now = ZonedDateTime.now();
+				ZonedDateTime then = Instant.ofEpochMilli(playerCrateData.get().replenishTime).atZone(ZoneId.systemDefault());
 				
-				return currentDate.after(lastDate);
+				now = now.truncatedTo(ChronoUnit.MONTHS);
+				then = then.truncatedTo(ChronoUnit.MONTHS);
+				
+				return now.isAfter(then);
 			}
 			case REAL_TIME -> {
-				Calendar calendar = GregorianCalendar.getInstance();
-				long currentTime = calendar.getTime().getTime(); // Milliseconds since unix epoch
-				
+				long currentTime = ZonedDateTime.now().toInstant().toEpochMilli();
 				return currentTime > playerCrateData.get().replenishTime + replenishTimeTicks;
 			}
 			default -> {

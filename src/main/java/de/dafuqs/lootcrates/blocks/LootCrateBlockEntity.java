@@ -42,6 +42,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity {
@@ -146,27 +147,32 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             if(!inventoryCleared && inventoryDeletionMode == InventoryDeletionMode.WHEN_REPLENISHED) {
                 this.clear();
             }
-            
-            if(trackedPerPlayer) {
-                if(this.playerCrateData.containsKey(player.getUuid())) {
-                    PlayerCrateData playerCrateData = this.playerCrateData.get(player.getUuid());
-                    playerCrateData.replenishTime = world.getTime();
-                } else {
-                    playerCrateData.put(player.getUuid(), new PlayerCrateData(world.getTime(), -1));
-                }
-            } else {
-                long time = this.replenishMode.usesRealTime ? Calendar.getInstance().getTime().getTime() : world.getTime();
-                if(defaultCrateData == null) {
-                    defaultCrateData = new PlayerCrateData(time, -1);
-                } else {
-                    defaultCrateData.replenishTime = time;
-                }
-            }
-            this.markDirty();
+    
+            setReplenishTimeToNow(player);
         }
         return canGenerateNewLoot;
     }
-
+    
+    private void setReplenishTimeToNow(PlayerEntity player) {
+        long time = this.replenishMode.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
+        
+        if(trackedPerPlayer) {
+            if(this.playerCrateData.containsKey(player.getUuid())) {
+                PlayerCrateData playerCrateData = this.playerCrateData.get(player.getUuid());
+                playerCrateData.replenishTime = time;
+            } else {
+                playerCrateData.put(player.getUuid(), new PlayerCrateData(time, -1));
+            }
+        } else {
+            if(defaultCrateData == null) {
+                defaultCrateData = new PlayerCrateData(time, -1);
+            } else {
+                defaultCrateData.replenishTime = time;
+            }
+        }
+        this.markDirty();
+    }
+    
     public boolean canReplenish(PlayerEntity player) {
         if(hasWorld()) {
             Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
@@ -346,7 +352,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             PlayerCrateData playerCrateData = optionalPlayerCrateData.get();
             playerCrateData.unlockTime = world.getTime();
         } else {
-            long time = this.replenishMode.usesRealTime ? Calendar.getInstance().getTime().getTime() : world.getTime();
+            long time = this.replenishMode.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
             if (trackedPerPlayer) {
                 playerCrateData.put(player.getUuid(), new PlayerCrateData(-1, time));
             } else {

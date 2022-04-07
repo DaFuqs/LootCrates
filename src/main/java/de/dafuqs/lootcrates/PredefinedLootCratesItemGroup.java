@@ -16,7 +16,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public final class PredefinedLootCratesItemGroup extends ItemGroup {
