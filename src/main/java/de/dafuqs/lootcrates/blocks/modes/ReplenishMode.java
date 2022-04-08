@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.temporal.ChronoField;
 import java.util.Optional;
 
 public enum ReplenishMode {
@@ -20,11 +20,11 @@ public enum ReplenishMode {
 	REAL_TIME(true, true); // real life milliseconds, like after 24h
 	
 	public final boolean usesRealTime; // real time = computer clock. Else ingame ticks
-	public final boolean usesTickData; // if "replenishTimeTicks" is needed for that mode to work
+	public final boolean requiresTickData; // if "replenishTimeTicks" is needed for that mode to work
 	
-	ReplenishMode (boolean usesRealTime, boolean usesTickData) {
+	ReplenishMode (boolean usesRealTime, boolean requiresTickData) {
 		this.usesRealTime = usesRealTime;
-		this.usesTickData = usesTickData;
+		this.requiresTickData = requiresTickData;
 	}
 	
 	public boolean canReplenish(World world, @NotNull Optional<PlayerCrateData> playerCrateData, long replenishTimeTicks) {
@@ -41,43 +41,31 @@ public enum ReplenishMode {
 				ZonedDateTime now = ZonedDateTime.now();
 				ZonedDateTime then = Instant.ofEpochMilli(playerCrateData.get().replenishTime).atZone(ZoneId.systemDefault());
 				
-				now = now.truncatedTo(ChronoUnit.HOURS);
-				then = then.truncatedTo(ChronoUnit.HOURS);
-				
-				return now.isAfter(then);
+				return now.get(ChronoField.YEAR) > then.get(ChronoField.YEAR) || now.get(ChronoField.DAY_OF_YEAR) > then.get(ChronoField.DAY_OF_YEAR) || now.get(ChronoField.HOUR_OF_DAY) > then.get(ChronoField.HOUR_OF_DAY);
 			}
 			case DAILY -> {
 				ZonedDateTime now = ZonedDateTime.now();
 				ZonedDateTime then = Instant.ofEpochMilli(playerCrateData.get().replenishTime).atZone(ZoneId.systemDefault());
-				
-				now = now.truncatedTo(ChronoUnit.DAYS);
-				then = then.truncatedTo(ChronoUnit.DAYS);
-				
-				return now.isAfter(then);
+
+				return now.get(ChronoField.YEAR) > then.get(ChronoField.YEAR) || now.get(ChronoField.DAY_OF_YEAR) > then.get(ChronoField.DAY_OF_YEAR);
 			}
 			case WEEKLY -> {
 				ZonedDateTime now = ZonedDateTime.now();
 				ZonedDateTime then = Instant.ofEpochMilli(playerCrateData.get().replenishTime).atZone(ZoneId.systemDefault());
 				
-				now = now.truncatedTo(ChronoUnit.WEEKS);
-				then = then.truncatedTo(ChronoUnit.WEEKS);
-				
-				return now.isAfter(then);
+				return now.get(ChronoField.YEAR) > then.get(ChronoField.YEAR) || now.get(ChronoField.ALIGNED_WEEK_OF_YEAR) > then.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
 			}
 			case MONTHLY -> {
 				ZonedDateTime now = ZonedDateTime.now();
 				ZonedDateTime then = Instant.ofEpochMilli(playerCrateData.get().replenishTime).atZone(ZoneId.systemDefault());
 				
-				now = now.truncatedTo(ChronoUnit.MONTHS);
-				then = then.truncatedTo(ChronoUnit.MONTHS);
-				
-				return now.isAfter(then);
+				return now.get(ChronoField.YEAR) > then.get(ChronoField.YEAR) || now.get(ChronoField.MONTH_OF_YEAR) > then.get(ChronoField.MONTH_OF_YEAR);
 			}
 			case REAL_TIME -> {
 				long currentTime = ZonedDateTime.now().toInstant().toEpochMilli();
 				return currentTime > playerCrateData.get().replenishTime + replenishTimeTicks;
 			}
-			default -> {
+			default -> { // NEVER
 				// crate was opened before (in general or by that player)
 				// => just generate loot once
 				return false;

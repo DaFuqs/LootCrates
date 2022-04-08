@@ -65,7 +65,7 @@ public final class PredefinedLootCratesItemGroup extends ItemGroup {
                                 continue; // there is nothing to relock
                             }
                             
-                            if(replenishMode.usesTickData) {
+                            if(replenishMode.requiresTickData) {
                                 for (Long replenishTimeTicks : replenishTimeTicksValues) {
                                     NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, lockMode, replenishMode, InventoryDeletionMode.NEVER, replenishTimeTicks, trackedPerPlayer, false);
                                     ItemStack itemStack = new ItemStack(lootCrateItem);
