@@ -17,6 +17,7 @@ import net.kyrptonaught.shulkerutils.ItemStackInventory;
 import net.kyrptonaught.shulkerutils.ShulkerUtils;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -30,6 +31,7 @@ import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
@@ -64,17 +66,18 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
         NbtCompound compound = stack.getSubNbt("BlockEntityTag");
         if (compound != null) {
             boolean trackedPerPlayer = LootCrateItem.isTrackedPerPlayer(compound);
-            Optional<PlayerCrateData> playerCrateData = LootCrateItem.getPlayerCrateData(compound, trackedPerPlayer);
+            Optional<PlayerCrateData> playerCrateData = LootCrateItem.getPlayerCrateData(compound, player, trackedPerPlayer);
             ReplenishMode replenishMode = LootCrateItem.getReplenishMode(compound);
             long replenishTimeTicks = LootCrateItem.getReplenishTimeTicks(compound);
             LockMode lockMode = LootCrateItem.getLockMode(compound);
     
-            boolean unlocked;
-            if(LootCrateBlockEntity.shouldRelock(player.world, replenishMode, replenishTimeTicks, lockMode, playerCrateData)) {
-                LootCrateItem.lockForPlayer(stack, player, trackedPerPlayer);
-                unlocked = false;
-            } else {
-                unlocked = !lockMode.isUnlocked(playerCrateData);
+            boolean unlocked = lockMode.isUnlocked(playerCrateData);
+            boolean shouldRelock = false;
+            if(unlocked) {
+                if(LootCrateBlockEntity.shouldRelock(player.world, replenishMode, replenishTimeTicks, lockMode, playerCrateData)) {
+                    shouldRelock = true;
+                    unlocked = false;
+                }
             }
             
             if (!unlocked) {
@@ -82,7 +85,11 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
                     LootCrateItem.unlockForPlayer(stack, player, trackedPerPlayer, replenishMode);
                     player.getEntityWorld().playSound(null, player.getBlockPos(), LootCrates.CHEST_UNLOCKS_SOUND_EVENT, SoundCategory.PLAYERS, 1.0F, 1.0F);
                 } else {
+                    if(shouldRelock) {
+                        LootCrateItem.lockForPlayer(stack, player, trackedPerPlayer);
+                    }
                     printLockedMessage(player, stack);
+                    player.getEntityWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.PLAYERS, 1.0F, 1.0F);
                 }
             } else {
                 boolean canReplenish = replenishMode.canReplenish(player.world, playerCrateData, replenishTimeTicks);

@@ -16,6 +16,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -50,7 +51,7 @@ public class LootCrateItem extends BlockItem {
         if (compound != null) {
             
             boolean trackedPerPlayer = isTrackedPerPlayer(compound);
-            Optional<PlayerCrateData> playerCrateData = getPlayerCrateData(compound, trackedPerPlayer);
+            Optional<PlayerCrateData> playerCrateData = getPlayerCrateData(compound, MinecraftClient.getInstance().player, trackedPerPlayer);
     
             ReplenishMode replenishMode = getReplenishMode(compound);
             long replenishTimeTicks = getReplenishTimeTicks(compound);
@@ -203,9 +204,9 @@ public class LootCrateItem extends BlockItem {
         return compound.contains(LootCrateTagNames.TrackedPerPlayer.toString()) && compound.getBoolean(LootCrateTagNames.TrackedPerPlayer.toString());
     }
     
-    public static Optional<PlayerCrateData> getPlayerCrateData(@NotNull NbtCompound compound, boolean trackedPerPlayer) {
+    public static Optional<PlayerCrateData> getPlayerCrateData(@NotNull NbtCompound compound, PlayerEntity player, boolean trackedPerPlayer) {
         if(trackedPerPlayer) {
-            return PlayerCrateData.getPlayerSpecificCrateData(compound, MinecraftClient.getInstance().player.getUuid());
+            return PlayerCrateData.getPlayerSpecificCrateData(compound, player.getUuid());
         } else {
             if(compound.contains("Data")) {
                 return Optional.of(PlayerCrateData.fromCompoundWithoutUUID(compound.getCompound("Data")));
@@ -237,32 +238,46 @@ public class LootCrateItem extends BlockItem {
             if(blockEntityTag != null) {
                 if(trackedPerPlayer) {
                     UUID uuid = player.getUuid();
+    
+                    NbtList playerDataList = null;
+                    NbtCompound playerDataCompound = null;
+                    if(blockEntityTag.contains("PlayerData", NbtElement.LIST_TYPE)) {
+                        playerDataList = blockEntityTag.getList("PlayerData", NbtElement.COMPOUND_TYPE);
+                        for (int i = 0; i < playerDataList.size(); i++) {
+                            NbtCompound playerCompound = playerDataList.getCompound(i);
+                            if (uuid.equals(playerCompound.getUuid("UUID"))) {
+                                playerDataCompound = playerCompound;
+                            }
+                        }
+                    }
                     
-                    NbtCompound playerDataCompound;
-                    if(blockEntityTag.contains("PlayerData", NbtElement.COMPOUND_TYPE)) {
-                        playerDataCompound = blockEntityTag.getCompound("PlayerData");
-                    } else {
+                    if(playerDataCompound == null) {
                         playerDataCompound = new NbtCompound();
-                        nbtCompound.putUuid("UUID", uuid);
-                        nbtCompound.putLong("ReplenishTime", -1);
+                        playerDataCompound.putUuid("UUID", uuid);
+                        playerDataCompound.putLong("ReplenishTime", -1);
                     }
                     playerDataCompound.putLong("UnlockTime", unlockTime);
                     
-                    blockEntityTag.put("PlayerData", playerDataCompound);
+                    if(playerDataList == null) {
+                        playerDataList = new NbtList();
+                    }
+                    playerDataList.add(playerDataCompound);
+                    
+                    blockEntityTag.put("PlayerData", playerDataList);
                 } else {
                     NbtCompound dataCompound;
                     if(blockEntityTag.contains("Data", NbtElement.COMPOUND_TYPE)) {
                         dataCompound = blockEntityTag.getCompound("Data");
                     } else {
                         dataCompound = new NbtCompound();
-                        nbtCompound.putLong("ReplenishTime", -1);
+                        dataCompound.putLong("ReplenishTime", -1);
                     }
                     dataCompound.putLong("UnlockTime", unlockTime);
                     
                     blockEntityTag.put("Data", dataCompound);
                 }
-                blockEntityTag.put("BlockEntityTag", blockEntityTag);
-                itemStack.setNbt(blockEntityTag);
+                nbtCompound.put("BlockEntityTag", blockEntityTag);
+                itemStack.setNbt(nbtCompound);
             }
         }
     }
@@ -274,37 +289,51 @@ public class LootCrateItem extends BlockItem {
     
     public static void setReplenishTime(@NotNull ItemStack itemStack, PlayerEntity player, boolean trackedPerPlayer, long replenishTime) {
         NbtCompound nbtCompound = itemStack.getNbt();
-        if(nbtCompound.contains("BlockEntityTag")) {
+        if(nbtCompound != null && nbtCompound.contains("BlockEntityTag")) {
             NbtCompound blockEntityTag = nbtCompound.getCompound("BlockEntityTag");
             if(blockEntityTag != null) {
                 if(trackedPerPlayer) {
                     UUID uuid = player.getUuid();
-                
-                    NbtCompound playerDataCompound;
-                    if(blockEntityTag.contains("PlayerData", NbtElement.COMPOUND_TYPE)) {
-                        playerDataCompound = blockEntityTag.getCompound("PlayerData");
-                    } else {
+    
+                    NbtList playerDataList = null;
+                    NbtCompound playerDataCompound = null;
+                    if(blockEntityTag.contains("PlayerData", NbtElement.LIST_TYPE)) {
+                        playerDataList = blockEntityTag.getList("PlayerData", NbtElement.COMPOUND_TYPE);
+                        for (int i = 0; i < playerDataList.size(); i++) {
+                            NbtCompound playerCompound = playerDataList.getCompound(i);
+                            if (uuid.equals(playerCompound.getUuid("UUID"))) {
+                                playerDataCompound = playerCompound;
+                            }
+                        }
+                    }
+    
+                    if(playerDataCompound == null) {
                         playerDataCompound = new NbtCompound();
-                        nbtCompound.putUuid("UUID", uuid);
-                        nbtCompound.putLong("UnlockTime", -1);
+                        playerDataCompound.putUuid("UUID", uuid);
+                        playerDataCompound.putLong("UnlockTime", -1);
                     }
                     playerDataCompound.putLong("ReplenishTime", replenishTime);
-                
-                    blockEntityTag.put("PlayerData", playerDataCompound);
+    
+                    if(playerDataList == null) {
+                        playerDataList = new NbtList();
+                    }
+                    playerDataList.add(playerDataCompound);
+    
+                    blockEntityTag.put("PlayerData", playerDataList);
                 } else {
                     NbtCompound dataCompound;
                     if(blockEntityTag.contains("Data", NbtElement.COMPOUND_TYPE)) {
                         dataCompound = blockEntityTag.getCompound("Data");
                     } else {
                         dataCompound = new NbtCompound();
-                        nbtCompound.putLong("UnlockTime", -1);
+                        dataCompound.putLong("UnlockTime", -1);
                     }
                     dataCompound.putLong("ReplenishTime", replenishTime);
                 
                     blockEntityTag.put("Data", dataCompound);
                 }
-                blockEntityTag.put("BlockEntityTag", blockEntityTag);
-                itemStack.setNbt(blockEntityTag);
+                nbtCompound.put("BlockEntityTag", blockEntityTag);
+                itemStack.setNbt(nbtCompound);
             }
         }
     }
