@@ -178,10 +178,18 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             if(playerCrateDataOptional.isEmpty()) {
                 return true;
             } else {
-                return this.replenishMode.canReplenish(world, playerCrateDataOptional, replenishTimeTicks);
+                return canReplenish(world, playerCrateDataOptional, replenishMode, replenishTimeTicks);
             }
         }
         return false;
+    }
+    
+    public static boolean canReplenish(World world, Optional<PlayerCrateData> playerCrateData, ReplenishMode replenishMode, long replenishTimeTicks) {
+        if(playerCrateData.isEmpty()) {
+            return true;
+        } else {
+            return replenishMode.canReplenish(world, playerCrateData, replenishTimeTicks);
+        }
     }
 
     public NbtCompound serializeInventory(NbtCompound tag) {
@@ -305,17 +313,23 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
-    public void checkRelock(PlayerEntity player) {
-        if (this.lockMode.relocks()) {
-            Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
-            if(playerCrateDataOptional.isPresent()) {
-                PlayerCrateData playerCrateData = playerCrateDataOptional.get();
-                 if(playerCrateData.unlockTime < playerCrateData.replenishTime && this.canReplenish(player)) {
-                     playerCrateData.unlockTime = -1;
-                     this.markDirty();
+    public void relockIfNecessary(PlayerEntity player) {
+        Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
+        if(shouldRelock(world, replenishMode, replenishTimeTicks, lockMode, playerCrateDataOptional)) {
+            playerCrateDataOptional.get().unlockTime = -1;
+            this.markDirty();
+        }
+    }
+    
+    public static boolean shouldRelock(World world, ReplenishMode replenishMode, long replenishTimeTicks, LockMode lockMode, Optional<PlayerCrateData> playerCrateData) {
+        if (lockMode.relocks()) {
+            if(playerCrateData.isPresent()) {
+                if(playerCrateData.get().unlockTime < playerCrateData.get().replenishTime && LootCrateBlockEntity.canReplenish(world, playerCrateData, replenishMode, replenishTimeTicks)) {
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     public boolean isUnlocked(PlayerEntity player) {
