@@ -7,6 +7,8 @@ import de.dafuqs.lootcrates.blocks.modes.LockMode;
 import de.dafuqs.lootcrates.blocks.modes.ReplenishMode;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.LootCrateTagNames;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
@@ -43,6 +45,7 @@ public class LootCrateItem extends BlockItem {
         return false;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         super.appendTooltip(itemStack, world, tooltip, tooltipContext);
