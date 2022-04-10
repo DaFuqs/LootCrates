@@ -45,17 +45,12 @@ import java.util.Random;
 
 public abstract class LootCrateBlock extends BlockWithEntity {
 
-    @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        super.onStateReplaced(state, world, pos, newState, moved);
-    }
-
     protected LootCrateBlock(Settings settings) {
         super(settings);
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, @NotNull World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             lootCrateBlockEntity.relockIfNecessary(player);
@@ -83,7 +78,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         return ActionResult.PASS;
     }
 
-    protected static LootCrateRarity getCrateRarity(World world, BlockPos blockPos) {
+    protected static LootCrateRarity getCrateRarity(@NotNull World world, BlockPos blockPos) {
         Block block = world.getBlockState(blockPos).getBlock();
         return getCrateRarity(block);
     }
@@ -101,7 +96,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         return true;
     }
 
-    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    public int getWeakRedstonePower(BlockState state, @NotNull BlockView world, BlockPos pos, Direction direction) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             if (lootCrateBlockEntity.isTrapped()) {
@@ -111,7 +106,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         return 0;
     }
 
-    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    public int getStrongRedstonePower(BlockState state, @NotNull BlockView world, BlockPos pos, Direction direction) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             if (lootCrateBlockEntity.isTrapped()) {
@@ -133,7 +128,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     }
 
     @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+    public void onPlaced(@NotNull World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity) {
             if (itemStack.hasCustomName()) {
@@ -143,7 +138,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, @NotNull ServerWorld world, BlockPos pos, Random random) {
         world.createAndScheduleBlockTick(pos, this, getRandomTickTime(world.random));
 
         BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -180,117 +175,53 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     }
 
     // faster than fire (30+ 0-10)
-    private static int getRandomTickTime(Random random) {
+    private static int getRandomTickTime(@NotNull Random random) {
         return 20 + random.nextInt(10);
     }
-
-    /**
-     * Called when the block is broken
-     * Used to add Block NBT to the item stack
-     * @param world The world, client and server
-     * @param pos BlockPos where the block is
-     * @param state The block state
-     * @param player The player that has broken the block
-     */
+    
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public void onStateReplaced(BlockState state, @NotNull World world, BlockPos pos, BlockState newState, boolean moved) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof LootCrateBlockEntity) {
-
+        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             // if creative: If there is block data add those and drop a block with all those tags
             // No tags = No drop. Just like vanilla shulker chests
             if (!world.isClient) {
                 BlockBreakAction blockBreakAction = getBlockBreakAction();
-                if (player.isCreative()) {
+                if (blockBreakAction == BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY) {
+                    ItemScatterer.spawn(world, pos, lootCrateBlockEntity);
+                } else if (blockBreakAction == BlockBreakAction.DROP_AND_SCATTER_INVENTORY) {
+                    ItemScatterer.spawn(world, pos, lootCrateBlockEntity);
+                    dropAsItemWithTags(world, pos, false);
+                } else if (blockBreakAction == BlockBreakAction.KEEP_INVENTORY) {
                     dropAsItemWithTags(world, pos, true);
-                } else {
-                    if (blockBreakAction == BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY) {
-                        ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
-                    } else if (blockBreakAction == BlockBreakAction.DROP_AND_SCATTER_INVENTORY) {
-                        ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
-                        dropAsItemWithTags(world, pos, false);
-                    } else if (blockBreakAction == BlockBreakAction.KEEP_INVENTORY) {
-                        dropAsItemWithTags(world, pos, true);
-                    }
                 }
             }
         }
-
-        super.onBreak(world, pos, state, player);
-    }
-
-    public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
-        BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
-        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
-            BlockBreakAction blockBreakAction = getBlockBreakAction();
-            if (blockBreakAction == BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY) {
-                return lootCrateBlockEntity.getInvStackList();
-            } else if (blockBreakAction == BlockBreakAction.DROP_AND_SCATTER_INVENTORY) {
-                ArrayList<ItemStack> list = new ArrayList<>();
-                list.addAll(lootCrateBlockEntity.getInvStackList());
-                lootCrateBlockEntity.getInvStackList().clear();
-                ItemStack crateItemStack = new ItemStack(this);
-                if (lootCrateBlockEntity.hasCustomName()) {
-                    crateItemStack.setCustomName(lootCrateBlockEntity.getCustomName());
-                }
-                NbtCompound compoundTag = lootCrateBlockEntity.putLootCrateBlockTags(new NbtCompound());
-                if (!compoundTag.isEmpty()) {
-                    crateItemStack.setSubNbt("BlockEntityTag", compoundTag);
-                }
-                list.add(crateItemStack);
-                return list;
-            } else if (blockBreakAction == BlockBreakAction.KEEP_INVENTORY) {
-                ArrayList<ItemStack> list = new ArrayList<>();
-
-                for(int i = 0; i < lootCrateBlockEntity.inventory.size(); i++) {
-                    if(!lootCrateBlockEntity.inventory.get(i).getItem().canBeNested()) {
-                        list.add(lootCrateBlockEntity.inventory.get(i));
-                        lootCrateBlockEntity.inventory.set(i, ItemStack.EMPTY);
-                    }
-                }
-
-                ItemStack crateItemStack = new ItemStack(this);
-                if (lootCrateBlockEntity.hasCustomName()) {
-                    crateItemStack.setCustomName(lootCrateBlockEntity.getCustomName());
-                }
-                NbtCompound compoundTag = lootCrateBlockEntity.putLootCrateBlockTags(new NbtCompound());
-                lootCrateBlockEntity.serializeInventory(compoundTag);
-                if (!compoundTag.isEmpty()) {
-                    crateItemStack.setSubNbt("BlockEntityTag", compoundTag);
-                }
-
-                list.add(crateItemStack);
-                return list;
-            }
-        }
-
-        return super.getDroppedStacks(state, builder);
+    
+        world.updateComparators(pos, state.getBlock());
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    public int getComparatorOutput(BlockState state, @NotNull World world, BlockPos pos) {
         return ScreenHandler.calculateComparatorOutput((Inventory)world.getBlockEntity(pos));
     }
 
-    public void dropAsItemWithTags(World world, BlockPos pos, boolean keepInventory) {
+    public void dropAsItemWithTags(@NotNull World world, BlockPos pos, boolean keepInventory) {
         LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) world.getBlockEntity(pos);
         if(lootCrateBlockEntity != null) {
             ItemStack itemStack = new ItemStack(this);
 
-            boolean shouldDropItem = false;
-
             if (lootCrateBlockEntity.hasCustomName()) {
                 itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
-                shouldDropItem = true;
             }
 
             NbtCompound compoundTag = lootCrateBlockEntity.putLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
                 itemStack.setSubNbt("BlockEntityTag", compoundTag);
-                shouldDropItem = true;
             }
 
             if (keepInventory && !lootCrateBlockEntity.isEmpty()) {
@@ -307,14 +238,11 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 }
 
                 lootCrateBlockEntity.serializeInventory(compoundTag);
-                shouldDropItem = true;
             }
 
-            if (shouldDropItem) {
-                ItemEntity itemEntity = new ItemEntity(world, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
-                itemEntity.setToDefaultPickupDelay();
-                world.spawnEntity(itemEntity);
-            }
+            ItemEntity itemEntity = new ItemEntity(world, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
+            itemEntity.setToDefaultPickupDelay();
+            world.spawnEntity(itemEntity);
         }
     }
 
@@ -339,12 +267,11 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         return itemStack;
     }
 
-    protected void playSound(World world, BlockPos blockPos, SoundEvent soundEvent) {
+    protected void playSound(@NotNull World world, @NotNull BlockPos blockPos, SoundEvent soundEvent) {
         double d = blockPos.getX() + 0.5D;
         double e = blockPos.getY() + 0.5D;
         double f = blockPos.getZ() + 0.5D;
         world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
     }
-
-
+    
 }

@@ -23,6 +23,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.world.chunk.ChunkStatus;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -294,10 +295,12 @@ public class LootCratesWorldgenReplacer {
                             if(previousTries < MAX_TRIES) {
                                 previousTries++;
                                 tryLaterReplacements.put(replacementPosition.getKey(), previousTries);
+                            } else {
+                                LootCrates.log(Level.ERROR, "The chunk '" + position.worldKey + "' at '" + position.blockPos + "' was generated, but was immediatey unloaded or did not finish generation for a very long time. Containers there will not be replaced. This happens when using some worldgen optimization mods.");
                             }
                         }
                     } catch (Exception e) {
-                        LootCrates.log(Level.ERROR, "Error while replacing a container in the world '" + position.worldKey + "' at '" + position.blockPos + "') + " + e.getLocalizedMessage());
+                        LootCrates.log(Level.ERROR, "Error while replacing a container in the world '" + position.worldKey + "' at '" + position.blockPos + "': " + e.getLocalizedMessage());
                     }
                 }
             }
@@ -325,7 +328,7 @@ public class LootCratesWorldgenReplacer {
     
     private static boolean replace(@NotNull MinecraftServer server, @NotNull LootCrateReplacementPosition replacementPosition) {
         ServerWorld serverWorld = server.getWorld(replacementPosition.worldKey);
-        if (serverWorld != null && serverWorld.isPosLoaded(replacementPosition.blockPos.getX(), replacementPosition.blockPos.getZ())) {
+        if (serverWorld != null && serverWorld.isPosLoaded(replacementPosition.blockPos.getX(), replacementPosition.blockPos.getZ()) && serverWorld.getChunk(replacementPosition.blockPos).getStatus() == ChunkStatus.FULL) {
             BlockEntity blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
             if(blockEntity instanceof LootableContainerBlockEntity && !(blockEntity instanceof LootCrateBlockEntity)) {
                 Identifier lootTableIdentifier;
