@@ -329,7 +329,15 @@ public class LootCratesWorldgenReplacer {
     private static boolean replace(@NotNull MinecraftServer server, @NotNull LootCrateReplacementPosition replacementPosition) {
         ServerWorld serverWorld = server.getWorld(replacementPosition.worldKey);
         if (serverWorld != null && serverWorld.isPosLoaded(replacementPosition.blockPos.getX(), replacementPosition.blockPos.getZ()) && serverWorld.getChunk(replacementPosition.blockPos).getStatus() == ChunkStatus.FULL) {
+            
+            BlockState sourceBlockState = serverWorld.getBlockState(replacementPosition.blockPos);
             BlockEntity blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
+            if (sourceBlockState.hasBlockEntity() && blockEntity == null) {
+                // chunk not finished generation?
+                // => try again later
+                return false;
+            }
+            
             if(blockEntity instanceof LootableContainerBlockEntity && !(blockEntity instanceof LootCrateBlockEntity)) {
                 Identifier lootTableIdentifier;
                 long lootTableSeed;
@@ -340,7 +348,6 @@ public class LootCratesWorldgenReplacer {
 
                 serverWorld.removeBlockEntity(replacementPosition.blockPos);
 
-                BlockState sourceBlockState = serverWorld.getBlockState(replacementPosition.blockPos);
                 Block sourceBlock = sourceBlockState.getBlock();
                 if (!(sourceBlock instanceof LootCrateBlock)) {
                     boolean trapped = false;

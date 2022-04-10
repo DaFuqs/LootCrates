@@ -4,10 +4,7 @@ import de.dafuqs.lootcrates.LootCrates;
 import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.worldgen.LootCrateReplacementPosition;
 import de.dafuqs.lootcrates.worldgen.LootCratesWorldgenReplacer;
-import net.minecraft.block.entity.BarrelBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.entity.*;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -30,8 +27,10 @@ public abstract class LootableContainerBlockEntityMixin {
     @Inject(method = "setLootTable(Lnet/minecraft/world/BlockView;Ljava/util/Random;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Identifier;)V", at = @At("TAIL"))
     private static void noteChestForLootCrateConversion(BlockView world, Random random, BlockPos pos, Identifier id, CallbackInfo ci) {
         if(LootCrates.CONFIG.ReplaceVanillaWorldgenChests) {
-            RegistryKey<World> worldRegistryKey;
-            if(world instanceof ProtoChunk protoChunk) {
+            RegistryKey<World> worldRegistryKey = null;
+            if(world instanceof ServerWorld serverWorld) {
+                worldRegistryKey = serverWorld.getRegistryKey();
+            } else if(world instanceof ProtoChunk protoChunk) {
                 ChunkAccessor protoChunkAccessor = ((ChunkAccessor) protoChunk);
                 HeightLimitView heightLimitView = protoChunkAccessor.getWorld();
                 if(heightLimitView instanceof ChunkRegion chunkRegion) {
@@ -43,15 +42,13 @@ public abstract class LootableContainerBlockEntityMixin {
                 }
             } else if (world instanceof ChunkRegion chunkRegion) {
                 worldRegistryKey = chunkRegion.toServerWorld().getRegistryKey();
-            } else if(world instanceof ServerWorld serverWorld) {
-                worldRegistryKey = serverWorld.getRegistryKey();
             } else {
                 return;
             }
 
             if (!LootCrates.CONFIG.ReplaceVanillaWorldgenChestsDimensionsBlacklist.contains(worldRegistryKey.getValue().toString())) {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
-                if (!(blockEntity instanceof LootCrateBlockEntity) && (blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity) && world instanceof ChunkRegion || world instanceof ServerWorld) {
+                if ((blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity || blockEntity instanceof ShulkerBoxBlockEntity) && worldRegistryKey != null) {
                     LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition(worldRegistryKey, pos));
                 }
             }
