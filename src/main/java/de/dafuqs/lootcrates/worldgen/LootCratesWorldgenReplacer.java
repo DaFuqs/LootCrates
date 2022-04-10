@@ -290,13 +290,14 @@ public class LootCratesWorldgenReplacer {
                 for (Map.Entry<LootCrateReplacementPosition, Integer> replacementPosition : map.entrySet()) {
                     LootCrateReplacementPosition position = replacementPosition.getKey();
                     try {
-                        if(!replace(server, position)) {
+                        if(!replace(server, position, false)) {
                             int previousTries = replacementPosition.getValue();
                             if(previousTries < MAX_TRIES) {
                                 previousTries++;
                                 tryLaterReplacements.put(replacementPosition.getKey(), previousTries);
                             } else {
-                                LootCrates.log(Level.ERROR, "The chunk '" + position.worldKey + "' at '" + position.blockPos + "' was generated, but was immediatey unloaded or did not finish generation for a very long time. Containers there will not be replaced. This happens when using some worldgen optimization mods.");
+                                replace(server, position, true);
+                                LootCrates.log(Level.ERROR, "The chunk '" + position.worldKey + "' at '" + position.blockPos + "' was generated, but was immediately unloaded or did not finish generation for a very long time. Chunk had to be force-loaded (performance impact!)");
                             }
                         }
                     } catch (Exception e) {
@@ -315,7 +316,7 @@ public class LootCratesWorldgenReplacer {
             List<LootCrateReplacementPosition> list = new ArrayList<>(replacements);
             for (LootCrateReplacementPosition replacementPosition : list) {
                 try {
-                    if(!replace(server, replacementPosition)) {
+                    if(!replace(server, replacementPosition, false)) {
                         tryLaterReplacements.put(replacementPosition, 0);
                     }
                 } catch (Exception e) {
@@ -326,9 +327,10 @@ public class LootCratesWorldgenReplacer {
         }
     }
     
-    private static boolean replace(@NotNull MinecraftServer server, @NotNull LootCrateReplacementPosition replacementPosition) {
+    private static boolean replace(@NotNull MinecraftServer server, @NotNull LootCrateReplacementPosition replacementPosition, boolean forceLoadChunk) {
         ServerWorld serverWorld = server.getWorld(replacementPosition.worldKey);
-        if (serverWorld != null && serverWorld.isPosLoaded(replacementPosition.blockPos.getX(), replacementPosition.blockPos.getZ()) && serverWorld.getChunk(replacementPosition.blockPos).getStatus() == ChunkStatus.FULL) {
+        
+        if (serverWorld != null && (forceLoadChunk || (serverWorld.isPosLoaded(replacementPosition.blockPos.getX(), replacementPosition.blockPos.getZ()) && serverWorld.getChunk(replacementPosition.blockPos).getStatus() == ChunkStatus.FULL))) {
             
             BlockState sourceBlockState = serverWorld.getBlockState(replacementPosition.blockPos);
             BlockEntity blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
@@ -357,11 +359,11 @@ public class LootCratesWorldgenReplacer {
                         if (sourceBlock instanceof TrappedChestBlock) {
                             trapped = true;
                         }
-                        serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getLootCrate(replacementTargetData.lootCrateRarity).getDefaultState().with(ChestLootCrateBlock.FACING, sourceBlockState.get(ChestBlock.FACING)), 3);
+                        serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getLootCrate(replacementTargetData.lootCrateRarity).getDefaultState().with(ChestLootCrateBlock.FACING, sourceBlockState.get(ChestBlock.FACING)));
                     } else if (sourceBlock instanceof BarrelBlock) {
-                        serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getLootBarrel(replacementTargetData.lootCrateRarity).getDefaultState().with(Properties.FACING, sourceBlockState.get(Properties.FACING)), 3);
+                        serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getLootBarrel(replacementTargetData.lootCrateRarity).getDefaultState().with(Properties.FACING, sourceBlockState.get(Properties.FACING)));
                     } else if (sourceBlock instanceof ShulkerBoxBlock) {
-                        serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getShulkerCrate(replacementTargetData.lootCrateRarity).getDefaultState().with(Properties.FACING, sourceBlockState.get(Properties.FACING)), 3);
+                        serverWorld.setBlockState(replacementPosition.blockPos, LootCrateAtlas.getShulkerCrate(replacementTargetData.lootCrateRarity).getDefaultState().with(Properties.FACING, sourceBlockState.get(Properties.FACING)));
                     } else {
                         // the worldgen may have been replaced by other blocks.
                         // Like a mineshaft cutting into a dungeon, replacing the chest with air again
