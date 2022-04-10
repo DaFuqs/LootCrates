@@ -13,6 +13,7 @@
   "text.autoconfig.LootCrates.option.ChestCratesKeepTheirInventory": "Chest Crates retain their inventory when broken",
   "text.autoconfig.LootCrates.option.ShulkerCratesKeepTheirInventory": "Shulker Crates retain their inventory when broken",
   "text.autoconfig.LootCrates.option.LootBarrelsKeepTheirInventory": "Loot Barrels retain their inventory when broken",
+  "text.autoconfig.LootCrates.option.BlazingCratesCauseFire": "Blazing Crates cause Fire",
   "text.autoconfig.LootCrates.option.ReplaceVanillaWorldgenChests": "Convert vanilla treasure chests to Loot Crates",
   "text.autoconfig.LootCrates.option.ReplacedWorldgenChestsAreOncePerPlayer": "Worldgen placed Loot Crates generate loot once per player",
   "text.autoconfig.LootCrates.option.ReplacedWorldgenChestsRestockEveryXTicks": "Worldgen placed Loot Crates restock time in ticks",
