@@ -52,8 +52,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof LootCrateBlockEntity) {
-            LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) blockEntity;
+        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             lootCrateBlockEntity.checkRelock(player);
             if(lootCrateBlockEntity.isLocked()) {
                 for(ItemStack itemStack : player.getItemsHand()) {
@@ -131,8 +130,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     @Override
     public void onStateReplaced(BlockState state, @NotNull World world, BlockPos pos, BlockState newState, boolean moved) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof LootCrateBlockEntity) {
-            LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) blockEntity;
+        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             // if creative: If there is block data add those and drop a block with all those tags
             // No tags = No drop. Just like vanilla shulker chests
             if (!world.isClient) {
