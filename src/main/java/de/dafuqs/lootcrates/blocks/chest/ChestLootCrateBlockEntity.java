@@ -9,10 +9,7 @@ import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestLidAnimator;
-import net.minecraft.block.entity.ViewerCountManager;
-import net.minecraft.client.block.ChestAnimationProgress;
+import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -24,14 +21,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements ChestAnimationProgress {
+public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements LidOpenable {
 
     private final ViewerCountManager stateManager;
     private final ChestLidAnimator lidAnimator;
 
     public ChestLootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
-
+        
         this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
         this.stateManager = new ViewerCountManager() {
             protected void onContainerOpen(World world, BlockPos pos, BlockState state) {

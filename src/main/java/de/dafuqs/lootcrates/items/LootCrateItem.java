@@ -13,7 +13,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -49,12 +48,12 @@ public class LootCrateItem extends BlockItem {
                 tooltip.add(LootCrateAtlas.getItemLockedTooltip(itemStack, compound));
             }
             if (compound.contains(LootCrateTagNames.RelocksWhenNewLoot.toString()) && compound.getBoolean(LootCrateTagNames.RelocksWhenNewLoot.toString())) {
-                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.relocks"));
+                tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.relocks"));
             }
 
 
             if (compound.contains(LootCrateTagNames.Trapped.toString()) && compound.getBoolean(LootCrateTagNames.Trapped.toString())) {
-                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.trapped"));
+                tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.trapped"));
             }
 
             boolean advanced = tooltipContext.isAdvanced();
@@ -68,7 +67,7 @@ public class LootCrateItem extends BlockItem {
 
             if (replenishTimeTicks <= 0 && !oncePerPlayer && wasOpened) {
                 // cannot generate more loot
-                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.already_looted"));
+                tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.already_looted"));
             } else {
                 tooltip.add(getReplenishTimeHumanReadableText(replenishTimeTicks));
 
@@ -89,20 +88,20 @@ public class LootCrateItem extends BlockItem {
                     }
 
                     if(playerHasAlreadyOpened) {
-                        tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player_already_opened_by_you"));
+                        tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.once_per_player_already_opened_by_you"));
                     } else {
-                        tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.once_per_player"));
+                        tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.once_per_player"));
                     }
                 }
 
                 if(advanced) {
                     if (compound.contains("LootTable")) {
                         String lootTableText = compound.getString("LootTable");
-                        tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.loot_table", lootTableText));
+                        tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootTableText));
                     }
                     if (compound.contains("LootTableSeed")) {
                         long lootTableSeed = compound.getLong("LootTableSeed");
-                        tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.fixed_seed", lootTableSeed));
+                        tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.fixed_seed", lootTableSeed));
                     }
                 }
 
@@ -120,7 +119,7 @@ public class LootCrateItem extends BlockItem {
                             ++j;
                             if (i <= 4) {
                                 ++i;
-                                MutableText mutableText = is.getName().shallowCopy();
+                                MutableText mutableText = is.getName().copy();
                                 mutableText.append(" x").append(String.valueOf(is.getCount()));
                                 tooltip.add(mutableText);
                             }
@@ -128,29 +127,29 @@ public class LootCrateItem extends BlockItem {
                     }
 
                     if (j - i > 0) {
-                        tooltip.add((new TranslatableText("container.shulkerBox.more", j - i)).formatted(Formatting.ITALIC));
+                        tooltip.add((Text.translatable("container.shulkerBox.more", j - i)).formatted(Formatting.ITALIC));
                     }
                 }
             }
 
         } else {
-            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.no_data_set"));
+            tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.no_data_set"));
         }
     }
 
     @Contract("_ -> new")
-    private @NotNull TranslatableText getReplenishTimeHumanReadableText(long replenishTime) {
+    private @NotNull Text getReplenishTimeHumanReadableText(long replenishTime) {
         if(replenishTime >= 1728000) { // 1 day
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_days", replenishTime / 1728000F);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_time_days", replenishTime / 1728000F);
         } else if(replenishTime >= 72000) { // 1 hour
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_hours", replenishTime / 72000F);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_time_hours", replenishTime / 72000F);
         } else if(replenishTime >= 1200) { // 1 minute
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_minutes", replenishTime / 1200F);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_time_minutes", replenishTime / 1200F);
         } else if(replenishTime <= 0) {
             // does not replenish
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_once");
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_time_once");
         } else { // in ticks
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_time_ticks", replenishTime);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_time_ticks", replenishTime);
         }
     }
 

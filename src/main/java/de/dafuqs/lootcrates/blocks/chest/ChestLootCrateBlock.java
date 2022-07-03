@@ -100,7 +100,7 @@ public class ChestLootCrateBlock extends LootCrateBlock {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {
         super.scheduledTick(state, world, pos, random);
 
         BlockEntity blockEntity = world.getBlockEntity(pos);

@@ -1,4 +1,4 @@
-package de.dafuqs.lootcrates.compat;
+/*package de.dafuqs.lootcrates.compat;
 
 import de.dafuqs.lootcrates.LootCrateAtlas;
 import de.dafuqs.lootcrates.LootCrates;
@@ -257,4 +257,4 @@ public class QuickShulkerCompat implements RegisterQuickShulker {
             }
         }
     }
-}
+}*/

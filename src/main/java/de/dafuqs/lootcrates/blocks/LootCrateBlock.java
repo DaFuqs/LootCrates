@@ -8,24 +8,19 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -39,8 +34,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public abstract class LootCrateBlock extends BlockWithEntity {
@@ -69,8 +62,8 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 }
                 if(!world.isClient()) {
                     LootCrateRarity rarity = getCrateRarity(world, pos);
-                    TranslatableText translatableText = LootCrateAtlas.getKeyNeededTooltip(rarity);
-                    player.sendMessage(translatableText, false);
+                    Text text = LootCrateAtlas.getKeyNeededTooltip(rarity);
+                    player.sendMessage(text, false);
                 }
                 playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
                 return ActionResult.FAIL;
@@ -137,9 +130,9 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             }
         }
     }
-
+    
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {
         world.createAndScheduleBlockTick(pos, this, getRandomTickTime(world.random));
 
         BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -176,7 +169,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     }
 
     // faster than fire (30+ 0-10)
-    private static int getRandomTickTime(Random random) {
+    private static int getRandomTickTime(net.minecraft.util.math.random.Random random) {
         return 20 + random.nextInt(10);
     }
     
@@ -209,7 +202,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return ScreenHandler.calculateComparatorOutput((Inventory)world.getBlockEntity(pos));
     }
-
+    
     public void dropAsItemWithTags(World world, BlockPos pos, boolean keepInventory) {
         LootCrateBlockEntity lootCrateBlockEntity = (LootCrateBlockEntity) world.getBlockEntity(pos);
         if(lootCrateBlockEntity != null) {
