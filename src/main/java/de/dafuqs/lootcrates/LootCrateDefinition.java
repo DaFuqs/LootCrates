@@ -6,11 +6,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
@@ -29,11 +30,11 @@ public class LootCrateDefinition {
         public boolean fireProof;
         public int luminance;
         public Rarity rarity;
-        public TranslatableText lockedTooltip;
-        public TranslatableText lockedConsumeTooltip;
-        public TranslatableText lootKeyTooltip;
-        public TranslatableText lootBagTooltip;
-        public TranslatableText keyNeededTooltip;
+        public Text lockedTooltip;
+        public Text lockedConsumeTooltip;
+        public Text lootKeyTooltip;
+        public Text lootBagTooltip;
+        public Text keyNeededTooltip;
         SoundEvent customOpenSoundEvent;
         SoundEvent customCloseSoundEvent;
 
@@ -45,11 +46,11 @@ public class LootCrateDefinition {
             this.fireProof = fireProof;
             this.luminance = luminance;
             this.rarity = rarity;
-            this.lockedTooltip = new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_use_" + this.identifier);
-            this.lockedConsumeTooltip = new TranslatableText("item.lootcrates.loot_crate.tooltip.locked_consume_" + this.identifier);
-            this.lootKeyTooltip = new TranslatableText("item.lootcrates." + this.identifier + "_crate_key.tooltip");
-            this.lootBagTooltip = new TranslatableText("item.lootcrates." + this.identifier + "_loot_bag.tooltip");
-            this.keyNeededTooltip = new TranslatableText("message.lootcrates." + this.identifier + "_key_needed_to_unlock");
+            this.lockedTooltip = Text.translatable("item.lootcrates.loot_crate.tooltip.locked_use_" + this.identifier);
+            this.lockedConsumeTooltip = Text.translatable("item.lootcrates.loot_crate.tooltip.locked_consume_" + this.identifier);
+            this.lootKeyTooltip = Text.translatable("item.lootcrates." + this.identifier + "_crate_key.tooltip");
+            this.lootBagTooltip = Text.translatable("item.lootcrates." + this.identifier + "_loot_bag.tooltip");
+            this.keyNeededTooltip = Text.translatable("message.lootcrates." + this.identifier + "_key_needed_to_unlock");
 
             this.customOpenSoundEvent = null;
             this.customCloseSoundEvent = null;
@@ -89,8 +90,8 @@ public class LootCrateDefinition {
             }
         }
 
-        public FabricBlockSettings getChestBlockSettings() {
-            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.METAL, mapColor).luminance(luminance);
+        public AbstractBlock.Settings getChestBlockSettings() {
+            AbstractBlock.Settings blockSettings = FabricBlockSettings.of(Material.METAL, mapColor).luminance(luminance);
 
             if(LootCrates.CONFIG.ChestCrateHardness < 0) {
                 blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
@@ -108,8 +109,8 @@ public class LootCrateDefinition {
             return blockSettings;
         }
 
-        public FabricBlockSettings getShulkerBlockSettings() {
-            FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, mapColor).luminance(luminance);
+        public AbstractBlock.Settings getShulkerBlockSettings() {
+            AbstractBlock.Settings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, mapColor).luminance(luminance);
 
             if(LootCrates.CONFIG.ShulkerCrateHardness < 0) {
                 blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
@@ -124,8 +125,8 @@ public class LootCrateDefinition {
             return blockSettings;
         }
 
-    public FabricBlockSettings getLootBarrelBlockSettings() {
-        FabricBlockSettings blockSettings = FabricBlockSettings.of(Material.WOOD, mapColor).luminance(luminance);
+    public AbstractBlock.Settings getLootBarrelBlockSettings() {
+        AbstractBlock.Settings blockSettings = FabricBlockSettings.of(Material.WOOD, mapColor).luminance(luminance);
 
         if(LootCrates.CONFIG.LootBarrelHardness < 0) {
             blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();

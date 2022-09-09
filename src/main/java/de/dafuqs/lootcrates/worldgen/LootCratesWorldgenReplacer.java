@@ -17,12 +17,12 @@ import net.fabricmc.loader.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
@@ -353,7 +353,7 @@ public class LootCratesWorldgenReplacer {
                 Block sourceBlock = sourceBlockState.getBlock();
                 if (!(sourceBlock instanceof LootCrateBlock)) {
                     boolean trapped = false;
-                    LootCrateReplacementEntry replacementTargetData = getEntryForLootTable(lootTableIdentifier, new Random(lootTableSeed));
+                    LootCrateReplacementEntry replacementTargetData = getEntryForLootTable(lootTableIdentifier, serverWorld.random);
 
                     if (sourceBlock instanceof ChestBlock) {
                         if (sourceBlock instanceof TrappedChestBlock) {

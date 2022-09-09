@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'fabric-loom' version '1.0-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -30,7 +30,7 @@ dependencies {
     }
     modApi("com.terraformersmc:modmenu:${project.modmenu_version}")
 
-    modImplementation "net.kyrptonaught:quickshulker:${project.quickshulker_version}"
+    //modImplementation "net.kyrptonaught:quickshulker:${project.quickshulker_version}"
 }
 
 processResources {

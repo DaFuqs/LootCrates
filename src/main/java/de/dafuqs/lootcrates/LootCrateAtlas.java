@@ -31,7 +31,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -246,7 +245,7 @@ public class LootCrateAtlas {
         });
     }
 
-    public static TranslatableText getKeyNeededTooltip(LootCrateRarity rarity) {
+    public static Text getKeyNeededTooltip(LootCrateRarity rarity) {
         return lootCrateDefinitions.get(rarity).keyNeededTooltip;
     }
 
@@ -295,7 +294,7 @@ public class LootCrateAtlas {
         }
     }
 
-    public static TranslatableText getLootKeyItemToolTip(ItemStack itemStack) {
+    public static Text getLootKeyItemToolTip(ItemStack itemStack) {
         Item item = itemStack.getItem();
         return lootCrateDefinitions.get(lootCrateKeys.inverse().get(item)).lootKeyTooltip;
     }

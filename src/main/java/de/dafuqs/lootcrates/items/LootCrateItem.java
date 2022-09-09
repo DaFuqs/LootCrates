@@ -21,7 +21,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -60,12 +59,12 @@ public class LootCrateItem extends BlockItem {
             long replenishTimeTicks = getReplenishTimeTicks(compound);
     
             if(playerCrateData.isEmpty() || playerCrateData.get().replenishTime < 0 || replenishMode.canReplenish(world, playerCrateData, replenishTimeTicks)) {
-                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.contains_loot"));
+                tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.contains_loot"));
             } else {
                 if(trackedPerPlayer) {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.already_looted_by_you"));
+                    tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.already_looted_by_you"));
                 } else {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.already_looted"));
+                    tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.already_looted"));
                 }
             }
     
@@ -76,16 +75,16 @@ public class LootCrateItem extends BlockItem {
 
             switch (replenishMode) {
                 case HOURLY -> {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_hourly"));
+                    tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_hourly"));
                 }
                 case DAILY -> {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_daily"));
+                    tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_daily"));
                 }
                 case WEEKLY -> {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_weekly"));
+                    tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_weekly"));
                 }
                 case MONTHLY -> {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_monthly"));
+                    tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_monthly"));
                 }
                 case GAME_TIME -> {
                     Text text = getReplenishTimeGameTimeHumanReadableText(replenishTimeTicks);
@@ -101,25 +100,25 @@ public class LootCrateItem extends BlockItem {
                 }
             }
             if(trackedPerPlayer) {
-                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.tracked_per_player"));
+                tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.tracked_per_player"));
             }
             if(lockMode.relocks()) {
-                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.relocks"));
+                tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.relocks"));
             }
     
             InventoryDeletionMode inventoryDeletionMode = getInventoryDeletionMode(compound);
             switch (inventoryDeletionMode) {
                 case ON_OPEN -> {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.inventory_deletes_on_open"));
+                    tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.inventory_deletes_on_open"));
                 }
                 case WHEN_REPLENISHED -> {
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.inventory_deletes_when_replenished"));
+                    tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.inventory_deletes_when_replenished"));
                 }
             }
     
             boolean trapped = isTrapped(compound);
             if(trapped) {
-                tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.trapped"));
+                tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.trapped"));
             }
     
             // loot table and seed
@@ -127,11 +126,11 @@ public class LootCrateItem extends BlockItem {
             if(advanced) {
                 if (compound.contains("LootTable")) {
                     String lootTableText = compound.getString("LootTable");
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.loot_table", lootTableText));
+                    tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootTableText));
                 }
                 if (compound.contains("LootTableSeed")) {
                     long lootTableSeed = compound.getLong("LootTableSeed");
-                    tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.fixed_seed", lootTableSeed));
+                    tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.fixed_seed", lootTableSeed));
                 }
             }
 
@@ -148,7 +147,7 @@ public class LootCrateItem extends BlockItem {
                             ++j;
                             if (i <= 4) {
                                 ++i;
-                                MutableText mutableText = is.getName().shallowCopy();
+                                MutableText mutableText = is.getName().copy();
                                 mutableText.append(" x").append(String.valueOf(is.getCount()));
                                 tooltip.add(mutableText);
                             }
@@ -156,13 +155,13 @@ public class LootCrateItem extends BlockItem {
                     }
 
                     if (j - i > 0) {
-                        tooltip.add((new TranslatableText("container.shulkerBox.more", j - i)).formatted(Formatting.ITALIC));
+                        tooltip.add((Text.translatable("container.shulkerBox.more", j - i)).formatted(Formatting.ITALIC));
                     }
                 }
             }
 
         } else {
-            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.no_data_set"));
+            tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.no_data_set"));
         }
     }
     
@@ -356,33 +355,33 @@ public class LootCrateItem extends BlockItem {
         return false;
     }
     
-    public static @Nullable TranslatableText getReplenishTimeGameTimeHumanReadableText(long replenishTime) {
+    public static @Nullable Text getReplenishTimeGameTimeHumanReadableText(long replenishTime) {
         if(replenishTime >= 1728000) { // 1 day
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_game_time_days", replenishTime / 1728000F);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_game_time_days", replenishTime / 1728000F);
         } else if(replenishTime >= 72000) { // 1 hour
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_game_time_hours", replenishTime / 72000F);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_game_time_hours", replenishTime / 72000F);
         } else if(replenishTime >= 1200) { // 1 minute
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_game_time_minutes", replenishTime / 1200F);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_game_time_minutes", replenishTime / 1200F);
         } else if(replenishTime <= 0) {
             // does not replenish
             return null;
         } else { // in ticks
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_game_time_ticks", replenishTime);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_game_time_ticks", replenishTime);
         }
     }
     
-    public static @Nullable TranslatableText getReplenishTimeRealTimeHumanReadableText(long replenishTime) {
+    public static @Nullable Text getReplenishTimeRealTimeHumanReadableText(long replenishTime) {
         if(replenishTime >= 1728000) { // 1 day
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_real_time_days", replenishTime / 1728000F);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_real_time_days", replenishTime / 1728000F);
         } else if(replenishTime >= 72000) { // 1 hour
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_real_time_hours", replenishTime / 72000F);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_real_time_hours", replenishTime / 72000F);
         } else if(replenishTime >= 1200) { // 1 minute
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_real_time_minutes", replenishTime / 1200F);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_real_time_minutes", replenishTime / 1200F);
         } else if(replenishTime <= 0) {
             // does not replenish
             return null;
         } else { // in ticks
-            return new TranslatableText("item.lootcrates.loot_crate.tooltip.replenish_real_time_ticks", replenishTime);
+            return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_real_time_ticks", replenishTime);
         }
     }
 

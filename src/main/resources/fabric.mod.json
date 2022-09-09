@@ -23,21 +23,15 @@
     ],
     "modmenu": [
       "de.dafuqs.lootcrates.config.ModMenuConfig"
-    ],
-    "quickshulker": [
-      "de.dafuqs.lootcrates.compat.QuickShulkerCompat"
     ]
   },
   "mixins": [
     "lootcrates.mixins.json"
   ],
   "depends": {
-    "minecraft": ">=1.18.1",
-    "fabricloader": ">=0.12.6",
+    "minecraft": ">=1.19.0",
+    "fabricloader": ">=0.14.0",
     "fabric": "*",
-    "cloth-config2": ">=6.0.0"
-  },
-  "suggests": {
-    "quickshulker": "1.2.2-1.17"
+    "cloth-config2": ">=7.0.0"
   }
 }

@@ -31,7 +31,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
@@ -307,7 +306,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         BlockState state = this.world.getBlockState(this.getPos());
         Text name = state.getBlock().getName();
         if(name.getString().startsWith("§")) {
-            return new LiteralText(name.getString().substring(2));
+            return Text.literal(name.getString().substring(2));
         } else {
             return name;
         }

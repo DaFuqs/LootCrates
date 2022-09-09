@@ -17,15 +17,13 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -39,9 +37,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import net.minecraft.util.math.random.Random;
 
 public abstract class LootCrateBlock extends BlockWithEntity {
 
@@ -55,7 +51,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             lootCrateBlockEntity.relockIfNecessary(player);
             if(!lootCrateBlockEntity.isUnlocked(player)) {
-                for(ItemStack itemStack : player.getItemsHand()) {
+                for(ItemStack itemStack : player.getHandItems()) {
                     if(lootCrateBlockEntity.doesItemUnlock(itemStack.getItem())) {
                         if(!player.isCreative()) {
                             if (lootCrateBlockEntity.getLockType().consumesKey()) {
@@ -68,7 +64,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                 }
                 if(!world.isClient()) {
                     LootCrateRarity rarity = getCrateRarity(world, pos);
-                    TranslatableText translatableText = LootCrateAtlas.getKeyNeededTooltip(rarity);
+                    Text translatableText = LootCrateAtlas.getKeyNeededTooltip(rarity);
                     player.sendMessage(translatableText, false);
                 }
                 playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);

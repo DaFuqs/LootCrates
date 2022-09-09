@@ -11,8 +11,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestLidAnimator;
+import net.minecraft.block.entity.LidOpenable;
 import net.minecraft.block.entity.ViewerCountManager;
-import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements ChestAnimationProgress {
+public class ChestLootCrateBlockEntity extends LootCrateBlockEntity implements LidOpenable {
 
     private final ViewerCountManager stateManager;
     private final ChestLidAnimator lidAnimator;

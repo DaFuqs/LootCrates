@@ -17,7 +17,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -40,10 +39,10 @@ public class LootBagItem extends Item {
 
         Identifier lootTableIdentifier = getLootTableIdentifier(itemStack);
         if(lootTableIdentifier == null) {
-            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.no_loot_table"));
+            tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.no_loot_table"));
         } else {
             tooltip.add(LootCrateAtlas.getLootBagItemToolTip(itemStack));
-            tooltip.add(new TranslatableText("item.lootcrates.loot_crate.tooltip.loot_table", lootTableIdentifier.toString()));
+            tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootTableIdentifier.toString()));
         }
     }
 
