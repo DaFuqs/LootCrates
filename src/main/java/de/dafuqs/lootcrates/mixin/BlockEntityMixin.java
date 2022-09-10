@@ -13,12 +13,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(BlockEntity.class)
 public class BlockEntityMixin {
 
-    @Inject(method = "setWorld(Lnet/minecraft/world/World;)V", at = @At("RETURN"))
-    protected void noteContainerForLootCrateConversion(World world, CallbackInfo ci) {
+    @Inject(method = "setWorld", at = @At("TAIL"))
+    private void lootCrates$setWorld(World world, CallbackInfo ci) {
         if(!((Object) this instanceof LootCrateBlockEntity) && LootCrates.CONFIG.ReplaceVanillaWorldgenChests && world instanceof ServerWorld && ((Object) this instanceof LootableContainerBlockEntity lootableContainerBlockEntity)) {
             RegistryKey<World> worldRegistryKey = world.getRegistryKey();
             if (!LootCrates.CONFIG.ReplaceVanillaWorldgenChestsDimensionsBlacklist.contains(worldRegistryKey.getValue().toString())) {
