@@ -23,7 +23,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.apache.logging.log4j.Level;

@@ -17,7 +17,6 @@ import net.kyrptonaught.shulkerutils.ItemStackInventory;
 import net.kyrptonaught.shulkerutils.ShulkerUtils;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
