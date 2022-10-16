@@ -17,12 +17,14 @@ import net.fabricmc.loader.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
@@ -171,13 +173,8 @@ public class LootCratesWorldgenReplacer {
 	}
 ]""";
     
-    public static int TRY_LATER_TICKS = 100;
-    public static int MAX_TRIES = 50;
 
     public static List<LootCrateReplacementPosition> replacements = new ArrayList<>(); // try at the end of each tick
-    public static HashMap<LootCrateReplacementPosition, Integer> tryLaterReplacements = new HashMap(); // positions and how often they have tried to be replaced already. Try each TRY_LATER_TICKS up to a max of MAX_TRIES
-
-    public static int currentTryLaterTicks = TRY_LATER_TICKS;
 
     private static WeightedLootCrateEntryList DefaultLootCrateProviderList = new WeightedLootCrateEntryList(1, new ArrayList<>() {{
         add(new LootCrateReplacementEntry(null, null, ReplenishMode.GAME_TIME, 1, LockMode.NONE, InventoryDeletionMode.NEVER, true, 1));
@@ -281,57 +278,23 @@ public class LootCratesWorldgenReplacer {
     }
 
     public static void tick(MinecraftServer server) {
-        if(currentTryLaterTicks == 0) {
-            if (!tryLaterReplacements.isEmpty()) {
-                // Protection against concurrent modification
-                HashMap<LootCrateReplacementPosition, Integer> map = new HashMap<>(tryLaterReplacements);
-                tryLaterReplacements.clear();
-            
-                for (Map.Entry<LootCrateReplacementPosition, Integer> replacementPosition : map.entrySet()) {
-                    LootCrateReplacementPosition position = replacementPosition.getKey();
-                    try {
-                        if(!replace(server, position, false)) {
-                            int previousTries = replacementPosition.getValue();
-                            if(previousTries < MAX_TRIES) {
-                                previousTries++;
-                                tryLaterReplacements.put(replacementPosition.getKey(), previousTries);
-                            } else {
-                                replace(server, position, true);
-                                LootCrates.log(Level.ERROR, "The chunk '" + position.worldKey + "' at '" + position.blockPos + "' was generated, but was immediately unloaded or did not finish generation for a very long time. Chunk had to be force-loaded (performance impact!)");
-                            }
-                        }
-                    } catch (Exception e) {
-                        LootCrates.log(Level.ERROR, "Error while replacing a container in the world '" + position.worldKey + "' at '" + position.blockPos + "': " + e.getLocalizedMessage());
-                    }
-                }
+        for (int i = 0; i < replacements.size(); i++) {
+            LootCrateReplacementPosition replacementPosition = replacements.get(i);
+            try {
+                replace(replacementPosition);
+            } catch (Throwable t) {
+                LootCrates.log(Level.ERROR, "Error while replacing a container in the world '" + replacementPosition.world.getRegistryKey().getValue() + "' at '" + replacementPosition.blockPos + "': " + t.getLocalizedMessage());
             }
-        
-            currentTryLaterTicks = TRY_LATER_TICKS;
         }
-        currentTryLaterTicks--;
-        
-        
-        if (!replacements.isEmpty()) {
-            // Protection against concurrent modification
-            List<LootCrateReplacementPosition> list = new ArrayList<>(replacements);
-            for (LootCrateReplacementPosition replacementPosition : list) {
-                try {
-                    if(!replace(server, replacementPosition, false)) {
-                        tryLaterReplacements.put(replacementPosition, 0);
-                    }
-                } catch (Exception e) {
-                    LootCrates.log(Level.ERROR, "Error while replacing a container in the world '" + replacementPosition.worldKey + "' at '" + replacementPosition.blockPos + "') + " + e.getLocalizedMessage());
-                }
-            }
-            replacements.clear();
-        }
+        replacements.clear();
     }
     
-    private static boolean replace(@NotNull MinecraftServer server, @NotNull LootCrateReplacementPosition replacementPosition, boolean forceLoadChunk) {
-        ServerWorld serverWorld = server.getWorld(replacementPosition.worldKey);
+    private static boolean replace(@NotNull LootCrateReplacementPosition replacementPosition) {
+        ServerWorld serverWorld = replacementPosition.world;
+        ChunkPos chunkPos = new ChunkPos(replacementPosition.blockPos);
+        Chunk chunk = serverWorld.getChunkManager().getChunk(chunkPos.x, chunkPos.z, ChunkStatus.FULL, false);
         
-        if (serverWorld != null && (forceLoadChunk || (serverWorld.isPosLoaded(replacementPosition.blockPos.getX(), replacementPosition.blockPos.getZ()) && serverWorld.getChunk(replacementPosition.blockPos).getStatus() == ChunkStatus.FULL))) {
-            
+        if (chunk != null) {
             BlockState sourceBlockState = serverWorld.getBlockState(replacementPosition.blockPos);
             BlockEntity blockEntity = serverWorld.getBlockEntity(replacementPosition.blockPos);
             if (sourceBlockState.hasBlockEntity() && blockEntity == null) {
@@ -353,7 +316,7 @@ public class LootCratesWorldgenReplacer {
                 Block sourceBlock = sourceBlockState.getBlock();
                 if (!(sourceBlock instanceof LootCrateBlock)) {
                     boolean trapped = false;
-                    LootCrateReplacementEntry replacementTargetData = getEntryForLootTable(lootTableIdentifier, new Random(lootTableSeed));
+                    LootCrateReplacementEntry replacementTargetData = getEntryForLootTable(lootTableIdentifier, serverWorld.random);
 
                     if (sourceBlock instanceof ChestBlock) {
                         if (sourceBlock instanceof TrappedChestBlock) {
