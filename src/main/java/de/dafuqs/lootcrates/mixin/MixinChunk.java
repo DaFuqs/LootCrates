@@ -17,16 +17,22 @@ public class MixinChunk {
 	
 	@Inject(method = "updateTicker(Lnet/minecraft/block/entity/BlockEntity;)V", at = @At(value = "HEAD"))
 	private <T extends BlockEntity> void updateTicker(T blockEntity, CallbackInfo ci) {
-		if (blockEntity instanceof LootableContainerBlockEntity && !(blockEntity instanceof LootCrateBlockEntity)) {
+		if (LootCrates.CONFIG.ReplaceVanillaWorldgenChests
+				&& blockEntity instanceof LootableContainerBlockEntity lootableContainerBlockEntity
+				&& ((LootTableAccessor) lootableContainerBlockEntity).getLootTableIdentifier() != null
+				&& !(blockEntity instanceof LootCrateBlockEntity)) {
+			
 			WorldChunk worldChunk = (WorldChunk) (Object) this;
 			if (!worldChunk.getWorld().isClient) {
+				
 				if (!LootCrates.CONFIG.ReplaceVanillaWorldgenChestsDimensionsBlacklist.contains(worldChunk.getWorld().getRegistryKey().getValue().toString())) {
 					if ((blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity || blockEntity instanceof ShulkerBoxBlockEntity)) {
 						LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition((ServerWorld) worldChunk.getWorld(), blockEntity.getPos()));
 					}
 				}
+				
 			}
 		}
 	}
-
+	
 }
