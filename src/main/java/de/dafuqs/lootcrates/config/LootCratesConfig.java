@@ -1,9 +1,11 @@
 package de.dafuqs.lootcrates.config;
 
+import de.dafuqs.lootcrates.LootCrates;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,5 +64,9 @@ public class LootCratesConfig implements ConfigData {
     @Comment(value = """
             Dimension identifiers where chests will not be replaced""")
     public final List<String> ReplaceVanillaWorldgenChestsDimensionsBlacklist = new ArrayList<>();
-
+    
+    public boolean isWorldBlacklisted(World world) {
+        return LootCrates.CONFIG.ReplaceVanillaWorldgenChestsDimensionsBlacklist.contains(world.getRegistryKey().getValue().toString());
+    }
+    
 }
