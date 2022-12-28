@@ -13,7 +13,7 @@ import de.dafuqs.lootcrates.config.LootCrateReplacementEntry;
 import de.dafuqs.lootcrates.config.WeightedLootCrateEntryList;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.mixin.LootTableAccessor;
-import net.fabricmc.loader.FabricLoader;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
@@ -182,7 +182,7 @@ public class LootCratesWorldgenReplacer {
     private static final Map<Identifier, WeightedLootCrateEntryList> LootCrateProviders = new HashMap<>();
 
     public static void initialize() {
-        File configFile = new File(FabricLoader.INSTANCE.getConfigDirectory(), "LootCratesWorldgenSettings.json5");
+        File configFile = new File(FabricLoader.getInstance().getConfigDirectory(), "LootCratesWorldgenSettings.json5");
         FileReader configReader;
         try {
             configReader = new FileReader(configFile);
@@ -203,7 +203,7 @@ public class LootCratesWorldgenReplacer {
 
         JsonElement jsonElement;
         try {
-            jsonElement = (JsonElement) JsonHelper.deserialize(GSON, configReader, (Class) JsonElement.class);
+            jsonElement = JsonHelper.deserialize(GSON, configReader, JsonElement.class);
         } catch (Exception e) {
             LootCrates.log(Level.ERROR, "Could not parse the LootCratesWorldgenSettings.json5: " + e.getLocalizedMessage());
             return;

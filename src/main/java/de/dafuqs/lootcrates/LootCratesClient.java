@@ -17,9 +17,5 @@ public class LootCratesClient implements ClientModInitializer {
 
         BlockEntityRendererRegistry.register(LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY, ChestLootCrateBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(LootCratesBlockEntityType.SHULKER_LOOT_CRATE_BLOCK_ENTITY, ShulkerLootCrateEntityRenderer::new);
-
-        // Add the item group to the creative menu
-        new PredefinedLootCratesItemGroup();
-        new PredefinedLootBagsItemGroup();
     }
 }

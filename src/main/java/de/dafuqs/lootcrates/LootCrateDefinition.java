@@ -68,25 +68,25 @@ public class LootCrateDefinition {
 
         public FabricItemSettings getKeyItemSettings() {
             if(fireProof) {
-                return new FabricItemSettings().group(LootCrates.ITEM_GROUP).maxCount(16).rarity(rarity).fireproof();
+                return new FabricItemSettings().maxCount(16).rarity(rarity).fireproof();
             } else {
-                return new FabricItemSettings().group(LootCrates.ITEM_GROUP).maxCount(16).rarity(rarity);
+                return new FabricItemSettings().maxCount(16).rarity(rarity);
             }
         }
 
     public FabricItemSettings getLootBagItemSettings() {
         if(fireProof) {
-            return new FabricItemSettings().group(LootCrates.ITEM_GROUP).maxCount(16).rarity(rarity).fireproof();
+            return new FabricItemSettings().maxCount(16).rarity(rarity).fireproof();
         } else {
-            return new FabricItemSettings().group(LootCrates.ITEM_GROUP).maxCount(16).rarity(rarity);
+            return new FabricItemSettings().maxCount(16).rarity(rarity);
         }
     }
 
         public FabricItemSettings getBlockItemSettings() {
             if(fireProof) {
-                return new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(rarity).fireproof();
+                return new FabricItemSettings().rarity(rarity).fireproof();
             } else {
-                return new FabricItemSettings().group(LootCrates.ITEM_GROUP).rarity(rarity);
+                return new FabricItemSettings().rarity(rarity);
             }
         }
 
