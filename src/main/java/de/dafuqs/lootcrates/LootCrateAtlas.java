@@ -15,7 +15,6 @@ import de.dafuqs.lootcrates.items.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -29,10 +28,11 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,7 +73,7 @@ public class LootCrateAtlas {
         Identifier keyItemIdentifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_crate_key");
 
         LootKeyItem keyItem = new LootKeyItem(lootCrateDefinition.getKeyItemSettings());
-        Registry.register(Registry.ITEM, keyItemIdentifier, keyItem);
+        Registry.register(Registries.ITEM, keyItemIdentifier, keyItem);
 
         lootCrateKeys.put(lootCrateRarity, keyItem);
 
@@ -85,9 +85,9 @@ public class LootCrateAtlas {
         ChestLootCrateBlock lootCrateBlock = new ChestLootCrateBlock(lootCrateDefinition.getChestBlockSettings());
         ShulkerLootCrateBlock shulkerLootCrateBlock = createShulkerLootCrateBlock(lootCrateDefinition.getShulkerBlockSettings());
         LootBarrelBlock lootBarrelBlock = new LootBarrelBlock(lootCrateDefinition.getLootBarrelBlockSettings());
-        Registry.register(Registry.BLOCK, lootCrateIdentifier, lootCrateBlock);
-        Registry.register(Registry.BLOCK, shulkerCrateIdentifier, shulkerLootCrateBlock);
-        Registry.register(Registry.BLOCK, lootBarrelIdentifier, lootBarrelBlock);
+        Registry.register(Registries.BLOCK, lootCrateIdentifier, lootCrateBlock);
+        Registry.register(Registries.BLOCK, shulkerCrateIdentifier, shulkerLootCrateBlock);
+        Registry.register(Registries.BLOCK, lootBarrelIdentifier, lootBarrelBlock);
 
         lootCrateBlocks.put(lootCrateRarity, lootCrateBlock);
         shulkerCrateBlocks.put(lootCrateRarity, shulkerLootCrateBlock);
@@ -108,9 +108,9 @@ public class LootCrateAtlas {
             shulkerCrateBlockItem = new TickingLootCrateItem(shulkerLootCrateBlock, blockItemSettings, lootCrateDefinition.scheduledTickEvent);
             lootBarrelBlockItem = new TickingLootCrateItem(lootBarrelBlock, blockItemSettings, lootCrateDefinition.scheduledTickEvent);
         }
-        Registry.register(Registry.ITEM, lootCrateIdentifier, lootCrateBlockItem);
-        Registry.register(Registry.ITEM, shulkerCrateIdentifier, shulkerCrateBlockItem);
-        Registry.register(Registry.ITEM, lootBarrelIdentifier, lootBarrelBlockItem);
+        Registry.register(Registries.ITEM, lootCrateIdentifier, lootCrateBlockItem);
+        Registry.register(Registries.ITEM, shulkerCrateIdentifier, shulkerCrateBlockItem);
+        Registry.register(Registries.ITEM, lootBarrelIdentifier, lootBarrelBlockItem);
 
         DispenserBlock.registerBehavior(lootCrateBlockItem, new BlockPlacementDispenserBehavior());
         DispenserBlock.registerBehavior(shulkerCrateBlockItem, new BlockPlacementDispenserBehavior());
@@ -130,7 +130,7 @@ public class LootCrateAtlas {
             lootBagItem = new TickingLootBagItem(lootCrateDefinition.getLootBagItemSettings(), lootCrateDefinition.scheduledTickEvent);
         }
 
-        Registry.register(Registry.ITEM, lootBagIdentifier, lootBagItem);
+        Registry.register(Registries.ITEM, lootBagIdentifier, lootBagItem);
 
         lootBagItems.put(lootCrateRarity, lootBagItem);
         DispenserBlock.registerBehavior(lootBagItem, LootCrates.LOOT_BAG_DISPENSER_BEHAVIOR);
