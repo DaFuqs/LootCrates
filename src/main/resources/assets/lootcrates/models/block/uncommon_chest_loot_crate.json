@@ -1,7 +1,7 @@
 {
   "parent": "lootcrates:block/crate_template",
   "textures": {
-    "0": "lootcrates:entity/chest/uncommon_crate",
+    "0": "lootcrates:block/uncommon_crate",
     "particle": "lootcrates:block/uncommon_crate_break"
   }
 }
