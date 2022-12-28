@@ -58,13 +58,13 @@ public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & LidOpenab
         World world = entity.getWorld();
         boolean bl = world != null;
 
-        if(entity instanceof ChestLootCrateBlockEntity) {
+        if(entity instanceof ChestLootCrateBlockEntity chest) {
             BlockState blockState = bl ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
             Block block = blockState.getBlock();
 
             if(block instanceof ChestLootCrateBlock) {
-                SpriteIdentifier spriteIdentifier = LootCrateAtlas.getChestTexture((ChestLootCrateBlockEntity) entity);
-                boolean hasTransparency = LootCrateAtlas.hasTransparency((ChestLootCrateBlockEntity) entity);
+                SpriteIdentifier spriteIdentifier = LootCrateAtlas.getChestTexture(chest);
+                boolean hasTransparency = LootCrateAtlas.hasTransparency(chest);
                 VertexConsumer vertexConsumer;
                 if (hasTransparency) {
                     vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityTranslucent);
@@ -75,7 +75,7 @@ public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & LidOpenab
                 matrices.push();
                 float f = (blockState.get(ChestBlock.FACING)).asRotation();
                 matrices.translate(0.5D, 0.5D, 0.5D);
-                matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(-f));
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-f));
                 matrices.translate(-0.5D, -0.5D, -0.5D);
 
                 float openFactor = entity.getAnimationProgress(tickDelta);
