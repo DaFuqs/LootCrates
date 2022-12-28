@@ -1,38 +1,28 @@
 package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import de.dafuqs.lootcrates.blocks.modes.InventoryDeletionMode;
-import de.dafuqs.lootcrates.blocks.modes.LockMode;
-import de.dafuqs.lootcrates.blocks.modes.ReplenishMode;
 import de.dafuqs.lootcrates.config.LootCratesConfig;
 import de.dafuqs.lootcrates.enums.LootCrateRarity;
 import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
 import de.dafuqs.lootcrates.items.LootBagItem;
-import de.dafuqs.lootcrates.items.LootCrateItem;
 import de.dafuqs.lootcrates.worldgen.LootCratesWorldgenReplacer;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.Direction;
@@ -42,88 +32,15 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class LootCrates implements ModInitializer {
 
     public static final String MOD_ID = "lootcrates";
     private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     public static LootCratesConfig CONFIG;
-
-    public static final ItemGroup ITEM_GROUP = FabricItemGroup.builder(new Identifier(MOD_ID, "loot_crates"))
-            .displayName(Text.translatable("itemGroup.lootcrates.loot_crates"))
-            .icon(() -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON)))
-            .entries((enabledFeatures, entries, operatorEnabled) -> {
-
-            })
-            .build();
     
-    public static final ItemGroup PREDEFINED_CRATES_GROUP = FabricItemGroup.builder(new Identifier(MOD_ID, "predefined_loot_crates"))
-            .displayName(Text.translatable("itemGroup.lootcrates.predefined_loot_crates"))
-            .icon(() -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.EPIC)))
-            .entries((enabledFeatures, entries, operatorEnabled) -> {
-                ArrayList<Long> replenishTimeTicksValues = new ArrayList<>();
-                replenishTimeTicksValues.add(1L);       // 1 tick
-                replenishTimeTicksValues.add(72000L);   // 1 hour
-                replenishTimeTicksValues.add(1728000L); // 1 day
-
-                ArrayList<Boolean> booleans = new ArrayList<>() {{
-                    add(false);
-                    add(true);
-                }};
-
-                Item lootCrateItem = LootCrateAtlas.getAllCrateItems().get(0);
-                Set<Identifier> allLootTables = LootTables.getAll();
-
-                for (Identifier lootTable : allLootTables) {
-                    if(lootTable.getNamespace().equals("minecraft") && lootTable.getPath().startsWith("chests/")) { // to reduce the lists size. These are just examples, after all
-                        for (LockMode lockMode : LockMode.values()) {
-                            for (boolean trackedPerPlayer : booleans) {
-                                for (ReplenishMode replenishMode : ReplenishMode.values()) {
-                                    if(lockMode.relocks() && replenishMode == ReplenishMode.NEVER) {
-                                        continue; // there is nothing to relock
-                                    }
-                    
-                                    if(replenishMode.requiresTickData) {
-                                        for (Long replenishTimeTicks : replenishTimeTicksValues) {
-                                            NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, lockMode, replenishMode, InventoryDeletionMode.NEVER, replenishTimeTicks, trackedPerPlayer, false);
-                                            ItemStack itemStack = new ItemStack(lootCrateItem);
-                                            itemStack.setNbt(compound);
-                                            entries.add(itemStack);
-                                        }
-                                    } else {
-                                        NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, lockMode, replenishMode, InventoryDeletionMode.NEVER, 0, trackedPerPlayer, false);
-                                        ItemStack itemStack = new ItemStack(lootCrateItem);
-                                        itemStack.setNbt(compound);
-                                        entries.add(itemStack);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }).build();
-    
-    public static final ItemGroup PREDEFINED_BAGS_GROUP = FabricItemGroup.builder(new Identifier(MOD_ID, "predefined_loot_bags"))
-            .displayName(Text.translatable("itemGroup.lootcrates.predefined_loot_bags"))
-            .icon(() -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.EPIC)))
-            .entries((enabledFeatures, entries, operatorEnabled) -> {
-                Item lootBagItem = LootCrateAtlas.getAllLootBagItems().get(0);
-                Set<Identifier> allLootTables = LootTables.getAll();
-
-                for (Identifier lootTable : allLootTables) {
-                    if(lootTable.getNamespace().equals("minecraft") && lootTable.getPath().startsWith("chests/")) { // to reduce the lists size
-                        NbtCompound compound = LootBagItem.getItemCompoundTag(lootTable, 0);
-                        ItemStack itemStack = new ItemStack(lootBagItem);
-                        itemStack.setNbt(compound);
-                        entries.add(itemStack);
-                    }
-                }
-            }).build();
-    
-    public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "");
+    public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
     public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = SoundEvent.of(CHEST_UNLOCKS_SOUND_ID);
 
     public static DispenserBehavior LOOT_BAG_DISPENSER_BEHAVIOR = (pointer, stack) -> {
@@ -188,6 +105,8 @@ public class LootCrates implements ModInitializer {
     
         log(Level.INFO, "Registering sounds...");
         Registry.register(Registries.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
+        
+        LootCratesItemGroups.register();
     
         log(Level.INFO, "Loading LootCratesWorldgenSettings.json and registering the replacer");
         LootCratesWorldgenReplacer.initialize();

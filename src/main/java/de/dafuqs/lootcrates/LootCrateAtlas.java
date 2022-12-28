@@ -23,7 +23,6 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.BlockPlacementDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -228,21 +227,6 @@ public class LootCrateAtlas {
 
     public static List<Item> getAllLootBagItems() {
         return new ArrayList<>(lootBagItems.values());
-    }
-
-    public static void registerTextureAtlas() {
-        //Register textures in chest atlas
-        ClientSpriteRegistryCallback.event(TexturedRenderLayers.CHEST_ATLAS_TEXTURE).register((texture, registry) -> {
-            for(LootCrateDefinition lootCrateDefinition : lootCrateDefinitions.values()) {
-                registry.register(lootCrateDefinition.chestTextureIdentifier);
-            }
-        });
-
-        ClientSpriteRegistryCallback.event(TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE).register((texture, registry) -> {
-            for(LootCrateDefinition lootCrateDefinition : lootCrateDefinitions.values()) {
-                registry.register(lootCrateDefinition.shulkerTextureIdentifier);
-            }
-        });
     }
 
     public static Text getKeyNeededTooltip(LootCrateRarity rarity) {
