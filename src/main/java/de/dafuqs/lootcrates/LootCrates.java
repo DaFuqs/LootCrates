@@ -1,6 +1,7 @@
 package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.blocks.*;
+import de.dafuqs.lootcrates.blocks.modes.*;
 import de.dafuqs.lootcrates.config.*;
 import de.dafuqs.lootcrates.enums.*;
 import de.dafuqs.lootcrates.items.*;
@@ -9,17 +10,21 @@ import me.shedaniel.autoconfig.*;
 import me.shedaniel.autoconfig.serializer.*;
 import net.fabricmc.api.*;
 import net.fabricmc.fabric.api.event.lifecycle.v1.*;
+import net.fabricmc.fabric.api.itemgroup.v1.*;
 import net.minecraft.block.*;
 import net.minecraft.block.dispenser.*;
 import net.minecraft.entity.*;
 import net.minecraft.item.*;
 import net.minecraft.loot.*;
 import net.minecraft.loot.context.*;
+import net.minecraft.nbt.*;
 import net.minecraft.registry.*;
 import net.minecraft.sound.*;
+import net.minecraft.text.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import org.apache.logging.log4j.*;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
@@ -29,18 +34,106 @@ public class LootCrates implements ModInitializer {
     private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     public static LootCratesConfig CONFIG;
 
-    public static final ItemGroup ITEM_GROUP = FabricItemGroupBuilder.build(
-            new Identifier(MOD_ID, "loot_crates"),
-            () -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON)));
+    public static final ItemGroup ITEM_GROUP = FabricItemGroup.builder().displayName(Text.translatable("itemGroup.lootcrates.loot_crates")).icon(() -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON))).entries(new ItemGroup.EntryCollector() {
+        @Override
+        public void accept(ItemGroup.DisplayContext displayContext, ItemGroup.Entries entries) {
+             for(LootCrateRarity rarity : LootCrateRarity.values()) {
+                 entries.add(LootCrateAtlas.getLootCrate(rarity));
+                 entries.add(LootCrateAtlas.getLootBarrel(rarity));
+                 entries.add(LootCrateAtlas.getShulkerCrate(rarity));
+                 entries.add(LootCrateAtlas.getLootKeyItem(rarity));
+                 entries.add(LootCrateAtlas.getLootBagItem(rarity));
+             }
+        }
+   }).build();
 
-    public static final ItemGroup PREDEFINED_CRATES_GROUP = FabricItemGroupBuilder.build(
-            new Identifier(MOD_ID, "predefined_loot_crates"),
-            () -> new ItemStack(Items.AIR)); // Is set in the tab directly
+    public static final ItemGroup PREDEFINED_CRATES_GROUP = FabricItemGroup.builder().displayName(Text.translatable("itemGroup.lootcrates.predefined_loot_crates")).icon(() -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.EPIC))).entries(new ItemGroup.EntryCollector() {
+        @Override
+        public void accept(ItemGroup.DisplayContext displayContext, ItemGroup.Entries entries) {
+            entries.addAll(getPredefinedLootCrates());
+        }
+    }).build(); // Icon is set in the tab directly
 
-    public static final ItemGroup PREDEFINED_BAGS_GROUP = FabricItemGroupBuilder.build(
-            new Identifier(MOD_ID, "predefined_loot_bags"),
-            () -> new ItemStack(Items.AIR)); // Is set in the tab directly
-
+    public static final ItemGroup PREDEFINED_BAGS_GROUP = FabricItemGroup.builder().displayName(Text.translatable("itemGroup.lootcrates.predefined_loot_bags")).icon(() -> new ItemStack(LootCrateAtlas.getLootBagItem(LootCrateRarity.EPIC))).entries(new ItemGroup.EntryCollector() {
+        @Override
+        public void accept(ItemGroup.DisplayContext displayContext, ItemGroup.Entries entries) {
+            entries.addAll(getPredefinedLootBags());
+        }
+    }).build(); // Icon is set in the tab directly
+    
+    /**
+     * Generates a default item for a lot of predefined values of itemStacks
+     * @return All generated ItemStacks
+     */
+    private static ArrayList<ItemStack> getPredefinedLootCrates() {
+        ArrayList<ItemStack> stacks = new ArrayList<>();
+        
+        ArrayList<Long> replenishTimeTicksValues = new ArrayList<>();
+        replenishTimeTicksValues.add(1L);       // 1 tick
+        replenishTimeTicksValues.add(72000L);   // 1 hour
+        replenishTimeTicksValues.add(1728000L); // 1 day
+        
+        ArrayList<Boolean> booleans = new ArrayList<>() {{
+            add(false);
+            add(true);
+        }};
+        
+        Item lootCrateItem = LootCrateAtlas.getAllCrateItems().get(0);
+        Set<Identifier> allLootTables = LootTables.getAll();
+        
+        for (Identifier lootTable : allLootTables) {
+            if(lootTable.getNamespace().equals("minecraft") && lootTable.getPath().startsWith("chests/")) { // to reduce the lists size. These are just examples, after all
+                for (LockMode lockMode : LockMode.values()) {
+                    for (boolean trackedPerPlayer : booleans) {
+                        for (ReplenishMode replenishMode : ReplenishMode.values()) {
+                            if(lockMode.relocks() && replenishMode == ReplenishMode.NEVER) {
+                                continue; // there is nothing to relock
+                            }
+                            
+                            if(replenishMode.requiresTickData) {
+                                for (Long replenishTimeTicks : replenishTimeTicksValues) {
+                                    NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, lockMode, replenishMode, InventoryDeletionMode.NEVER, replenishTimeTicks, trackedPerPlayer, false);
+                                    ItemStack itemStack = new ItemStack(lootCrateItem);
+                                    itemStack.setNbt(compound);
+                                    stacks.add(itemStack);
+                                }
+                            } else {
+                                NbtCompound compound = LootCrateItem.getLootCrateItemCompoundTag(lootTable, lockMode, replenishMode, InventoryDeletionMode.NEVER, 0, trackedPerPlayer, false);
+                                ItemStack itemStack = new ItemStack(lootCrateItem);
+                                itemStack.setNbt(compound);
+                                stacks.add(itemStack);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return stacks;
+    }
+    
+    /**
+     * Generates a default item for a lot of predefined values of itemStacks
+     * @return All generated ItemStacks
+     */
+    private static @NotNull ArrayList<ItemStack> getPredefinedLootBags() {
+        ArrayList<ItemStack> stacks = new ArrayList<>();
+        
+        Item lootBagItem = LootCrateAtlas.getAllLootBagItems().get(0);
+        Set<Identifier> allLootTables = LootTables.getAll();
+        
+        for (Identifier lootTable : allLootTables) {
+            if(lootTable.getNamespace().equals("minecraft") && lootTable.getPath().startsWith("chests/")) { // to reduce the lists size
+                NbtCompound compound = LootBagItem.getItemCompoundTag(lootTable, 0);
+                ItemStack itemStack = new ItemStack(lootBagItem);
+                itemStack.setNbt(compound);
+                stacks.add(itemStack);
+            }
+        }
+        
+        return stacks;
+    }
+    
     public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
     public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = SoundEvent.of(CHEST_UNLOCKS_SOUND_ID);
 
@@ -112,6 +205,10 @@ public class LootCrates implements ModInitializer {
             ServerTickEvents.END_SERVER_TICK.register(LootCratesWorldgenReplacer::tick);
         }
 
+        Registry.register(Registries.ITEM_GROUP, new Identifier(MOD_ID, "loot_crates"), ITEM_GROUP);
+        Registry.register(Registries.ITEM_GROUP, new Identifier(MOD_ID, "predefined_loot_crates"), PREDEFINED_CRATES_GROUP);
+        Registry.register(Registries.ITEM_GROUP, new Identifier(MOD_ID, "predefined_loot_bags"), PREDEFINED_BAGS_GROUP);
+        
         log(Level.INFO, "Finished!");
     }
     
