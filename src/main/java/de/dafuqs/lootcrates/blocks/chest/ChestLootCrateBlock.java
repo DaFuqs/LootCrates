@@ -1,35 +1,24 @@
 package de.dafuqs.lootcrates.blocks.chest;
 
-import de.dafuqs.lootcrates.LootCrates;
-import de.dafuqs.lootcrates.blocks.LootCrateBlock;
-import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
-import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import de.dafuqs.lootcrates.enums.BlockBreakAction;
+import de.dafuqs.lootcrates.*;
+import de.dafuqs.lootcrates.blocks.*;
+import de.dafuqs.lootcrates.enums.*;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.mob.PiglinBrain;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.block.entity.*;
+import net.minecraft.entity.mob.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.item.*;
+import net.minecraft.screen.*;
+import net.minecraft.server.world.*;
+import net.minecraft.state.*;
+import net.minecraft.state.property.*;
+import net.minecraft.util.*;
+import net.minecraft.util.hit.*;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.*;
+import net.minecraft.util.shape.*;
+import net.minecraft.world.*;
+import org.jetbrains.annotations.*;
 
 public class ChestLootCrateBlock extends LootCrateBlock {
 
@@ -84,15 +73,6 @@ public class ChestLootCrateBlock extends LootCrateBlock {
         }
     }
 
-    @Override
-    public PistonBehavior getPistonBehavior(BlockState state) {
-        if(LootCrates.CONFIG.ChestCrateHardness < 0) {
-            return PistonBehavior.BLOCK;
-        } else {
-            return PistonBehavior.DESTROY;
-        }
-    }
-
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         return world.isClient ? checkType(type, LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY, ChestLootCrateBlockEntity::clientTick) : null;
@@ -135,7 +115,7 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        Direction direction = ctx.getPlayerFacing().getOpposite();
+        Direction direction = ctx.getHorizontalPlayerFacing().getOpposite();
         return this.getDefaultState().with(FACING, direction);
     }
 

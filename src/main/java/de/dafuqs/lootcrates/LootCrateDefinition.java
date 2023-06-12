@@ -1,22 +1,17 @@
 package de.dafuqs.lootcrates;
 
-import de.dafuqs.lootcrates.enums.LootCrateRarity;
-import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.Material;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
+import de.dafuqs.lootcrates.enums.*;
+import net.fabricmc.api.*;
+import net.fabricmc.fabric.api.item.v1.*;
+import net.fabricmc.fabric.api.object.builder.v1.block.*;
+import net.minecraft.block.*;
+import net.minecraft.block.piston.*;
+import net.minecraft.client.util.*;
+import net.minecraft.sound.*;
+import net.minecraft.text.*;
+import net.minecraft.util.*;
 
-import static net.minecraft.client.render.TexturedRenderLayers.CHEST_ATLAS_TEXTURE;
-import static net.minecraft.client.render.TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE;
+import static net.minecraft.client.render.TexturedRenderLayers.*;
 
 public class LootCrateDefinition {
         public String identifier;
@@ -91,7 +86,7 @@ public class LootCrateDefinition {
         }
 
         public AbstractBlock.Settings getChestBlockSettings() {
-            AbstractBlock.Settings blockSettings = FabricBlockSettings.of(Material.METAL, mapColor).luminance(luminance);
+            AbstractBlock.Settings blockSettings = FabricBlockSettings.copyOf(Blocks.CHEST).mapColor(mapColor).luminance(luminance).pistonBehavior(LootCrates.CONFIG.ChestCrateHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
 
             if(LootCrates.CONFIG.ChestCrateHardness < 0) {
                 blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
@@ -110,7 +105,7 @@ public class LootCrateDefinition {
         }
 
         public AbstractBlock.Settings getShulkerBlockSettings() {
-            AbstractBlock.Settings blockSettings = FabricBlockSettings.of(Material.SHULKER_BOX, mapColor).luminance(luminance);
+            AbstractBlock.Settings blockSettings = FabricBlockSettings.copyOf(Blocks.SHULKER_BOX).mapColor(mapColor).luminance(luminance).pistonBehavior(LootCrates.CONFIG.ShulkerCrateHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
 
             if(LootCrates.CONFIG.ShulkerCrateHardness < 0) {
                 blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
@@ -126,7 +121,7 @@ public class LootCrateDefinition {
         }
 
     public AbstractBlock.Settings getLootBarrelBlockSettings() {
-        AbstractBlock.Settings blockSettings = FabricBlockSettings.of(Material.WOOD, mapColor).luminance(luminance);
+        AbstractBlock.Settings blockSettings = FabricBlockSettings.copyOf(Blocks.BARREL).mapColor(mapColor).luminance(luminance).pistonBehavior(LootCrates.CONFIG.LootBarrelHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
 
         if(LootCrates.CONFIG.LootBarrelHardness < 0) {
             blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();

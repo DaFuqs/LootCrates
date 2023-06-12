@@ -1,31 +1,21 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
-import de.dafuqs.lootcrates.LootCrates;
-import de.dafuqs.lootcrates.blocks.LootCrateBlock;
-import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import de.dafuqs.lootcrates.enums.BlockBreakAction;
+import de.dafuqs.lootcrates.*;
+import de.dafuqs.lootcrates.blocks.*;
+import de.dafuqs.lootcrates.enums.*;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.mob.PiglinBrain;
-import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.block.entity.*;
+import net.minecraft.entity.mob.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.item.*;
+import net.minecraft.state.*;
+import net.minecraft.state.property.*;
 import net.minecraft.util.*;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.hit.*;
+import net.minecraft.util.math.*;
+import net.minecraft.util.shape.*;
+import net.minecraft.world.*;
+import org.jetbrains.annotations.*;
 
 public class ShulkerLootCrateBlock extends LootCrateBlock {
 
@@ -104,15 +94,6 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
-    }
-
-    @Override
-    public PistonBehavior getPistonBehavior(BlockState state) {
-        if(LootCrates.CONFIG.ShulkerCrateHardness < 0) {
-            return PistonBehavior.BLOCK;
-        } else {
-            return PistonBehavior.DESTROY;
-        }
     }
 
     @Override

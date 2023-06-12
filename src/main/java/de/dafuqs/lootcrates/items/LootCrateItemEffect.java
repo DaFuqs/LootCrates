@@ -1,13 +1,12 @@
 package de.dafuqs.lootcrates.items;
 
-import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
+import de.dafuqs.lootcrates.enums.*;
+import net.minecraft.block.*;
+import net.minecraft.entity.*;
+import net.minecraft.sound.*;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.*;
+import net.minecraft.world.*;
 
 public interface LootCrateItemEffect {
 
@@ -33,8 +32,8 @@ public interface LootCrateItemEffect {
                             int yOffset = 1 - random.nextInt(3);
                             int zOffset = 3 - random.nextInt(7);
 
-                            BlockPos targetPos = new BlockPos(entity.getPos()).add(xOffset, yOffset, zOffset);
-                            if (world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.down()).getMaterial().isSolid()) {
+                            BlockPos targetPos = BlockPos.ofFloored(entity.getPos()).add(xOffset, yOffset, zOffset);
+                            if (world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.down()).isSolid()) {
                                 world.setBlockState(targetPos, Blocks.FIRE.getDefaultState());
                             }
                         }

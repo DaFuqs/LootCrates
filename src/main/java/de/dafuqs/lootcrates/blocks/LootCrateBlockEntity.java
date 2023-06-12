@@ -1,47 +1,30 @@
 package de.dafuqs.lootcrates.blocks;
 
-import de.dafuqs.lootcrates.LootCrateAtlas;
-import de.dafuqs.lootcrates.LootCrates;
-import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlockEntity;
-import de.dafuqs.lootcrates.blocks.modes.InventoryDeletionMode;
-import de.dafuqs.lootcrates.blocks.modes.LockMode;
-import de.dafuqs.lootcrates.blocks.modes.ReplenishMode;
-import de.dafuqs.lootcrates.enums.LootCrateRarity;
-import de.dafuqs.lootcrates.enums.LootCrateTagNames;
-import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
-import de.dafuqs.lootcrates.items.LootKeyItem;
-import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Pair;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import de.dafuqs.lootcrates.*;
+import de.dafuqs.lootcrates.blocks.chest.*;
+import de.dafuqs.lootcrates.blocks.modes.*;
+import de.dafuqs.lootcrates.enums.*;
+import de.dafuqs.lootcrates.items.*;
+import net.minecraft.advancement.criterion.*;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.inventory.*;
+import net.minecraft.item.*;
+import net.minecraft.loot.*;
+import net.minecraft.loot.context.*;
+import net.minecraft.nbt.*;
+import net.minecraft.server.network.*;
+import net.minecraft.server.world.*;
+import net.minecraft.sound.*;
+import net.minecraft.text.*;
+import net.minecraft.util.*;
+import net.minecraft.util.collection.*;
+import net.minecraft.util.math.*;
+import net.minecraft.world.*;
+import org.jetbrains.annotations.*;
 
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 
 public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity {
@@ -205,7 +188,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     public void checkLootInteraction(@Nullable PlayerEntity player) {
         // only players can generate container loot
         if (player != null && this.lootTableId != null && this.world.getServer() != null && tryGenerateLoot(player)) {
-            LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
+            LootTable lootTable = this.world.getServer().getLootManager().getLootTable(this.lootTableId);
             if (player instanceof ServerPlayerEntity) {
                 Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, this.lootTableId);
             }

@@ -1,10 +1,7 @@
 package de.dafuqs.lootcrates.worldgen;
 
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.server.world.*;
+import net.minecraft.util.math.*;
 
 public class LootCrateReplacementPosition {
 

@@ -1,42 +1,26 @@
 package de.dafuqs.lootcrates.blocks;
 
-import de.dafuqs.lootcrates.LootCrateAtlas;
-import de.dafuqs.lootcrates.enums.BlockBreakAction;
-import de.dafuqs.lootcrates.enums.LootCrateRarity;
-import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import de.dafuqs.lootcrates.*;
+import de.dafuqs.lootcrates.enums.*;
+import net.fabricmc.api.*;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.*;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.pathing.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.inventory.*;
+import net.minecraft.item.*;
+import net.minecraft.nbt.*;
+import net.minecraft.screen.*;
+import net.minecraft.server.world.*;
+import net.minecraft.sound.*;
+import net.minecraft.text.*;
+import net.minecraft.util.*;
+import net.minecraft.util.hit.*;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.*;
+import net.minecraft.world.*;
+import org.jetbrains.annotations.*;
 
 public abstract class LootCrateBlock extends BlockWithEntity {
 
@@ -134,7 +118,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 
     @Override
     public void scheduledTick(BlockState state, @NotNull ServerWorld world, BlockPos pos, Random random) {
-        world.createAndScheduleBlockTick(pos, this, getRandomTickTime(world.random));
+        world.scheduleBlockTick(pos, this, getRandomTickTime(world.random));
 
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity) {
@@ -147,7 +131,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                     int zOffset = 2 - random.nextInt(5);
 
                     BlockPos targetPos = pos.add(xOffset, yOffset, zOffset);
-                    if (world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.down()).getMaterial().isSolid()) {
+                    if (world.getBlockState(targetPos).isAir() && world.getBlockState(targetPos.down()).isSolid()) {
                         world.setBlockState(targetPos, Blocks.FIRE.getDefaultState());
                     }
                 }
@@ -164,7 +148,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             ScheduledTickEvent scheduledTickEvent = ((LootCrateBlockEntity) blockEntity).getRandomTickEvent();
 
             if(scheduledTickEvent != ScheduledTickEvent.NONE) {
-                world.createAndScheduleBlockTick(pos, this, getRandomTickTime(world.random));
+                world.scheduleBlockTick(pos, this, getRandomTickTime(world.random));
             }
         }
     }

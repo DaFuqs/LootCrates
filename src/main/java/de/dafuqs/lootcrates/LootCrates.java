@@ -1,40 +1,27 @@
 package de.dafuqs.lootcrates;
 
-import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import de.dafuqs.lootcrates.config.LootCratesConfig;
-import de.dafuqs.lootcrates.enums.LootCrateRarity;
-import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
-import de.dafuqs.lootcrates.items.LootBagItem;
-import de.dafuqs.lootcrates.worldgen.LootCratesWorldgenReplacer;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.dispenser.DispenserBehavior;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Position;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import de.dafuqs.lootcrates.blocks.*;
+import de.dafuqs.lootcrates.config.*;
+import de.dafuqs.lootcrates.enums.*;
+import de.dafuqs.lootcrates.items.*;
+import de.dafuqs.lootcrates.worldgen.*;
+import me.shedaniel.autoconfig.*;
+import me.shedaniel.autoconfig.serializer.*;
+import net.fabricmc.api.*;
+import net.fabricmc.fabric.api.event.lifecycle.v1.*;
+import net.minecraft.block.*;
+import net.minecraft.block.dispenser.*;
+import net.minecraft.entity.*;
+import net.minecraft.item.*;
+import net.minecraft.loot.*;
+import net.minecraft.loot.context.*;
+import net.minecraft.registry.*;
+import net.minecraft.sound.*;
+import net.minecraft.util.*;
+import net.minecraft.util.math.*;
+import org.apache.logging.log4j.*;
 
-import java.util.List;
+import java.util.*;
 
 public class LootCrates implements ModInitializer {
 
@@ -55,7 +42,7 @@ public class LootCrates implements ModInitializer {
             () -> new ItemStack(Items.AIR)); // Is set in the tab directly
 
     public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
-    public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = new SoundEvent(CHEST_UNLOCKS_SOUND_ID);
+    public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = SoundEvent.of(CHEST_UNLOCKS_SOUND_ID);
 
     public static DispenserBehavior LOOT_BAG_DISPENSER_BEHAVIOR = (pointer, stack) -> {
         if(stack.getItem() instanceof LootBagItem lootBagItem) {
@@ -63,7 +50,7 @@ public class LootCrates implements ModInitializer {
             if (lootTableId != null) {
                 long lootTableSeed = lootBagItem.getLootTableSeed(stack);
 
-                LootTable lootTable = pointer.getWorld().getServer().getLootManager().getTable(lootTableId);
+                LootTable lootTable = pointer.getWorld().getServer().getLootManager().getLootTable(lootTableId);
                 Vec3d destinationPos = Vec3d.ofCenter(pointer.getPos());
                 LootContext.Builder builder = (new LootContext.Builder(pointer.getWorld())).parameter(LootContextParameters.ORIGIN, destinationPos).random(lootTableSeed);
 
@@ -118,7 +105,7 @@ public class LootCrates implements ModInitializer {
         LootCratesBlockEntityType.register();
     
         log(Level.INFO, "Registering sounds...");
-        Registry.register(Registry.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
+        Registry.register(Registries.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
     
         log(Level.INFO, "Loading LootCratesWorldgenSettings.json and registering the replacer");
         LootCratesWorldgenReplacer.initialize();

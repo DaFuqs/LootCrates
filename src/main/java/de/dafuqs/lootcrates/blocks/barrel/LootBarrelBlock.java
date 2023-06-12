@@ -1,33 +1,23 @@
 package de.dafuqs.lootcrates.blocks.barrel;
 
-import de.dafuqs.lootcrates.LootCrates;
-import de.dafuqs.lootcrates.blocks.LootCrateBlock;
-import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
-import de.dafuqs.lootcrates.enums.BlockBreakAction;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.mob.PiglinBrain;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import de.dafuqs.lootcrates.*;
+import de.dafuqs.lootcrates.blocks.*;
+import de.dafuqs.lootcrates.enums.*;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.*;
+import net.minecraft.entity.mob.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.item.*;
+import net.minecraft.screen.*;
+import net.minecraft.server.world.*;
+import net.minecraft.state.*;
+import net.minecraft.state.property.*;
+import net.minecraft.util.*;
+import net.minecraft.util.hit.*;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.*;
+import net.minecraft.world.*;
+import org.jetbrains.annotations.*;
 
 public class LootBarrelBlock extends LootCrateBlock {
 
@@ -77,15 +67,6 @@ public class LootBarrelBlock extends LootCrateBlock {
             } else {
                 return BlockBreakAction.DESTROY_AND_SCATTER_INVENTORY;
             }
-        }
-    }
-
-    @Override
-    public PistonBehavior getPistonBehavior(BlockState state) {
-        if(LootCrates.CONFIG.LootBarrelHardness < 0) {
-            return PistonBehavior.BLOCK;
-        } else {
-            return PistonBehavior.DESTROY;
         }
     }
 

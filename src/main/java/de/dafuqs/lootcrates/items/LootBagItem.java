@@ -1,31 +1,23 @@
 package de.dafuqs.lootcrates.items;
 
-import de.dafuqs.lootcrates.LootCrateAtlas;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import de.dafuqs.lootcrates.*;
+import net.fabricmc.fabric.api.item.v1.*;
+import net.minecraft.client.item.*;
+import net.minecraft.entity.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.item.*;
+import net.minecraft.loot.*;
+import net.minecraft.loot.context.*;
+import net.minecraft.nbt.*;
+import net.minecraft.server.network.*;
+import net.minecraft.server.world.*;
+import net.minecraft.sound.*;
+import net.minecraft.text.*;
+import net.minecraft.util.*;
+import net.minecraft.world.*;
+import org.jetbrains.annotations.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class LootBagItem extends Item {
 
@@ -90,7 +82,7 @@ public class LootBagItem extends Item {
     public List<ItemStack> getLootTableContents(ServerPlayerEntity player, ItemStack lootBagItemStack) {
         Identifier lootTableId = getLootTableIdentifier(lootBagItemStack);
         if(lootTableId != null) {
-            LootTable lootTable = player.getWorld().getServer().getLootManager().getTable(lootTableId);
+            LootTable lootTable = player.getWorld().getServer().getLootManager().getLootTable(lootTableId);
             if(lootTable != null) {
                 LootContext.Builder builder = (new LootContext.Builder(player.getWorld()).parameter(LootContextParameters.ORIGIN, player.getPos())).random(getLootTableSeed(lootBagItemStack));
                 builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
@@ -111,7 +103,7 @@ public class LootBagItem extends Item {
                 itemEntity.setDespawnImmediately();
             }
 
-            serverPlayerEntity.world.playSound(null, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+            serverPlayerEntity.getWorld().playSound(null, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
             serverPlayerEntity.currentScreenHandler.sendContentUpdates();
         } else {
             itemEntity = serverPlayerEntity.dropItem(itemStack, false);

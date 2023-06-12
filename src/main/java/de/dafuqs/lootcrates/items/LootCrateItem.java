@@ -1,37 +1,25 @@
 package de.dafuqs.lootcrates.items;
 
-import de.dafuqs.lootcrates.LootCrateAtlas;
-import de.dafuqs.lootcrates.blocks.PlayerCrateData;
-import de.dafuqs.lootcrates.blocks.modes.InventoryDeletionMode;
-import de.dafuqs.lootcrates.blocks.modes.LockMode;
-import de.dafuqs.lootcrates.blocks.modes.ReplenishMode;
-import de.dafuqs.lootcrates.enums.LootCrateRarity;
-import de.dafuqs.lootcrates.enums.LootCrateTagNames;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import de.dafuqs.lootcrates.*;
+import de.dafuqs.lootcrates.blocks.*;
+import de.dafuqs.lootcrates.blocks.modes.*;
+import de.dafuqs.lootcrates.enums.*;
+import net.fabricmc.api.*;
+import net.minecraft.block.*;
+import net.minecraft.client.*;
+import net.minecraft.client.item.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.inventory.*;
+import net.minecraft.item.*;
+import net.minecraft.nbt.*;
+import net.minecraft.text.*;
+import net.minecraft.util.*;
+import net.minecraft.util.collection.*;
+import net.minecraft.world.*;
+import org.jetbrains.annotations.*;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.*;
+import java.util.*;
 
 public class LootCrateItem extends BlockItem {
 
@@ -229,7 +217,7 @@ public class LootCrateItem extends BlockItem {
     }
     
     public static void unlockForPlayer(ItemStack itemStack, PlayerEntity player, boolean trackedPerPlayer, @NotNull ReplenishMode replenishMode) {
-        long time = replenishMode.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : player.world.getTime();
+        long time = replenishMode.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : player.getWorld().getTime();
         setUnlockTime(itemStack, player, trackedPerPlayer, time);
     }
     
@@ -285,7 +273,7 @@ public class LootCrateItem extends BlockItem {
     }
     
     public static void setReplenishedForPlayer(ItemStack itemStack, PlayerEntity player, boolean trackedPerPlayer, @NotNull ReplenishMode replenishMode) {
-        long time = replenishMode.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : player.world.getTime();
+        long time = replenishMode.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : player.getWorld().getTime();
         setReplenishTime(itemStack, player, trackedPerPlayer, time);
     }
     

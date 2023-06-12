@@ -1,26 +1,17 @@
 package de.dafuqs.lootcrates.blocks.chest;
 
-import de.dafuqs.lootcrates.LootCrateAtlas;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.LidOpenable;
+import de.dafuqs.lootcrates.*;
+import net.fabricmc.api.*;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.*;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.world.World;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.block.entity.*;
+import net.minecraft.client.render.entity.model.*;
+import net.minecraft.client.util.*;
+import net.minecraft.client.util.math.*;
+import net.minecraft.util.math.*;
+import net.minecraft.world.*;
 
 @Environment(EnvType.CLIENT)
 public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & LidOpenable> implements BlockEntityRenderer<T> {
@@ -71,11 +62,11 @@ public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & LidOpenab
                 } else {
                     vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
                 }
-
+                
                 matrices.push();
                 float f = (blockState.get(ChestBlock.FACING)).asRotation();
                 matrices.translate(0.5D, 0.5D, 0.5D);
-                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-f));
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-f));
                 matrices.translate(-0.5D, -0.5D, -0.5D);
 
                 float openFactor = entity.getAnimationProgress(tickDelta);
