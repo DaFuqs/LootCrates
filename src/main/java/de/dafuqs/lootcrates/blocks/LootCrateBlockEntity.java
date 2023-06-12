@@ -187,14 +187,16 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     @Override
     public void checkLootInteraction(@Nullable PlayerEntity player) {
         // only players can generate container loot
-        if (player != null && this.lootTableId != null && this.world.getServer() != null && tryGenerateLoot(player)) {
+        if (player != null && this.lootTableId != null && this.world != null && this.world.getServer() != null && tryGenerateLoot(player)) {
             LootTable lootTable = this.world.getServer().getLootManager().getLootTable(this.lootTableId);
             if (player instanceof ServerPlayerEntity) {
                 Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, this.lootTableId);
             }
-            LootContext.Builder builder = (new LootContext.Builder((ServerWorld)this.world)).parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.pos)).random(this.lootTableSeed);
-            builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
-            lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
+        
+            this.lootTableId = null;
+            LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder((ServerWorld)this.world)).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.pos));
+            builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
+            lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST), this.lootTableSeed);
         }
     }
 
