@@ -2,16 +2,22 @@
   "replace": false,
   "values": [
     "lootcrates:common_chest_loot_crate",
+    "lootcrates:common_loot_barrel",
     "lootcrates:common_shulker_loot_crate",
     "lootcrates:uncommon_chest_loot_crate",
+    "lootcrates:uncommon_loot_barrel",
     "lootcrates:uncommon_shulker_loot_crate",
     "lootcrates:rare_chest_loot_crate",
+    "lootcrates:rare_loot_barrel",
     "lootcrates:rare_shulker_loot_crate",
     "lootcrates:epic_chest_loot_crate",
+    "lootcrates:epic_loot_barrel",
     "lootcrates:epic_shulker_loot_crate",
     "lootcrates:ghost_chest_loot_crate",
+    "lootcrates:ghost_loot_barrel",
     "lootcrates:ghost_shulker_loot_crate",
     "lootcrates:blaze_chest_loot_crate",
+    "lootcrates:blaze_loot_barrel",
     "lootcrates:blaze_shulker_loot_crate"
   ]
 }
