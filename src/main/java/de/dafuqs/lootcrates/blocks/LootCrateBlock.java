@@ -70,11 +70,13 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
     }
-
+    
+    @Override
     public boolean emitsRedstonePower(BlockState state) {
         return true;
     }
-
+    
+    @Override
     public int getWeakRedstonePower(BlockState state, @NotNull BlockView world, BlockPos pos, Direction direction) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
@@ -84,7 +86,8 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         }
         return 0;
     }
-
+    
+    @Override
     public int getStrongRedstonePower(BlockState state, @NotNull BlockView world, BlockPos pos, Direction direction) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
@@ -181,10 +184,12 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         super.onStateReplaced(state, world, pos, newState, moved);
     }
 
+    @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
-
+    
+    @Override
     public int getComparatorOutput(BlockState state, @NotNull World world, BlockPos pos) {
         return ScreenHandler.calculateComparatorOutput((Inventory)world.getBlockEntity(pos));
     }
@@ -215,8 +220,8 @@ public abstract class LootCrateBlock extends BlockWithEntity {
                         lootCrateBlockEntity.inventory.set(i, ItemStack.EMPTY);
                     }
                 }
-
-                lootCrateBlockEntity.serializeInventory(compoundTag);
+    
+                Inventories.writeNbt(compoundTag, lootCrateBlockEntity.inventory, false);
             }
 
             ItemEntity itemEntity = new ItemEntity(world, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);

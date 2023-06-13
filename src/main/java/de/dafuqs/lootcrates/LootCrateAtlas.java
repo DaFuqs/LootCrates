@@ -128,7 +128,7 @@ public class LootCrateAtlas {
                 return lootCrateDefinition.chestTexture;
             }
         }
-        return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/common_crate"));
+        return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "block/common_crate"));
     }
 
     public static SpriteIdentifier getShulkerTexture(LootCrateBlockEntity lootCrateBlockEntity) {
@@ -139,7 +139,7 @@ public class LootCrateAtlas {
                 return lootCrateDefinition.shulkerTexture;
             }
         }
-        return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "entity/chest/common_crate"));
+        return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "block/common_crate"));
     }
 
     public static Block getLootCrate(LootCrateRarity lootCrateRarity) {

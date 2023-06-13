@@ -174,11 +174,6 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
     }
 
-    public NbtCompound serializeInventory(NbtCompound tag) {
-        Inventories.writeNbt(tag, this.inventory, false);
-        return tag;
-    }
-
     @Override
     public boolean isEmpty() {
         return this.getInvStackList().stream().allMatch(ItemStack::isEmpty);
@@ -192,8 +187,6 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             if (player instanceof ServerPlayerEntity) {
                 Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, this.lootTableId);
             }
-        
-            this.lootTableId = null;
             LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder((ServerWorld)this.world)).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.pos));
             builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
             lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST), this.lootTableSeed);

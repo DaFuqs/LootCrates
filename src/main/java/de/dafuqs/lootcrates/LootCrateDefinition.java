@@ -6,12 +6,11 @@ import net.fabricmc.fabric.api.item.v1.*;
 import net.fabricmc.fabric.api.object.builder.v1.block.*;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.*;
+import net.minecraft.client.texture.*;
 import net.minecraft.client.util.*;
 import net.minecraft.sound.*;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
-
-import static net.minecraft.client.render.TexturedRenderLayers.*;
 
 public class LootCrateDefinition {
         public String identifier;
@@ -141,10 +140,10 @@ public class LootCrateDefinition {
 
         @Environment(EnvType.CLIENT)
         public void setupTextures() {
-            this.chestTextureIdentifier = new Identifier(LootCrates.MOD_ID, "entity/chest/" + this.identifier + "_crate");
-            this.chestTexture = new SpriteIdentifier(CHEST_ATLAS_TEXTURE, this.chestTextureIdentifier);
-            this.shulkerTextureIdentifier = new Identifier(LootCrates.MOD_ID, "entity/shulker/" + this.identifier + "_shulker");
-            this.shulkerTexture = new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, this.shulkerTextureIdentifier);
+            this.chestTextureIdentifier = new Identifier(LootCrates.MOD_ID, "block/" + this.identifier + "_crate");
+            this.chestTexture = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, this.chestTextureIdentifier);
+            this.shulkerTextureIdentifier = new Identifier(LootCrates.MOD_ID, "block/" + this.identifier + "_shulker");
+            this.shulkerTexture = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, this.shulkerTextureIdentifier);
         }
 
     }

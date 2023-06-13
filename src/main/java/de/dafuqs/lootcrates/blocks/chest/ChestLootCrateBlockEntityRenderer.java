@@ -27,15 +27,6 @@ public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & LidOpenab
         this.singleChestLatch = modelPart.getChild("lock");
     }
 
-    public static TexturedModelData getSingleTexturedModelData() {
-        ModelData modelData = new ModelData();
-        ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("bottom", ModelPartBuilder.create().uv(0, 19).cuboid(1.0F, 0.0F, 1.0F, 14.0F, 10.0F, 14.0F), ModelTransform.NONE);
-        modelPartData.addChild("lid", ModelPartBuilder.create().uv(0, 0).cuboid(1.0F, 0.0F, 0.0F, 14.0F, 5.0F, 14.0F), ModelTransform.pivot(0.0F, 9.0F, 1.0F));
-        modelPartData.addChild("lock", ModelPartBuilder.create().uv(0, 0).cuboid(7.0F, -1.0F, 15.0F, 2.0F, 4.0F, 1.0F), ModelTransform.pivot(0.0F, 8.0F, 0.0F));
-        return TexturedModelData.of(modelData, 64, 64);
-    }
-
     private void render(MatrixStack matrices, VertexConsumer vertices, ModelPart lid, ModelPart latch, ModelPart base, float openFactor, int light, int overlay) {
         lid.pitch = -(openFactor * 1.5707964F);
         latch.pitch = lid.pitch;
@@ -49,13 +40,13 @@ public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & LidOpenab
         World world = entity.getWorld();
         boolean bl = world != null;
 
-        if(entity instanceof ChestLootCrateBlockEntity) {
+        if(entity instanceof ChestLootCrateBlockEntity chestLootCrateBlockEntity) {
             BlockState blockState = bl ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
             Block block = blockState.getBlock();
 
             if(block instanceof ChestLootCrateBlock) {
-                SpriteIdentifier spriteIdentifier = LootCrateAtlas.getChestTexture((ChestLootCrateBlockEntity) entity);
-                boolean hasTransparency = LootCrateAtlas.hasTransparency((ChestLootCrateBlockEntity) entity);
+                SpriteIdentifier spriteIdentifier = LootCrateAtlas.getChestTexture(chestLootCrateBlockEntity);
+                boolean hasTransparency = LootCrateAtlas.hasTransparency(chestLootCrateBlockEntity);
                 VertexConsumer vertexConsumer;
                 if (hasTransparency) {
                     vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityTranslucent);
