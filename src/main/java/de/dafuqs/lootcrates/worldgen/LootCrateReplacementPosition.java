@@ -5,8 +5,8 @@ import net.minecraft.util.math.*;
 
 public class LootCrateReplacementPosition {
 
-    public ServerWorld world;
-    public BlockPos blockPos;
+    public final ServerWorld world;
+    public final BlockPos blockPos;
 
     public LootCrateReplacementPosition(ServerWorld world, BlockPos blockPos) {
         this.world = world;

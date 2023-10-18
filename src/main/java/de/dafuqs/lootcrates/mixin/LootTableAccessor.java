@@ -1,9 +1,9 @@
 package de.dafuqs.lootcrates.mixin;
 
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.util.Identifier;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import net.minecraft.block.entity.*;
+import net.minecraft.util.*;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.gen.*;
 
 @Mixin(LootableContainerBlockEntity.class)
 public interface LootTableAccessor {

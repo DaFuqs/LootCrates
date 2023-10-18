@@ -1,15 +1,10 @@
 package de.dafuqs.lootcrates.blocks;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.util.Pair;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.nbt.*;
+import net.minecraft.util.*;
+import org.jetbrains.annotations.*;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerCrateData {
 	

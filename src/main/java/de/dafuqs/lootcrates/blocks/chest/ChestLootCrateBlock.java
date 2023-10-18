@@ -75,7 +75,7 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? checkType(type, LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY, ChestLootCrateBlockEntity::clientTick) : null;
+        return world.isClient ? validateTicker(type, LootCratesBlockEntityType.CHEST_LOOT_CRATE_BLOCK_ENTITY, ChestLootCrateBlockEntity::clientTick) : null;
     }
 
     @Override

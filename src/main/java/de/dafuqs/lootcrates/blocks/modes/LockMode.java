@@ -1,8 +1,8 @@
 package de.dafuqs.lootcrates.blocks.modes;
 
-import de.dafuqs.lootcrates.blocks.PlayerCrateData;
+import de.dafuqs.lootcrates.blocks.*;
 
-import java.util.Optional;
+import java.util.*;
 
 public enum LockMode {
 	NONE(false, false, false),
@@ -32,10 +32,6 @@ public enum LockMode {
 		} else {
 			return true;
 		}
-	}
-	
-	public boolean requiresKey() {
-		return this.requiresKey;
 	}
     
     public boolean consumesKey() {

@@ -1,43 +1,32 @@
 package de.dafuqs.lootcrates.worldgen;
 
 import com.google.gson.*;
-import de.dafuqs.lootcrates.LootCrateAtlas;
-import de.dafuqs.lootcrates.LootCrates;
-import de.dafuqs.lootcrates.blocks.LootCrateBlock;
-import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
-import de.dafuqs.lootcrates.blocks.chest.ChestLootCrateBlock;
-import de.dafuqs.lootcrates.blocks.modes.InventoryDeletionMode;
-import de.dafuqs.lootcrates.blocks.modes.LockMode;
-import de.dafuqs.lootcrates.blocks.modes.ReplenishMode;
-import de.dafuqs.lootcrates.config.LootCrateReplacementEntry;
-import de.dafuqs.lootcrates.config.WeightedLootCrateEntryList;
-import de.dafuqs.lootcrates.enums.LootCrateRarity;
-import de.dafuqs.lootcrates.mixin.LootTableAccessor;
-import net.fabricmc.loader.FabricLoader;
+import de.dafuqs.lootcrates.*;
+import de.dafuqs.lootcrates.blocks.*;
+import de.dafuqs.lootcrates.blocks.chest.*;
+import de.dafuqs.lootcrates.blocks.modes.*;
+import de.dafuqs.lootcrates.config.*;
+import de.dafuqs.lootcrates.enums.*;
+import de.dafuqs.lootcrates.mixin.*;
+import net.fabricmc.loader.*;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.block.entity.*;
+import net.minecraft.server.*;
+import net.minecraft.server.world.*;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.*;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkStatus;
-import org.apache.logging.log4j.Level;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.chunk.*;
+import org.apache.logging.log4j.*;
+import org.jetbrains.annotations.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class LootCratesWorldgenReplacer {
 
-    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final String DEFAULT_CONFIG = """
 [
 	{
@@ -174,7 +163,7 @@ public class LootCratesWorldgenReplacer {
 ]""";
     
 
-    public static List<LootCrateReplacementPosition> replacements = new ArrayList<>(); // try at the end of each tick
+    public static final List<LootCrateReplacementPosition> replacements = new ArrayList<>(); // try at the end of each tick
 
     private static WeightedLootCrateEntryList DefaultLootCrateProviderList = new WeightedLootCrateEntryList(1, new ArrayList<>() {{
         add(new LootCrateReplacementEntry(null, null, ReplenishMode.GAME_TIME, 1, LockMode.NONE, InventoryDeletionMode.NEVER, true, 1));
@@ -203,7 +192,7 @@ public class LootCratesWorldgenReplacer {
 
         JsonElement jsonElement;
         try {
-            jsonElement = (JsonElement) JsonHelper.deserialize(GSON, configReader, (Class) JsonElement.class);
+            jsonElement = JsonHelper.deserialize(GSON, configReader, JsonElement.class);
         } catch (Exception e) {
             LootCrates.log(Level.ERROR, "Could not parse the LootCratesWorldgenSettings.json5: " + e.getLocalizedMessage());
             return;

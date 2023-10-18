@@ -301,9 +301,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     public static boolean shouldRelock(World world, ReplenishMode replenishMode, long replenishTimeTicks, LockMode lockMode, Optional<PlayerCrateData> playerCrateData) {
         if (lockMode.relocks()) {
             if(playerCrateData.isPresent()) {
-                if(playerCrateData.get().unlockTime < playerCrateData.get().replenishTime && LootCrateBlockEntity.canReplenish(world, playerCrateData, replenishMode, replenishTimeTicks)) {
-                    return true;
-                }
+                return playerCrateData.get().unlockTime < playerCrateData.get().replenishTime && LootCrateBlockEntity.canReplenish(world, playerCrateData, replenishMode, replenishTimeTicks);
             }
         }
         return false;
@@ -370,9 +368,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     public ScheduledTickEvent getRandomTickEvent() {
         if(this.scheduledTickEvent == null) {
             Optional<LootCrateBlock> block = getBlock();
-            if(block.isPresent()) {
-                scheduledTickEvent = LootCrateAtlas.getRandomTickEvent(block.get());
-            }
+            block.ifPresent(lootCrateBlock -> scheduledTickEvent = LootCrateAtlas.getRandomTickEvent(lootCrateBlock));
         }
         return this.scheduledTickEvent;
     }

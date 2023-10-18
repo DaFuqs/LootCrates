@@ -1,20 +1,15 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
-import de.dafuqs.lootcrates.LootCrateAtlas;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.ShulkerEntityModel;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Direction;
+import de.dafuqs.lootcrates.*;
+import net.fabricmc.api.*;
+import net.minecraft.block.*;
+import net.minecraft.client.model.*;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.block.entity.*;
+import net.minecraft.client.render.entity.model.*;
+import net.minecraft.client.util.*;
+import net.minecraft.client.util.math.*;
+import net.minecraft.util.math.*;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerLootCrateEntityRenderer implements BlockEntityRenderer<ShulkerLootCrateBlockEntity> {
@@ -22,7 +17,7 @@ public class ShulkerLootCrateEntityRenderer implements BlockEntityRenderer<Shulk
     private final ShulkerEntityModel<?> model;
 
     public ShulkerLootCrateEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.model = new ShulkerEntityModel(ctx.getLayerModelPart(EntityModelLayers.SHULKER));
+        this.model = new ShulkerEntityModel<>(ctx.getLayerModelPart(EntityModelLayers.SHULKER));
     }
 
     public void render(ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

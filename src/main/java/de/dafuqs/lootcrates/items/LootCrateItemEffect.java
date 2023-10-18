@@ -10,7 +10,7 @@ import net.minecraft.world.*;
 
 public interface LootCrateItemEffect {
 
-    public default void doInventoryTick(World world, Entity entity, ScheduledTickEvent scheduledTickEvent) {
+    default void doInventoryTick(World world, Entity entity, ScheduledTickEvent scheduledTickEvent) {
         if(world != null && entity != null) {
             if (scheduledTickEvent == ScheduledTickEvent.FIRE) {
                 // play fire sound, set player and surroundings on fire
@@ -42,6 +42,5 @@ public interface LootCrateItemEffect {
             }
         }
     }
-
-
+    
 }

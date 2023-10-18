@@ -11,9 +11,9 @@ import net.minecraft.util.*;
 
 public class LootCratesBlockEntityType {
 
-    public static Identifier CHEST_LOOT_CRATE_BLOCK_ENTITY_IDENTIFIER = new Identifier(LootCrates.MOD_ID, "chest_loot_crate_block_entity");
-    public static Identifier SHULKER_LOOT_CRATE_BLOCK_ENTITY_IDENTIFIER = new Identifier(LootCrates.MOD_ID, "shulker_loot_crate_block_entity");
-    public static Identifier LOOT_BARREL_BLOCK_ENTITY_IDENTIFIER = new Identifier(LootCrates.MOD_ID, "loot_barrel_block_entity");
+    public static final Identifier CHEST_LOOT_CRATE_BLOCK_ENTITY_IDENTIFIER = new Identifier(LootCrates.MOD_ID, "chest_loot_crate_block_entity");
+    public static final Identifier SHULKER_LOOT_CRATE_BLOCK_ENTITY_IDENTIFIER = new Identifier(LootCrates.MOD_ID, "shulker_loot_crate_block_entity");
+    public static final Identifier LOOT_BARREL_BLOCK_ENTITY_IDENTIFIER = new Identifier(LootCrates.MOD_ID, "loot_barrel_block_entity");
 
     public static BlockEntityType<ChestLootCrateBlockEntity> CHEST_LOOT_CRATE_BLOCK_ENTITY;
     public static BlockEntityType<ShulkerLootCrateBlockEntity> SHULKER_LOOT_CRATE_BLOCK_ENTITY;

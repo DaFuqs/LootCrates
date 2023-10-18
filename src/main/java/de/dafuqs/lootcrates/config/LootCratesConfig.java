@@ -1,14 +1,12 @@
 package de.dafuqs.lootcrates.config;
 
-import de.dafuqs.lootcrates.LootCrates;
-import me.shedaniel.autoconfig.ConfigData;
-import me.shedaniel.autoconfig.annotation.Config;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
-import net.minecraft.world.World;
+import de.dafuqs.lootcrates.*;
+import me.shedaniel.autoconfig.*;
+import me.shedaniel.autoconfig.annotation.*;
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.*;
+import net.minecraft.world.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Config(name = "LootCrates")
 public class LootCratesConfig implements ConfigData {

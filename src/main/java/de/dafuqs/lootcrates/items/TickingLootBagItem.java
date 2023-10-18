@@ -1,10 +1,10 @@
 package de.dafuqs.lootcrates.items;
 
-import de.dafuqs.lootcrates.enums.ScheduledTickEvent;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import de.dafuqs.lootcrates.enums.*;
+import net.fabricmc.fabric.api.item.v1.*;
+import net.minecraft.entity.*;
+import net.minecraft.item.*;
+import net.minecraft.world.*;
 
 public class TickingLootBagItem extends LootBagItem implements LootCrateItemEffect {
 

@@ -1,18 +1,13 @@
 package de.dafuqs.lootcrates.mixin;
 
-import de.dafuqs.lootcrates.LootCrates;
-import de.dafuqs.lootcrates.worldgen.LootCrateReplacementPosition;
-import de.dafuqs.lootcrates.worldgen.LootCratesWorldgenReplacer;
-import net.minecraft.block.entity.BarrelBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.chunk.WorldChunk;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import de.dafuqs.lootcrates.*;
+import de.dafuqs.lootcrates.worldgen.*;
+import net.minecraft.block.entity.*;
+import net.minecraft.server.world.*;
+import net.minecraft.world.chunk.*;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.*;
 
 @Mixin(WorldChunk.class)
 public class WorldChunkMixin {

@@ -163,7 +163,7 @@ public class LootCrateItem extends BlockItem {
         if (compound.contains(LootCrateTagNames.InventoryDeletionMode.toString())) {
             try {
                 inventoryDeletionMode = InventoryDeletionMode.valueOf(compound.getString(LootCrateTagNames.InventoryDeletionMode.toString()));
-            } catch (IllegalArgumentException ignored) { } // nonexistant value
+            } catch (IllegalArgumentException ignored) { } // nonexistent value
         }
         return inventoryDeletionMode;
     }
@@ -174,7 +174,7 @@ public class LootCrateItem extends BlockItem {
         if (compound.contains(LootCrateTagNames.LockMode.toString())) {
             try {
                 lockMode = LockMode.valueOf(compound.getString(LootCrateTagNames.LockMode.toString()));
-            } catch (IllegalArgumentException ignored) { } // nonexistant value
+            } catch (IllegalArgumentException ignored) { } // nonexistent value
         }
         return lockMode;
     }
@@ -185,7 +185,7 @@ public class LootCrateItem extends BlockItem {
         if (compound.contains(LootCrateTagNames.ReplenishMode.toString())) {
             try {
                 replenishMode = ReplenishMode.valueOf(compound.getString(LootCrateTagNames.ReplenishMode.toString()));
-            } catch (IllegalArgumentException ignored) { } // nonexistant value
+            } catch (IllegalArgumentException ignored) { } // nonexistent value
         }
         return replenishMode;
     }

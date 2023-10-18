@@ -34,32 +34,28 @@ public class LootCrates implements ModInitializer {
     private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     public static LootCratesConfig CONFIG;
 
-    public static final ItemGroup ITEM_GROUP = FabricItemGroup.builder().displayName(Text.translatable("itemGroup.lootcrates.loot_crates")).icon(() -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON))).entries(new ItemGroup.EntryCollector() {
-        @Override
-        public void accept(ItemGroup.DisplayContext displayContext, ItemGroup.Entries entries) {
-             for(LootCrateRarity rarity : LootCrateRarity.values()) {
-                 entries.add(LootCrateAtlas.getLootCrate(rarity));
-                 entries.add(LootCrateAtlas.getLootBarrel(rarity));
-                 entries.add(LootCrateAtlas.getShulkerCrate(rarity));
-                 entries.add(LootCrateAtlas.getLootKeyItem(rarity));
-                 entries.add(LootCrateAtlas.getLootBagItem(rarity));
-             }
-        }
-   }).build();
+    public static final ItemGroup ITEM_GROUP = FabricItemGroup.builder()
+            .displayName(Text.translatable("itemGroup.lootcrates.loot_crates"))
+            .icon(() -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.COMMON)))
+            .entries((displayContext, entries) -> {
+         for(LootCrateRarity rarity : LootCrateRarity.values()) {
+             entries.add(LootCrateAtlas.getLootCrate(rarity));
+             entries.add(LootCrateAtlas.getLootBarrel(rarity));
+             entries.add(LootCrateAtlas.getShulkerCrate(rarity));
+             entries.add(LootCrateAtlas.getLootKeyItem(rarity));
+             entries.add(LootCrateAtlas.getLootBagItem(rarity));
+         }
+    }).build();
 
-    public static final ItemGroup PREDEFINED_CRATES_GROUP = FabricItemGroup.builder().displayName(Text.translatable("itemGroup.lootcrates.predefined_loot_crates")).icon(() -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.EPIC))).entries(new ItemGroup.EntryCollector() {
-        @Override
-        public void accept(ItemGroup.DisplayContext displayContext, ItemGroup.Entries entries) {
-            entries.addAll(getPredefinedLootCrates());
-        }
-    }).build(); // Icon is set in the tab directly
+    public static final ItemGroup PREDEFINED_CRATES_GROUP = FabricItemGroup.builder()
+            .displayName(Text.translatable("itemGroup.lootcrates.predefined_loot_crates"))
+            .icon(() -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateRarity.EPIC)))
+            .entries((displayContext, entries) -> entries.addAll(getPredefinedLootCrates())).build(); // Icon is set in the tab directly
 
-    public static final ItemGroup PREDEFINED_BAGS_GROUP = FabricItemGroup.builder().displayName(Text.translatable("itemGroup.lootcrates.predefined_loot_bags")).icon(() -> new ItemStack(LootCrateAtlas.getLootBagItem(LootCrateRarity.EPIC))).entries(new ItemGroup.EntryCollector() {
-        @Override
-        public void accept(ItemGroup.DisplayContext displayContext, ItemGroup.Entries entries) {
-            entries.addAll(getPredefinedLootBags());
-        }
-    }).build(); // Icon is set in the tab directly
+    public static final ItemGroup PREDEFINED_BAGS_GROUP = FabricItemGroup.builder()
+            .displayName(Text.translatable("itemGroup.lootcrates.predefined_loot_bags"))
+            .icon(() -> new ItemStack(LootCrateAtlas.getLootBagItem(LootCrateRarity.EPIC)))
+            .entries((displayContext, entries) -> entries.addAll(getPredefinedLootBags())).build(); // Icon is set in the tab directly
     
     /**
      * Generates a default item for a lot of predefined values of itemStacks
@@ -135,25 +131,25 @@ public class LootCrates implements ModInitializer {
     }
     
     public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
-    public static SoundEvent CHEST_UNLOCKS_SOUND_EVENT = SoundEvent.of(CHEST_UNLOCKS_SOUND_ID);
+    public static final SoundEvent CHEST_UNLOCKS_SOUND_EVENT = SoundEvent.of(CHEST_UNLOCKS_SOUND_ID);
 
-    public static DispenserBehavior LOOT_BAG_DISPENSER_BEHAVIOR = (pointer, stack) -> {
+    public static final DispenserBehavior LOOT_BAG_DISPENSER_BEHAVIOR = (pointer, stack) -> {
         if(stack.getItem() instanceof LootBagItem lootBagItem) {
             Identifier lootTableId = lootBagItem.getLootTableIdentifier(stack);
             if (lootTableId != null) {
                 long lootTableSeed = lootBagItem.getLootTableSeed(stack);
 
-                LootTable lootTable = pointer.getWorld().getServer().getLootManager().getLootTable(lootTableId);
+                LootTable lootTable = pointer.world().getServer().getLootManager().getLootTable(lootTableId);
                 
-                LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder(pointer.getWorld())).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pointer.getPos()));
+                LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder(pointer.world())).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pointer.pos()));
                 List<ItemStack> lootStacks = lootTable.generateLoot(builder.build(LootContextTypes.CHEST), lootTableSeed);
                 Position position = DispenserBlock.getOutputLocation(pointer);
-                Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+                Direction direction = pointer.state().get(DispenserBlock.FACING);
 
                 for (ItemStack lootStack : lootStacks) {
-                    ItemEntity itemEntity = new ItemEntity(pointer.getWorld(), position.getX(), position.getY(), position.getZ(), lootStack);
+                    ItemEntity itemEntity = new ItemEntity(pointer.world(), position.getX(), position.getY(), position.getZ(), lootStack);
                     itemEntity.setVelocity(direction.getOffsetX() * 0.2, direction.getOffsetY() * 0.2, direction.getOffsetZ() * 0.2);
-                    pointer.getWorld().spawnEntity(itemEntity);
+                    pointer.world().spawnEntity(itemEntity);
                 }
             }
             stack.decrement(1);

@@ -1,30 +1,22 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
-import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
-import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ShulkerBoxScreenHandler;
+import de.dafuqs.lootcrates.blocks.*;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.*;
+import net.minecraft.block.piston.*;
+import net.minecraft.entity.*;
+import net.minecraft.entity.mob.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.inventory.*;
+import net.minecraft.item.*;
+import net.minecraft.screen.*;
 import net.minecraft.util.math.*;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.shape.*;
+import net.minecraft.world.*;
+import org.jetbrains.annotations.*;
 
-import java.util.List;
-import java.util.stream.IntStream;
+import java.util.*;
+import java.util.stream.*;
 
 public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements SidedInventory {
 
@@ -69,30 +61,26 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 
     private void updateAnimation(World world, BlockPos pos, BlockState state) {
         this.prevAnimationProgress = this.animationProgress;
-        switch(this.animationStage) {
-            case CLOSED:
-                this.animationProgress = 0.0F;
-                break;
-            case OPENING:
+        switch (this.animationStage) {
+            case CLOSED -> this.animationProgress = 0.0F;
+            case OPENING -> {
                 this.animationProgress += 0.1F;
                 if (this.animationProgress >= 1.0F) {
                     this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
                     this.animationProgress = 1.0F;
                     updateNeighborStates(world, pos, state);
                 }
-
                 this.pushEntities(world, pos, state);
-                break;
-            case CLOSING:
+            }
+            case CLOSING -> {
                 this.animationProgress -= 0.1F;
                 if (this.animationProgress <= 0.0F) {
                     this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
                     this.animationProgress = 0.0F;
                     updateNeighborStates(world, pos, state);
                 }
-                break;
-            case OPENED:
-                this.animationProgress = 1.0F;
+            }
+            case OPENED -> this.animationProgress = 1.0F;
         }
     }
 
@@ -104,7 +92,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
             if (!list.isEmpty()) {
                 for (Entity entity : list) {
                     if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
-                        entity.move(MovementType.SHULKER_BOX, new Vec3d((box.getXLength() + 0.01D) * (double) direction.getOffsetX(), (box.getYLength() + 0.01D) * (double) direction.getOffsetY(), (box.getZLength() + 0.01D) * (double) direction.getOffsetZ()));
+                        entity.move(MovementType.SHULKER_BOX, new Vec3d((box.getLengthX() + 0.01D) * (double) direction.getOffsetX(), (box.getLengthY() + 0.01D) * (double) direction.getOffsetY(), (box.getLengthZ() + 0.01D) * (double) direction.getOffsetZ()));
                     }
                 }
             }

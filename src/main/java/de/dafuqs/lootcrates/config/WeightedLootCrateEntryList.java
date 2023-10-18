@@ -1,9 +1,9 @@
 package de.dafuqs.lootcrates.config;
 
 import net.minecraft.util.math.random.Random;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
-import java.util.List;
+import java.util.*;
 
 public class WeightedLootCrateEntryList {
 

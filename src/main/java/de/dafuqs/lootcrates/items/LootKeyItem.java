@@ -1,14 +1,13 @@
 package de.dafuqs.lootcrates.items;
 
-import de.dafuqs.lootcrates.LootCrateAtlas;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.world.World;
+import de.dafuqs.lootcrates.*;
+import net.fabricmc.fabric.api.item.v1.*;
+import net.minecraft.client.item.*;
+import net.minecraft.item.*;
+import net.minecraft.text.*;
+import net.minecraft.world.*;
 
-import java.util.List;
+import java.util.*;
 
 public class LootKeyItem extends Item {
 

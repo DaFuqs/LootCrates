@@ -1,26 +1,24 @@
 package de.dafuqs.lootcrates.config;
 
-import de.dafuqs.lootcrates.blocks.modes.InventoryDeletionMode;
-import de.dafuqs.lootcrates.blocks.modes.LockMode;
-import de.dafuqs.lootcrates.blocks.modes.ReplenishMode;
-import de.dafuqs.lootcrates.enums.LootCrateRarity;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
+import de.dafuqs.lootcrates.blocks.modes.*;
+import de.dafuqs.lootcrates.enums.*;
+import net.minecraft.util.*;
+import org.jetbrains.annotations.*;
 
 public class LootCrateReplacementEntry {
     
     @Nullable
-    public LootCrateRarity lootCrateRarity;
+    public final LootCrateRarity lootCrateRarity;
     @Nullable
-    public Identifier lootTable;
+    public final Identifier lootTable;
     
-    public LockMode lockMode;
-    public ReplenishMode replenishMode;
-    public InventoryDeletionMode inventoryDeletionMode;
-    public boolean trackedPerPlayer;
-    public int replenishTimeTicks;
+    public final LockMode lockMode;
+    public final ReplenishMode replenishMode;
+    public final InventoryDeletionMode inventoryDeletionMode;
+    public final boolean trackedPerPlayer;
+    public final int replenishTimeTicks;
     
-    public int weight;
+    public final int weight;
 
     public LootCrateReplacementEntry(@Nullable LootCrateRarity lootCrateRarity, @Nullable Identifier lootTable, ReplenishMode replenishMode, int replenishTimeTicks, LockMode lockMode, InventoryDeletionMode inventoryDeletionMode, boolean trackedPerPlayer, int weight) {
         this.lootCrateRarity = lootCrateRarity;

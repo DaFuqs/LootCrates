@@ -5,23 +5,17 @@
 
 package de.dafuqs.lootcrates.blocks.barrel;
 
-import de.dafuqs.lootcrates.blocks.LootCrateBlockEntity;
-import de.dafuqs.lootcrates.blocks.LootCratesBlockEntityType;
-import net.minecraft.block.BarrelBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ViewerCountManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import de.dafuqs.lootcrates.blocks.*;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.inventory.*;
+import net.minecraft.item.*;
+import net.minecraft.screen.*;
+import net.minecraft.sound.*;
+import net.minecraft.util.collection.*;
+import net.minecraft.util.math.*;
+import net.minecraft.world.*;
 
 public class LootBarrelBlockEntity extends LootCrateBlockEntity {
 

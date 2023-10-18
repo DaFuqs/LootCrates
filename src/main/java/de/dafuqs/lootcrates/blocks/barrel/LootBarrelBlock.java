@@ -45,8 +45,9 @@ public class LootBarrelBlock extends LootCrateBlock {
             return ActionResult.CONSUME;
         }
     }
-
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    
+    @Override
+    public void onStateReplaced(BlockState state, @NotNull World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof LootCrateBlockEntity) {
@@ -69,7 +70,8 @@ public class LootBarrelBlock extends LootCrateBlock {
             }
         }
     }
-
+    
+    @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootBarrelBlockEntity) {

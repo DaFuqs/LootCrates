@@ -39,7 +39,7 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? checkType(type, LootCratesBlockEntityType.SHULKER_LOOT_CRATE_BLOCK_ENTITY, ShulkerLootCrateBlockEntity::tick) : null;
+        return world.isClient ? validateTicker(type, LootCratesBlockEntityType.SHULKER_LOOT_CRATE_BLOCK_ENTITY, ShulkerLootCrateBlockEntity::tick) : null;
     }
 
     @Override
@@ -65,8 +65,7 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
             ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
             if(actionResult == ActionResult.PASS) {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
-                if (blockEntity instanceof ShulkerLootCrateBlockEntity) {
-                    ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity = (ShulkerLootCrateBlockEntity) blockEntity;
+                if (blockEntity instanceof ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity) {
                     if (canOpen(state, world, pos, shulkerLootCrateBlockEntity)) {
                         player.openHandledScreen(shulkerLootCrateBlockEntity);
                         PiglinBrain.onGuardedBlockInteracted(player, true);
