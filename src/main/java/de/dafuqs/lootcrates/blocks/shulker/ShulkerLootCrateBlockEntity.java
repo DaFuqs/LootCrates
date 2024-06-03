@@ -43,9 +43,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     public int getCurrentLookingPlayers(BlockView world, BlockPos pos) {
         return this.viewerCount;
     }
-
-
-
+    
     @Override
     protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
         return new ShulkerBoxScreenHandler(syncId, playerInventory, this);
@@ -87,7 +85,7 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
     private void pushEntities(World world, BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof ShulkerLootCrateBlock) {
             Direction direction = state.get(ShulkerBoxBlock.FACING);
-            Box box = ShulkerEntity.calculateBoundingBox(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
+            Box box = ShulkerEntity.calculateBoundingBox(1.0F, direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
             List<Entity> list = world.getOtherEntities(null, box);
             if (!list.isEmpty()) {
                 for (Entity entity : list) {

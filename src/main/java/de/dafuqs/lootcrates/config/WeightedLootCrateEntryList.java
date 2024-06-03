@@ -9,6 +9,7 @@ public class WeightedLootCrateEntryList {
 
     int totalWeight;
     List<LootCrateReplacementEntry> weightedEntries;
+    
     public WeightedLootCrateEntryList(int totalWeight, List<LootCrateReplacementEntry> weightedEntries) {
         this.totalWeight = totalWeight;
         this.weightedEntries = weightedEntries;

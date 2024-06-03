@@ -78,7 +78,7 @@ public class LootCrateAtlas {
         lootBarrelBlocks.put(lootCrateRarity, lootBarrelBlock);
 
         // create & register block items
-        FabricItemSettings blockItemSettings = lootCrateDefinition.getBlockItemSettings();
+        Item.Settings blockItemSettings = lootCrateDefinition.getBlockItemSettings();
 
         BlockItem lootCrateBlockItem;
         BlockItem shulkerCrateBlockItem;

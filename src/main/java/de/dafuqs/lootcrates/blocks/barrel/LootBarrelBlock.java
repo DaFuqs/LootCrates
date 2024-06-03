@@ -1,7 +1,9 @@
 package de.dafuqs.lootcrates.blocks.barrel;
 
+import com.mojang.serialization.*;
 import de.dafuqs.lootcrates.*;
 import de.dafuqs.lootcrates.blocks.*;
+import de.dafuqs.lootcrates.blocks.shulker.*;
 import de.dafuqs.lootcrates.enums.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
@@ -28,13 +30,20 @@ public class LootBarrelBlock extends LootCrateBlock {
         super(settings);
         this.setDefaultState(((this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(OPEN, false));
     }
+    
+    public static final MapCodec<LootBarrelBlock> CODEC = createCodec(LootBarrelBlock::new);
+    
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return CODEC;
+    }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {
-            ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
+            ActionResult actionResult = super.onUse(state, world, pos, player, hit);
             if(actionResult == ActionResult.PASS) {
                 NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
                 if (namedScreenHandlerFactory != null) {

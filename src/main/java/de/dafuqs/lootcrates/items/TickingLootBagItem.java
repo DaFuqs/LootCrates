@@ -10,7 +10,7 @@ public class TickingLootBagItem extends LootBagItem implements LootCrateItemEffe
 
     ScheduledTickEvent scheduledTickEvent;
 
-    public TickingLootBagItem(FabricItemSettings fabricItemSettings, ScheduledTickEvent scheduledTickEvent) {
+    public TickingLootBagItem(Item.Settings fabricItemSettings, ScheduledTickEvent scheduledTickEvent) {
         super(fabricItemSettings);
         this.scheduledTickEvent = scheduledTickEvent;
     }

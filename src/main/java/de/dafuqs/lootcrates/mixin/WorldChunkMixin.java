@@ -21,7 +21,7 @@ public class WorldChunkMixin {
 		if (LootCrates.CONFIG.ReplaceVanillaWorldgenChests
 				&& !worldChunk.getWorld().isClient
 				&& ((blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity || blockEntity instanceof ShulkerBoxBlockEntity))
-				&& ((LootTableAccessor) blockEntity).getLootTableIdentifier() != null
+				&& ((LootTableAccessor) blockEntity).getLootTable() != null
 				&& !LootCrates.CONFIG.isWorldBlacklisted(worldChunk.getWorld())) {
 			
 			LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition((ServerWorld) worldChunk.getWorld(), blockEntity.getPos()));

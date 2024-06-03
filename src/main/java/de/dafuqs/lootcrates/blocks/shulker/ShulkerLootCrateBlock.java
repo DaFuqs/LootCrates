@@ -1,5 +1,6 @@
 package de.dafuqs.lootcrates.blocks.shulker;
 
+import com.mojang.serialization.*;
 import de.dafuqs.lootcrates.*;
 import de.dafuqs.lootcrates.blocks.*;
 import de.dafuqs.lootcrates.enums.*;
@@ -26,7 +27,14 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
         super(settings);
         this.setDefaultState((this.stateManager.getDefaultState()).with(FACING, Direction.UP));
     }
-
+    
+    public static final MapCodec<ShulkerLootCrateBlock> CODEC = createCodec(ShulkerLootCrateBlock::new);
+    
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return CODEC;
+    }
+    
     @Override
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
@@ -56,13 +64,13 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else if (player.isSpectator()) {
             return ActionResult.CONSUME;
         } else {
-            ActionResult actionResult = super.onUse(state, world, pos, player, hand, hit);
+            ActionResult actionResult = super.onUse(state, world, pos, player, hit);
             if(actionResult == ActionResult.PASS) {
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if (blockEntity instanceof ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity) {
@@ -80,12 +88,12 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
             }
         }
     }
-
+    
     private static boolean canOpen(BlockState state, World world, BlockPos pos, ShulkerLootCrateBlockEntity entity) {
         if (entity.getAnimationStage() != ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
             return true;
         } else {
-            Box box = ShulkerEntity.calculateBoundingBox(state.get(FACING), 0.0F, 0.5F).offset(pos).contract(1.0E-6D);
+            Box box = ShulkerEntity.calculateBoundingBox(1.0F, state.get(FACING), 0.0F, 0.5F).offset(pos).contract(1.0E-6);
             return world.isSpaceEmpty(box);
         }
     }

@@ -8,6 +8,8 @@ import net.fabricmc.api.*;
 import net.minecraft.block.*;
 import net.minecraft.client.*;
 import net.minecraft.client.item.*;
+import net.minecraft.component.*;
+import net.minecraft.component.type.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.*;
 import net.minecraft.item.*;
@@ -22,7 +24,9 @@ import java.time.*;
 import java.util.*;
 
 public class LootCrateItem extends BlockItem {
-
+    
+    private static final Text UNKNOWN_CONTENTS_TEXT = Text.translatable("container.shulkerBox.unknownContents");
+    
     public LootCrateItem(Block block, Settings settings) {
         super(block, settings);
     }
@@ -34,18 +38,18 @@ public class LootCrateItem extends BlockItem {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
-        super.appendTooltip(itemStack, world, tooltip, tooltipContext);
-
-        NbtCompound compound = itemStack.getSubNbt("BlockEntityTag");
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
+        
+        NbtCompound compound = stack.getSubNbt("BlockEntityTag");
         if (compound != null) {
             
             boolean trackedPerPlayer = isTrackedPerPlayer(compound);
             Optional<PlayerCrateData> playerCrateData = getPlayerCrateData(compound, MinecraftClient.getInstance().player, trackedPerPlayer);
-    
+            
             ReplenishMode replenishMode = getReplenishMode(compound);
             long replenishTimeTicks = getReplenishTimeTicks(compound);
-    
+            
             if(playerCrateData.isEmpty() || playerCrateData.get().replenishTime < 0 || replenishMode.canReplenish(world, playerCrateData, replenishTimeTicks)) {
                 tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.contains_loot"));
             } else {
@@ -55,12 +59,12 @@ public class LootCrateItem extends BlockItem {
                     tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.already_looted"));
                 }
             }
-    
+            
             LockMode lockMode = getLockMode(compound);
             if(!lockMode.isUnlocked(playerCrateData)) {
-                tooltip.add(LootCrateAtlas.getItemLockedTooltip(itemStack, lockMode));
+                tooltip.add(LootCrateAtlas.getItemLockedTooltip(stack, lockMode));
             }
-
+            
             switch (replenishMode) {
                 case HOURLY -> {
                     tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_hourly"));
@@ -93,7 +97,7 @@ public class LootCrateItem extends BlockItem {
             if(lockMode.relocks()) {
                 tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.relocks"));
             }
-    
+            
             InventoryDeletionMode inventoryDeletionMode = getInventoryDeletionMode(compound);
             switch (inventoryDeletionMode) {
                 case ON_OPEN -> {
@@ -103,14 +107,14 @@ public class LootCrateItem extends BlockItem {
                     tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.inventory_deletes_when_replenished"));
                 }
             }
-    
+            
             boolean trapped = isTrapped(compound);
             if(trapped) {
                 tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.trapped"));
             }
-    
+            
             // loot table and seed
-            boolean advanced = tooltipContext.isAdvanced();
+            boolean advanced = type.isAdvanced();
             if(advanced) {
                 if (compound.contains("LootTable")) {
                     String lootTableText = compound.getString("LootTable");
@@ -121,33 +125,28 @@ public class LootCrateItem extends BlockItem {
                     tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.fixed_seed", lootTableSeed));
                 }
             }
-
+            
             // inventory
             if(!lockMode.isUnlocked(playerCrateData)) {
-                if (compound.contains("Items", 9)) {
-                    DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
-                    Inventories.readNbt(compound, defaultedList);
-                    int i = 0;
-                    int j = 0;
-
-                    for (ItemStack is : defaultedList) {
-                        if (!is.isEmpty()) {
-                            ++j;
-                            if (i <= 4) {
-                                ++i;
-                                MutableText mutableText = is.getName().copy();
-                                mutableText.append(" x").append(String.valueOf(is.getCount()));
-                                tooltip.add(mutableText);
-                            }
-                        }
-                    }
-
-                    if (j - i > 0) {
-                        tooltip.add((Text.translatable("container.shulkerBox.more", j - i)).formatted(Formatting.ITALIC));
-                    }
+                if (stack.contains(DataComponentTypes.CONTAINER_LOOT)) {
+                    tooltip.add(UNKNOWN_CONTENTS_TEXT);
+                }
+                
+                int i = 0;
+                int j = 0;
+				for (ItemStack itemStack : (stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT)).iterateNonEmpty()) {
+					++j;
+					if (i <= 4) {
+						++i;
+						tooltip.add(Text.translatable("container.shulkerBox.itemCount", new Object[]{itemStack.getName(), itemStack.getCount()}));
+					}
+				}
+                
+                if (j - i > 0) {
+                    tooltip.add(Text.translatable("container.shulkerBox.more", new Object[]{j - i}).formatted(Formatting.ITALIC));
                 }
             }
-
+            
         } else {
             tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.no_data_set"));
         }
@@ -371,25 +370,6 @@ public class LootCrateItem extends BlockItem {
         } else { // in ticks
             return Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_real_time_ticks", replenishTime);
         }
-    }
-
-    public static @NotNull NbtCompound getLootCrateItemCompoundTag(@NotNull Identifier lootTable, LockMode lockMode, ReplenishMode replenishMode, InventoryDeletionMode inventoryDeletionMode, long lootGenerationTimeInTicks, boolean trackedPerPlayer, boolean trapped) {
-        NbtCompound compoundTag = new NbtCompound();
-        NbtCompound blockEntityTag = new NbtCompound();
-
-        blockEntityTag.putString("LootTable", lootTable.toString());
-        
-        if(lootGenerationTimeInTicks > 0) {
-            blockEntityTag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), lootGenerationTimeInTicks);
-        }
-        blockEntityTag.putBoolean(LootCrateTagNames.TrackedPerPlayer.toString(), trackedPerPlayer);
-        blockEntityTag.putString(LootCrateTagNames.LockMode.toString(), lockMode.toString());
-        blockEntityTag.putString(LootCrateTagNames.ReplenishMode.toString(), replenishMode.toString());
-        blockEntityTag.putString(LootCrateTagNames.InventoryDeletionMode.toString(), inventoryDeletionMode.toString());
-        blockEntityTag.putBoolean(LootCrateTagNames.Trapped.toString(), trapped);
-
-        compoundTag.put("BlockEntityTag", blockEntityTag);
-        return compoundTag;
     }
     
 }

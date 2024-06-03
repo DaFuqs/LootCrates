@@ -8,6 +8,7 @@ import net.minecraft.block.*;
 import net.minecraft.block.piston.*;
 import net.minecraft.client.texture.*;
 import net.minecraft.client.util.*;
+import net.minecraft.item.*;
 import net.minecraft.sound.*;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
@@ -60,27 +61,27 @@ public class LootCrateDefinition {
 		this.scheduledTickEvent = scheduledTickEvent;
 	}
 	
-	public FabricItemSettings getKeyItemSettings() {
+	public Item.Settings getKeyItemSettings() {
 		if (fireProof) {
-			return new FabricItemSettings().maxCount(16).rarity(rarity).fireproof();
+			return new Item.Settings().maxCount(16).rarity(rarity).fireproof();
 		} else {
-			return new FabricItemSettings().maxCount(16).rarity(rarity);
+			return new Item.Settings().maxCount(16).rarity(rarity);
 		}
 	}
 	
-	public FabricItemSettings getLootBagItemSettings() {
+	public Item.Settings getLootBagItemSettings() {
 		if (fireProof) {
-			return new FabricItemSettings().maxCount(16).rarity(rarity).fireproof();
+			return new Item.Settings().maxCount(16).rarity(rarity).fireproof();
 		} else {
-			return new FabricItemSettings().maxCount(16).rarity(rarity);
+			return new Item.Settings().maxCount(16).rarity(rarity);
 		}
 	}
 	
-	public FabricItemSettings getBlockItemSettings() {
+	public Item.Settings getBlockItemSettings() {
 		if (fireProof) {
-			return new FabricItemSettings().rarity(rarity).fireproof();
+			return new Item.Settings().rarity(rarity).fireproof();
 		} else {
-			return new FabricItemSettings().rarity(rarity);
+			return new Item.Settings().rarity(rarity);
 		}
 	}
 	

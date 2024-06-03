@@ -1,19 +1,23 @@
 package de.dafuqs.lootcrates.items;
 
 import de.dafuqs.lootcrates.*;
-import net.fabricmc.fabric.api.item.v1.*;
+import net.minecraft.block.entity.*;
 import net.minecraft.client.item.*;
+import net.minecraft.component.*;
+import net.minecraft.component.type.*;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
 import net.minecraft.loot.*;
 import net.minecraft.loot.context.*;
 import net.minecraft.nbt.*;
+import net.minecraft.registry.*;
 import net.minecraft.server.network.*;
 import net.minecraft.server.world.*;
 import net.minecraft.sound.*;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
+import net.minecraft.util.math.*;
 import net.minecraft.world.*;
 import org.jetbrains.annotations.*;
 
@@ -21,20 +25,20 @@ import java.util.*;
 
 public class LootBagItem extends Item {
 
-    public LootBagItem(FabricItemSettings fabricItemSettings) {
+    public LootBagItem(Item.Settings fabricItemSettings) {
         super(fabricItemSettings);
     }
-
+    
     @Override
-    public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
-        super.appendTooltip(itemStack, world, tooltip, tooltipContext);
-
-        Identifier lootTableIdentifier = getLootTableIdentifier(itemStack);
-        if(lootTableIdentifier == null) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
+        
+        @Nullable ContainerLootComponent lootComponent = getLootComponent(stack);
+        if(lootComponent == null) {
             tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.no_loot_table"));
         } else {
-            tooltip.add(LootCrateAtlas.getLootBagItemToolTip(itemStack));
-            tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootTableIdentifier.toString()));
+            tooltip.add(LootCrateAtlas.getLootBagItemToolTip(stack));
+            tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootComponent.toString()));
         }
     }
 
@@ -48,22 +52,8 @@ public class LootBagItem extends Item {
         return compoundTag;
     }
 
-    public @Nullable Identifier getLootTableIdentifier(@NotNull ItemStack itemStack) {
-        NbtCompound nbtCompound = itemStack.getNbt();
-        if (nbtCompound != null && nbtCompound.contains("LootTable")) {
-            return Identifier.tryParse(nbtCompound.getString("LootTable"));
-        } else {
-            return null;
-        }
-    }
-
-    public long getLootTableSeed(@NotNull ItemStack itemStack) {
-        NbtCompound nbtCompound = itemStack.getNbt();
-        if (nbtCompound != null && nbtCompound.contains("LootTableSeed")) {
-            return nbtCompound.getLong("LootTableSeed");
-        } else {
-            return 0;
-        }
+    public @Nullable ContainerLootComponent getLootComponent(@NotNull ItemStack stack) {
+        return stack.getComponents().get(DataComponentTypes.CONTAINER_LOOT);
     }
 
     @Override
@@ -79,15 +69,17 @@ public class LootBagItem extends Item {
         return super.use(world, user, hand);
     }
 
-    public List<ItemStack> getLootTableContents(ServerPlayerEntity player, ItemStack lootBagItemStack) {
-        Identifier lootTableId = getLootTableIdentifier(lootBagItemStack);
-        if(lootTableId != null) {
-            LootTable lootTable = player.getWorld().getServer().getLootManager().getLootTable(lootTableId);
-            if(lootTable != null) {
-                LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder(player.getServerWorld())).add(LootContextParameters.ORIGIN, player.getPos());
-                builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
-                return lootTable.generateLoot(builder.build(LootContextTypes.CHEST), getLootTableSeed(lootBagItemStack));
-            }
+    public List<ItemStack> getLootTableContents(ServerPlayerEntity player, ItemStack stack) {
+        @Nullable ContainerLootComponent lootComponent = getLootComponent(stack);
+        if(lootComponent != null) {
+            ServerWorld serverWorld = player.getServerWorld();
+            
+            RegistryKey<LootTable> lootTableKey = lootComponent.lootTable();
+            LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(lootTableKey);
+            LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder(serverWorld)).add(LootContextParameters.ORIGIN, player.getPos());
+			builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
+   
+			lootTable.generateLoot(builder.build(LootContextTypes.CHEST), lootComponent.seed());
         }
         return List.of();
     }

@@ -14,6 +14,7 @@ import net.minecraft.item.*;
 import net.minecraft.loot.*;
 import net.minecraft.loot.context.*;
 import net.minecraft.nbt.*;
+import net.minecraft.registry.*;
 import net.minecraft.server.network.*;
 import net.minecraft.server.world.*;
 import net.minecraft.sound.*;
@@ -53,42 +54,43 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         this.inventoryDeletionMode = InventoryDeletionMode.NEVER;
         this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
     }
-
+    
     @Override
-    public void writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
-
-        Inventories.writeNbt(tag, this.inventory, false);
-        putLootCrateBlockTags(tag);
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        
+        Inventories.writeNbt(nbt, this.inventory, registryLookup);
+        putLootCrateBlockTags(nbt);
     }
-
+    
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+        
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        if(tag.contains("Items", 9)) {
-            Inventories.readNbt(tag, this.inventory);
+        if(nbt.contains("Items", 9)) {
+            Inventories.readNbt(nbt, this.inventory, registryLookup);
         }
-
-        setLootCrateBlockTags(tag);
+        
+        setLootCrateBlockTags(nbt);
+        
     }
-
+    
     @Override
     public int size() {
         return this.inventory.size();
     }
-
+    
     @Override
-    protected DefaultedList<ItemStack> getInvStackList() {
+    protected DefaultedList<ItemStack> getHeldStacks() {
         return this.inventory;
     }
-
+    
     @Override
-    protected void setInvStackList(DefaultedList<ItemStack> list) {
-        this.inventory = list;
+    protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+        this.inventory = inventory;
     }
-
+    
     protected void playSound(SoundEvent soundEvent) {
         playSound(soundEvent, 1.0F);
     }
@@ -176,16 +178,16 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
     @Override
     public boolean isEmpty() {
-        return this.getInvStackList().stream().allMatch(ItemStack::isEmpty);
+        return this.getHeldStacks().stream().allMatch(ItemStack::isEmpty);
     }
 
     @Override
     public void checkLootInteraction(@Nullable PlayerEntity player) {
         // only players can generate container loot
-        if (player != null && this.lootTableId != null && this.world != null && this.world.getServer() != null && tryGenerateLoot(player)) {
-            LootTable lootTable = this.world.getServer().getLootManager().getLootTable(this.lootTableId);
+        if (player != null && this.lootTable != null && this.world != null && this.world.getServer() != null && tryGenerateLoot(player)) {
+            LootTable lootTable = this.world.getServer().getReloadableRegistries().getLootTable(this.lootTable);
             if (player instanceof ServerPlayerEntity) {
-                Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, this.lootTableId);
+                Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, this.lootTable);
             }
             LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder((ServerWorld)this.world)).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.pos));
             builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);

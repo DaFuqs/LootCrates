@@ -27,9 +27,9 @@ public abstract class LootCrateBlock extends BlockWithEntity {
     protected LootCrateBlock(Settings settings) {
         super(settings);
     }
-
+    
     @Override
-    public ActionResult onUse(BlockState state, @NotNull World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             lootCrateBlockEntity.relockIfNecessary(player);
@@ -64,11 +64,6 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 
     protected static LootCrateRarity getCrateRarity(Block block) {
         return LootCrateAtlas.getCrateRarity(block);
-    }
-
-    @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-        return false;
     }
     
     @Override
@@ -109,15 +104,15 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         return 0;
     }
 
-    @Override
+    /*@Override
     public void onPlaced(@NotNull World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof LootCrateBlockEntity) {
+        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
             if (itemStack.hasCustomName()) {
                 ((LootCrateBlockEntity) blockEntity).setCustomName(itemStack.getName());
             }
         }
-    }
+    }*/
 
     @Override
     public void scheduledTick(BlockState state, @NotNull ServerWorld world, BlockPos pos, Random random) {
@@ -199,9 +194,9 @@ public abstract class LootCrateBlock extends BlockWithEntity {
         if(lootCrateBlockEntity != null) {
             ItemStack itemStack = new ItemStack(this);
 
-            if (lootCrateBlockEntity.hasCustomName()) {
+            /*if (lootCrateBlockEntity.hasCustomName()) {
                 itemStack.setCustomName(lootCrateBlockEntity.getCustomName());
-            }
+            }*/
 
             NbtCompound compoundTag = lootCrateBlockEntity.putLootCrateBlockTags(new NbtCompound());
             if (!compoundTag.isEmpty()) {
@@ -232,7 +227,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 
     protected abstract BlockBreakAction getBlockBreakAction();
 
-    @Override
+    /*@Override
     @Environment(EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         ItemStack itemStack = super.getPickStack(world, pos, state);
@@ -249,7 +244,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
             }
         }
         return itemStack;
-    }
+    }*/
 
     protected void playSound(@NotNull World world, @NotNull BlockPos blockPos, SoundEvent soundEvent) {
         double d = blockPos.getX() + 0.5D;

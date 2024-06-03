@@ -11,15 +11,15 @@ import java.util.*;
 
 public class LootKeyItem extends Item {
 
-    public LootKeyItem(FabricItemSettings fabricItemSettings) {
-        super(fabricItemSettings);
+    public LootKeyItem(Item.Settings settings) {
+        super(settings);
     }
-
+    
     @Override
-    public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
-        super.appendTooltip(itemStack, world, tooltip, tooltipContext);
-
-        tooltip.add(LootCrateAtlas.getLootKeyItemToolTip(itemStack));
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
+        
+        tooltip.add(LootCrateAtlas.getLootKeyItemToolTip(stack));
     }
 
 }
