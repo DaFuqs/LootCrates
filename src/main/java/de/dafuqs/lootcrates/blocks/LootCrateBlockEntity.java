@@ -2,7 +2,7 @@ package de.dafuqs.lootcrates.blocks;
 
 import de.dafuqs.lootcrates.*;
 import de.dafuqs.lootcrates.blocks.chest.*;
-import de.dafuqs.lootcrates.blocks.modes.*;
+import de.dafuqs.lootcrates.components.*;
 import de.dafuqs.lootcrates.enums.*;
 import de.dafuqs.lootcrates.items.*;
 import net.minecraft.advancement.criterion.*;
@@ -32,9 +32,9 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     
     protected DefaultedList<ItemStack> inventory;
 
-    private LockMode lockMode;
-    private ReplenishMode replenishMode;
-    private InventoryDeletionMode inventoryDeletionMode;
+    private LootCrateLootComponent.LockMode lockMode;
+    private LootCrateLootComponent.ReplenishTimeScale replenishTimeScale;
+    private LootCrateLootComponent.InventoryDeletionMode inventoryDeletionMode;
     private boolean trapped;
     private long replenishTimeTicks;
     private boolean trackedPerPlayer;
@@ -49,9 +49,9 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
         
-        this.lockMode = LockMode.NONE;
-        this.replenishMode = ReplenishMode.NEVER;
-        this.inventoryDeletionMode = InventoryDeletionMode.NEVER;
+        this.lockMode = LootCrateLootComponent.LockMode.NOT_LOCKED;
+        this.replenishTimeScale = LootCrateLootComponent.ReplenishTimeScale.NEVER;
+        this.inventoryDeletionMode = LootCrateLootComponent.InventoryDeletionMode.NEVER;
         this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
     }
     
@@ -120,14 +120,14 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     
     public boolean tryGenerateLoot(PlayerEntity player) {
         boolean inventoryCleared = false;
-        if(inventoryDeletionMode == InventoryDeletionMode.ON_OPEN) {
+        if(inventoryDeletionMode == LootCrateLootComponent.InventoryDeletionMode.ON_OPEN) {
             this.clear();
             inventoryCleared = true;
         }
         
         boolean canGenerateNewLoot = canReplenish(player);
         if(canGenerateNewLoot) {
-            if(!inventoryCleared && inventoryDeletionMode == InventoryDeletionMode.WHEN_REPLENISHED) {
+            if(!inventoryCleared && inventoryDeletionMode == LootCrateLootComponent.InventoryDeletionMode.WHEN_REPLENISHED) {
                 this.clear();
             }
     
@@ -137,7 +137,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
     }
     
     private void setReplenishTimeToNow(PlayerEntity player) {
-        long time = this.replenishMode.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
+        long time = this.replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
         
         if(trackedPerPlayer) {
             if(this.playerCrateData.containsKey(player.getUuid())) {
@@ -162,17 +162,17 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             if(playerCrateDataOptional.isEmpty()) {
                 return true;
             } else {
-                return canReplenish(world, playerCrateDataOptional, replenishMode, replenishTimeTicks);
+                return canReplenish(world, playerCrateDataOptional, replenishTimeScale, replenishTimeTicks);
             }
         }
         return false;
     }
     
-    public static boolean canReplenish(World world, Optional<PlayerCrateData> playerCrateData, ReplenishMode replenishMode, long replenishTimeTicks) {
+    public static boolean canReplenish(World world, Optional<PlayerCrateData> playerCrateData, LootCrateLootComponent.ReplenishTimeScale replenishTimeScale, long replenishTimeTicks) {
         if(playerCrateData.isEmpty()) {
             return true;
         } else {
-            return replenishMode.canReplenish(world, playerCrateData, replenishTimeTicks);
+            return replenishTimeScale.canReplenish(world, playerCrateData, replenishTimeTicks);
         }
     }
 
@@ -213,7 +213,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         }
         
         tag.putString(LootCrateTagNames.LockMode.toString(), this.lockMode.toString());
-        tag.putString(LootCrateTagNames.ReplenishMode.toString(), this.replenishMode.toString());
+        tag.putString(LootCrateTagNames.ReplenishMode.toString(), this.replenishTimeScale.toString());
         tag.putString(LootCrateTagNames.InventoryDeletionMode.toString(), this.inventoryDeletionMode.toString());
         tag.putBoolean(LootCrateTagNames.Trapped.toString(), this.trapped);
         tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
@@ -248,24 +248,24 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         this.trapped = tag.contains(LootCrateTagNames.Trapped.toString()) && tag.getBoolean(LootCrateTagNames.Trapped.toString());
     
         if(tag.contains(LootCrateTagNames.LockMode.toString())) {
-            this.lockMode = LockMode.valueOf(tag.getString(LootCrateTagNames.LockMode.toString()).toUpperCase(Locale.ROOT));
+            this.lockMode = LootCrateLootComponent.LockMode.valueOf(tag.getString(LootCrateTagNames.LockMode.toString()).toUpperCase(Locale.ROOT));
         } else {
-            this.lockMode = LockMode.NONE;
+            this.lockMode = LootCrateLootComponent.LockMode.NOT_LOCKED;
         }
         if(tag.contains(LootCrateTagNames.ReplenishMode.toString())) {
-            this.replenishMode = ReplenishMode.valueOf(tag.getString(LootCrateTagNames.ReplenishMode.toString()).toUpperCase(Locale.ROOT));
+            this.replenishTimeScale = LootCrateLootComponent.ReplenishTimeScale.valueOf(tag.getString(LootCrateTagNames.ReplenishMode.toString()).toUpperCase(Locale.ROOT));
         } else {
-            this.replenishMode = ReplenishMode.NEVER;
+            this.replenishTimeScale = LootCrateLootComponent.ReplenishTimeScale.NEVER;
         }
         if(tag.contains(LootCrateTagNames.InventoryDeletionMode.toString())) {
-            this.inventoryDeletionMode = InventoryDeletionMode.valueOf(tag.getString(LootCrateTagNames.InventoryDeletionMode.toString()).toUpperCase(Locale.ROOT));
+            this.inventoryDeletionMode = LootCrateLootComponent.InventoryDeletionMode.valueOf(tag.getString(LootCrateTagNames.InventoryDeletionMode.toString()).toUpperCase(Locale.ROOT));
         } else {
-            this.inventoryDeletionMode = InventoryDeletionMode.NEVER;
+            this.inventoryDeletionMode = LootCrateLootComponent.InventoryDeletionMode.NEVER;
         }
     }
     
-    public void setData(ReplenishMode replenishMode, int replenishTimeTicks, boolean trackedPerPlayer, LockMode lockMode, InventoryDeletionMode inventoryDeletionMode, boolean trapped) {
-        this.replenishMode = replenishMode;
+    public void setData(LootCrateLootComponent.ReplenishTimeScale replenishTimeScale, int replenishTimeTicks, boolean trackedPerPlayer, LootCrateLootComponent.LockMode lockMode, LootCrateLootComponent.InventoryDeletionMode inventoryDeletionMode, boolean trapped) {
+        this.replenishTimeScale = replenishTimeScale;
         this.replenishTimeTicks = replenishTimeTicks;
         this.trackedPerPlayer = trackedPerPlayer;
         this.lockMode = lockMode;
@@ -294,16 +294,16 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 
     public void relockIfNecessary(PlayerEntity player) {
         Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
-        if(shouldRelock(world, replenishMode, replenishTimeTicks, lockMode, playerCrateDataOptional)) {
+        if(shouldRelock(world, replenishTimeScale, replenishTimeTicks, lockMode, playerCrateDataOptional)) {
             playerCrateDataOptional.get().unlockTime = -1;
             this.markDirty();
         }
     }
     
-    public static boolean shouldRelock(World world, ReplenishMode replenishMode, long replenishTimeTicks, LockMode lockMode, Optional<PlayerCrateData> playerCrateData) {
+    public static boolean shouldRelock(World world, LootCrateLootComponent.ReplenishTimeScale replenishTimeScale, long replenishTimeTicks, LootCrateLootComponent.LockMode lockMode, Optional<PlayerCrateData> playerCrateData) {
         if (lockMode.relocks()) {
             if(playerCrateData.isPresent()) {
-                return playerCrateData.get().unlockTime < playerCrateData.get().replenishTime && LootCrateBlockEntity.canReplenish(world, playerCrateData, replenishMode, replenishTimeTicks);
+                return playerCrateData.get().unlockTime < playerCrateData.get().replenishTime && LootCrateBlockEntity.canReplenish(world, playerCrateData, replenishTimeScale, replenishTimeTicks);
             }
         }
         return false;
@@ -331,7 +331,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
         return false;
     }
 
-    public LockMode getLockType() {
+    public LootCrateLootComponent.LockMode getLockType() {
         return this.lockMode;
     }
 
@@ -342,7 +342,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
             PlayerCrateData playerCrateData = optionalPlayerCrateData.get();
             playerCrateData.unlockTime = world.getTime();
         } else {
-            long time = this.replenishMode.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
+            long time = this.replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
             if (trackedPerPlayer) {
                 playerCrateData.put(player.getUuid(), new PlayerCrateData(-1, time));
             } else {

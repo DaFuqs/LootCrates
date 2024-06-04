@@ -4,13 +4,12 @@ import com.google.common.collect.*;
 import de.dafuqs.lootcrates.blocks.*;
 import de.dafuqs.lootcrates.blocks.barrel.*;
 import de.dafuqs.lootcrates.blocks.chest.*;
-import de.dafuqs.lootcrates.blocks.modes.*;
 import de.dafuqs.lootcrates.blocks.shulker.*;
+import de.dafuqs.lootcrates.components.*;
 import de.dafuqs.lootcrates.enums.*;
 import de.dafuqs.lootcrates.items.*;
 import net.fabricmc.api.*;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.*;
-import net.fabricmc.fabric.api.item.v1.*;
 import net.minecraft.block.*;
 import net.minecraft.block.dispenser.*;
 import net.minecraft.block.entity.*;
@@ -170,7 +169,7 @@ public class LootCrateAtlas {
         }
     }
 
-    public static Text getItemLockedTooltip(ItemStack itemStack, LockMode lockMode) {
+    public static Text getItemLockedTooltip(ItemStack itemStack, LootCrateLootComponent.LockMode lockMode) {
         LootCrateRarity itemRarity = getCrateItemRarity((LootCrateItem) itemStack.getItem());
 
         if (lockMode.consumesKey()) {

@@ -2,7 +2,7 @@ package de.dafuqs.lootcrates.items;
 
 import de.dafuqs.lootcrates.*;
 import de.dafuqs.lootcrates.blocks.*;
-import de.dafuqs.lootcrates.blocks.modes.*;
+import de.dafuqs.lootcrates.components.*;
 import de.dafuqs.lootcrates.enums.*;
 import net.fabricmc.api.*;
 import net.minecraft.block.*;
@@ -11,13 +11,10 @@ import net.minecraft.client.item.*;
 import net.minecraft.component.*;
 import net.minecraft.component.type.*;
 import net.minecraft.entity.player.*;
-import net.minecraft.inventory.*;
 import net.minecraft.item.*;
 import net.minecraft.nbt.*;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
-import net.minecraft.util.collection.*;
-import net.minecraft.world.*;
 import org.jetbrains.annotations.*;
 
 import java.time.*;
@@ -47,10 +44,10 @@ public class LootCrateItem extends BlockItem {
             boolean trackedPerPlayer = isTrackedPerPlayer(compound);
             Optional<PlayerCrateData> playerCrateData = getPlayerCrateData(compound, MinecraftClient.getInstance().player, trackedPerPlayer);
             
-            ReplenishMode replenishMode = getReplenishMode(compound);
+            LootCrateLootComponent.ReplenishTimeScale replenishTimeScale = getReplenishMode(compound);
             long replenishTimeTicks = getReplenishTimeTicks(compound);
             
-            if(playerCrateData.isEmpty() || playerCrateData.get().replenishTime < 0 || replenishMode.canReplenish(world, playerCrateData, replenishTimeTicks)) {
+            if(playerCrateData.isEmpty() || playerCrateData.get().replenishTime < 0 || replenishTimeScale.canReplenish(world, playerCrateData, replenishTimeTicks)) {
                 tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.contains_loot"));
             } else {
                 if(trackedPerPlayer) {
@@ -60,12 +57,12 @@ public class LootCrateItem extends BlockItem {
                 }
             }
             
-            LockMode lockMode = getLockMode(compound);
+            LootCrateLootComponent.LockMode lockMode = getLockMode(compound);
             if(!lockMode.isUnlocked(playerCrateData)) {
                 tooltip.add(LootCrateAtlas.getItemLockedTooltip(stack, lockMode));
             }
             
-            switch (replenishMode) {
+            switch (replenishTimeScale) {
                 case HOURLY -> {
                     tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_hourly"));
                 }
@@ -78,13 +75,13 @@ public class LootCrateItem extends BlockItem {
                 case MONTHLY -> {
                     tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_monthly"));
                 }
-                case GAME_TIME -> {
+                case TICKS -> {
                     Text text = getReplenishTimeGameTimeHumanReadableText(replenishTimeTicks);
                     if(text != null) {
                         tooltip.add(text);
                     }
                 }
-                case REAL_TIME -> {
+                case SECONDS -> {
                     Text text = getReplenishTimeRealTimeHumanReadableText(replenishTimeTicks);
                     if(text != null) {
                         tooltip.add(text);
@@ -98,7 +95,7 @@ public class LootCrateItem extends BlockItem {
                 tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.relocks"));
             }
             
-            InventoryDeletionMode inventoryDeletionMode = getInventoryDeletionMode(compound);
+            LootCrateLootComponent.InventoryDeletionMode inventoryDeletionMode = getInventoryDeletionMode(compound);
             switch (inventoryDeletionMode) {
                 case ON_OPEN -> {
                     tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.inventory_deletes_on_open"));
@@ -157,36 +154,36 @@ public class LootCrateItem extends BlockItem {
     }
     
     @NotNull
-    public static InventoryDeletionMode getInventoryDeletionMode(@NotNull NbtCompound compound) {
-        InventoryDeletionMode inventoryDeletionMode = InventoryDeletionMode.NEVER;
+    public static LootCrateLootComponent.InventoryDeletionMode getInventoryDeletionMode(@NotNull NbtCompound compound) {
+        LootCrateLootComponent.InventoryDeletionMode inventoryDeletionMode = LootCrateLootComponent.InventoryDeletionMode.NEVER;
         if (compound.contains(LootCrateTagNames.InventoryDeletionMode.toString())) {
             try {
-                inventoryDeletionMode = InventoryDeletionMode.valueOf(compound.getString(LootCrateTagNames.InventoryDeletionMode.toString()));
+                inventoryDeletionMode = LootCrateLootComponent.InventoryDeletionMode.valueOf(compound.getString(LootCrateTagNames.InventoryDeletionMode.toString()));
             } catch (IllegalArgumentException ignored) { } // nonexistent value
         }
         return inventoryDeletionMode;
     }
     
     @NotNull
-    public static LockMode getLockMode(@NotNull NbtCompound compound) {
-        LockMode lockMode = LockMode.NONE; // DONE
+    public static LootCrateLootComponent.LockMode getLockMode(@NotNull NbtCompound compound) {
+        LootCrateLootComponent.LockMode lockMode = LootCrateLootComponent.LockMode.NOT_LOCKED; // DONE
         if (compound.contains(LootCrateTagNames.LockMode.toString())) {
             try {
-                lockMode = LockMode.valueOf(compound.getString(LootCrateTagNames.LockMode.toString()));
+                lockMode = LootCrateLootComponent.LockMode.valueOf(compound.getString(LootCrateTagNames.LockMode.toString()));
             } catch (IllegalArgumentException ignored) { } // nonexistent value
         }
         return lockMode;
     }
     
     @NotNull
-    public static ReplenishMode getReplenishMode(@NotNull NbtCompound compound) {
-        ReplenishMode replenishMode = ReplenishMode.NEVER;
+    public static LootCrateLootComponent.ReplenishTimeScale getReplenishMode(@NotNull NbtCompound compound) {
+        LootCrateLootComponent.ReplenishTimeScale replenishTimeScale = LootCrateLootComponent.ReplenishTimeScale.NEVER;
         if (compound.contains(LootCrateTagNames.ReplenishMode.toString())) {
             try {
-                replenishMode = ReplenishMode.valueOf(compound.getString(LootCrateTagNames.ReplenishMode.toString()));
+                replenishTimeScale = LootCrateLootComponent.ReplenishTimeScale.valueOf(compound.getString(LootCrateTagNames.ReplenishMode.toString()));
             } catch (IllegalArgumentException ignored) { } // nonexistent value
         }
-        return replenishMode;
+        return replenishTimeScale;
     }
     
     public static boolean isTrackedPerPlayer(@NotNull NbtCompound compound) {
@@ -215,8 +212,8 @@ public class LootCrateItem extends BlockItem {
         setUnlockTime(itemStack, player, trackedPerPlayer, -1);
     }
     
-    public static void unlockForPlayer(ItemStack itemStack, PlayerEntity player, boolean trackedPerPlayer, @NotNull ReplenishMode replenishMode) {
-        long time = replenishMode.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : player.getWorld().getTime();
+    public static void unlockForPlayer(ItemStack itemStack, PlayerEntity player, boolean trackedPerPlayer, @NotNull LootCrateLootComponent.ReplenishTimeScale replenishTimeScale) {
+        long time = replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : player.getWorld().getTime();
         setUnlockTime(itemStack, player, trackedPerPlayer, time);
     }
     
@@ -271,8 +268,8 @@ public class LootCrateItem extends BlockItem {
         }
     }
     
-    public static void setReplenishedForPlayer(ItemStack itemStack, PlayerEntity player, boolean trackedPerPlayer, @NotNull ReplenishMode replenishMode) {
-        long time = replenishMode.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : player.getWorld().getTime();
+    public static void setReplenishedForPlayer(ItemStack itemStack, PlayerEntity player, boolean trackedPerPlayer, @NotNull LootCrateLootComponent.ReplenishTimeScale replenishTimeScale) {
+        long time = replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : player.getWorld().getTime();
         setReplenishTime(itemStack, player, trackedPerPlayer, time);
     }
     

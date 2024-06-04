@@ -1,7 +1,6 @@
 package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.blocks.*;
-import de.dafuqs.lootcrates.blocks.modes.*;
 import de.dafuqs.lootcrates.components.*;
 import de.dafuqs.lootcrates.config.*;
 import de.dafuqs.lootcrates.enums.*;
@@ -83,22 +82,22 @@ public class LootCrates implements ModInitializer {
         for (RegistryKey<LootTable> lootTableKeys : allLootTables) {
             Identifier lootTableId = lootTableKeys.getValue();
             if(lootTableId.getNamespace().equals("minecraft") && lootTableId.getPath().startsWith("chests/")) { // to reduce the lists size. These are just examples, after all
-                for (LockMode lockMode : LockMode.values()) {
+                for (LootCrateLootComponent.LockMode lockMode : LootCrateLootComponent.LockMode.values()) {
                     for (boolean trackedPerPlayer : booleans) {
-                        for (ReplenishMode replenishMode : ReplenishMode.values()) {
-                            if(lockMode.relocks() && replenishMode == ReplenishMode.NEVER) {
+                        for (LootCrateLootComponent.ReplenishTimeScale replenishTimeScale : LootCrateLootComponent.ReplenishTimeScale.values()) {
+                            if(lockMode.relocks() && replenishTimeScale == LootCrateLootComponent.ReplenishTimeScale.NEVER) {
                                 continue; // there is nothing to relock
                             }
                             
-                            if(replenishMode.requiresTickData) {
+                            if(replenishTimeScale.requiresTickData) {
                                 for (Long replenishTimeTicks : replenishTimeTicksValues) {
                                     ItemStack itemStack = new ItemStack(lootCrateItem);
-                                    LootCrateLootComponent lootComponent = new LootCrateLootComponent(lootTableId, lockMode, replenishMode, InventoryDeletionMode.NEVER, replenishTimeTicks, trackedPerPlayer, false);
+                                    LootCrateLootComponent lootComponent = new LootCrateLootComponent(lootTableId, lockMode, replenishTimeScale, LootCrateLootComponent.InventoryDeletionMode.NEVER, replenishTimeTicks, trackedPerPlayer, false);
                                     itemStack.set(LootCrateDataComponentTypes.LOOT_CRATE_LOOT, lootComponent);
                                     stacks.add(itemStack);
                                 }
                             } else {
-                                LootCrateLootComponent lootComponent = new LootCrateLootComponent(lootTableId, lockMode, replenishMode, InventoryDeletionMode.NEVER, 0, trackedPerPlayer, false);
+                                LootCrateLootComponent lootComponent = new LootCrateLootComponent(lootTableId, lockMode, replenishTimeScale, LootCrateLootComponent.InventoryDeletionMode.NEVER, 0, trackedPerPlayer, false);
                                 ItemStack itemStack = new ItemStack(lootCrateItem);
                                 itemStack.set(LootCrateDataComponentTypes.LOOT_CRATE_LOOT, lootComponent);
                                 stacks.add(itemStack);
@@ -198,10 +197,11 @@ public class LootCrates implements ModInitializer {
         Registry.register(Registries.SOUND_EVENT, CHEST_UNLOCKS_SOUND_ID, CHEST_UNLOCKS_SOUND_EVENT);
         
         LOGGER.info("Loading LootCratesWorldgenSettings.json and registering the replacer");
-        LootCratesWorldgenReplacer.initialize();
         if(CONFIG.ReplaceVanillaWorldgenChests) {
             ServerTickEvents.END_SERVER_TICK.register(LootCratesWorldgenReplacer::tick);
         }
+        
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> LootCratesWorldgenReplacer.initialize(server.getOverworld()));
 
         Registry.register(Registries.ITEM_GROUP, new Identifier(MOD_ID, "loot_crates"), ITEM_GROUP);
         Registry.register(Registries.ITEM_GROUP, new Identifier(MOD_ID, "predefined_loot_crates"), PREDEFINED_CRATES_GROUP);
