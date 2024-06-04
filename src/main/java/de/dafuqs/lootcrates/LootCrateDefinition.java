@@ -2,7 +2,6 @@ package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.enums.*;
 import net.fabricmc.api.*;
-import net.fabricmc.fabric.api.item.v1.*;
 import net.fabricmc.fabric.api.object.builder.v1.block.*;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.*;
@@ -33,8 +32,8 @@ public class LootCrateDefinition {
 	public SoundEvent customCloseSoundEvent;
 	public ScheduledTickEvent scheduledTickEvent;
 	
-	public LootCrateDefinition(LootCrateRarity lootCrateRarity, Rarity rarity, MapColor mapColor, int luminance, boolean hasTransparency, boolean fireProof) {
-		this.identifier = lootCrateRarity.toString().toLowerCase();
+	public LootCrateDefinition(LootCrateVariant lootCrateVariant, Rarity rarity, MapColor mapColor, int luminance, boolean hasTransparency, boolean fireProof) {
+		this.identifier = lootCrateVariant.toString().toLowerCase();
 		
 		this.hasTransparency = hasTransparency;
 		this.mapColor = mapColor;

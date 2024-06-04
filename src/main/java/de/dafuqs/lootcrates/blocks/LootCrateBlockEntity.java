@@ -29,400 +29,406 @@ import java.time.*;
 import java.util.*;
 
 public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity {
-    
-    protected DefaultedList<ItemStack> inventory;
-
-    private LootCrateLootComponent.LockMode lockMode;
-    private LootCrateLootComponent.ReplenishTimeScale replenishTimeScale;
-    private LootCrateLootComponent.InventoryDeletionMode inventoryDeletionMode;
-    private boolean trapped;
-    private long replenishTimeTicks;
-    private boolean trackedPerPlayer;
-    
-    private ScheduledTickEvent scheduledTickEvent;
-    
-    @Nullable
-    private PlayerCrateData defaultCrateData = null;
-    private HashMap<UUID, PlayerCrateData> playerCrateData = new HashMap<>();
-
-    
-    protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
-        super(blockEntityType, blockPos, blockState);
-        
-        this.lockMode = LootCrateLootComponent.LockMode.NOT_LOCKED;
-        this.replenishTimeScale = LootCrateLootComponent.ReplenishTimeScale.NEVER;
-        this.inventoryDeletionMode = LootCrateLootComponent.InventoryDeletionMode.NEVER;
-        this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
-    }
-    
-    @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        
-        Inventories.writeNbt(nbt, this.inventory, registryLookup);
-        putLootCrateBlockTags(nbt);
-    }
-    
-    @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        
-        this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        if(nbt.contains("Items", 9)) {
-            Inventories.readNbt(nbt, this.inventory, registryLookup);
-        }
-        
-        setLootCrateBlockTags(nbt);
-        
-    }
-    
-    @Override
-    public int size() {
-        return this.inventory.size();
-    }
-    
-    @Override
-    protected DefaultedList<ItemStack> getHeldStacks() {
-        return this.inventory;
-    }
-    
-    @Override
-    protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
-        this.inventory = inventory;
-    }
-    
-    protected void playSound(SoundEvent soundEvent) {
-        playSound(soundEvent, 1.0F);
-    }
-
-    protected void playSound(SoundEvent soundEvent, float volume) {
-        if(hasWorld()) {
-            double d = (double) this.pos.getX() + 0.5D;
-            double e = (double) this.pos.getY() + 0.5D;
-            double f = (double) this.pos.getZ() + 0.5D;
-            this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F * volume, this.world.random.nextFloat() * 0.1F + 0.9F);
-        }
-    }
-    
-    public Optional<PlayerCrateData> getPlayerCrateData(PlayerEntity playerEntity) {
-        if(trackedPerPlayer) {
-            if(playerCrateData.containsKey(playerEntity.getUuid())) {
-                return Optional.of(playerCrateData.get(playerEntity.getUuid()));
-            }
-            return Optional.empty();
-        } else {
-            if(defaultCrateData == null) {
-                return Optional.empty();
-            }
-            return Optional.of(defaultCrateData);
-        }
-    }
-    
-    public boolean tryGenerateLoot(PlayerEntity player) {
-        boolean inventoryCleared = false;
-        if(inventoryDeletionMode == LootCrateLootComponent.InventoryDeletionMode.ON_OPEN) {
-            this.clear();
-            inventoryCleared = true;
-        }
-        
-        boolean canGenerateNewLoot = canReplenish(player);
-        if(canGenerateNewLoot) {
-            if(!inventoryCleared && inventoryDeletionMode == LootCrateLootComponent.InventoryDeletionMode.WHEN_REPLENISHED) {
-                this.clear();
-            }
-    
-            setReplenishTimeToNow(player);
-        }
-        return canGenerateNewLoot;
-    }
-    
-    private void setReplenishTimeToNow(PlayerEntity player) {
-        long time = this.replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
-        
-        if(trackedPerPlayer) {
-            if(this.playerCrateData.containsKey(player.getUuid())) {
-                PlayerCrateData playerCrateData = this.playerCrateData.get(player.getUuid());
-                playerCrateData.replenishTime = time;
-            } else {
-                playerCrateData.put(player.getUuid(), new PlayerCrateData(time, -1));
-            }
-        } else {
-            if(defaultCrateData == null) {
-                defaultCrateData = new PlayerCrateData(time, -1);
-            } else {
-                defaultCrateData.replenishTime = time;
-            }
-        }
-        this.markDirty();
-    }
-    
-    public boolean canReplenish(PlayerEntity player) {
-        if(hasWorld()) {
-            Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
-            if(playerCrateDataOptional.isEmpty()) {
-                return true;
-            } else {
-                return canReplenish(world, playerCrateDataOptional, replenishTimeScale, replenishTimeTicks);
-            }
-        }
-        return false;
-    }
-    
-    public static boolean canReplenish(World world, Optional<PlayerCrateData> playerCrateData, LootCrateLootComponent.ReplenishTimeScale replenishTimeScale, long replenishTimeTicks) {
-        if(playerCrateData.isEmpty()) {
-            return true;
-        } else {
-            return replenishTimeScale.canReplenish(world, playerCrateData, replenishTimeTicks);
-        }
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return this.getHeldStacks().stream().allMatch(ItemStack::isEmpty);
-    }
-
-    @Override
-    public void checkLootInteraction(@Nullable PlayerEntity player) {
-        // only players can generate container loot
-        if (player != null && this.lootTable != null && this.world != null && this.world.getServer() != null && tryGenerateLoot(player)) {
-            LootTable lootTable = this.world.getServer().getReloadableRegistries().getLootTable(this.lootTable);
-            if (player instanceof ServerPlayerEntity) {
-                Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, this.lootTable);
-            }
-            LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder((ServerWorld)this.world)).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.pos));
-            builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
-            lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST), this.lootTableSeed);
-        }
-    }
-
-    public NbtCompound putLootCrateBlockTags(NbtCompound tag) {
-        this.serializeLootTable(tag);
-        
-        tag.putBoolean(LootCrateTagNames.TrackedPerPlayer.toString(), this.trackedPerPlayer);
-        if(this.trackedPerPlayer) {
-            NbtList playerList = new NbtList();
-            for(Map.Entry<UUID, PlayerCrateData> playerCrateData : this.playerCrateData.entrySet()) {
-                playerList.add(playerCrateData.getValue().toCompound(playerCrateData.getKey()));
-            }
-            tag.put("PlayerData", playerList);
-        } else {
-            PlayerCrateData playerCrateData = this.defaultCrateData;
-            if(playerCrateData != null) {
-                tag.put("Data", playerCrateData.toCompound(null));
-            }
-        }
-        
-        tag.putString(LootCrateTagNames.LockMode.toString(), this.lockMode.toString());
-        tag.putString(LootCrateTagNames.ReplenishMode.toString(), this.replenishTimeScale.toString());
-        tag.putString(LootCrateTagNames.InventoryDeletionMode.toString(), this.inventoryDeletionMode.toString());
-        tag.putBoolean(LootCrateTagNames.Trapped.toString(), this.trapped);
-        tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
-        
-        return tag;
-    }
-
-    public void setLootCrateBlockTags(NbtCompound tag) {
-        this.deserializeLootTable(tag);
-        
-        if(tag.contains(LootCrateTagNames.TrackedPerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.TrackedPerPlayer.toString())) {
-            this.trackedPerPlayer = true;
-            this.playerCrateData = new HashMap<>();
-            NbtList nbtList = tag.getList("PlayerData", NbtElement.COMPOUND_TYPE);
-            for(int i = 0; i < nbtList.size(); i++) {
-                Pair<UUID, PlayerCrateData> data = PlayerCrateData.fromCompoundWithUUID(nbtList.getCompound(i));
-                this.playerCrateData.put(data.getLeft(), data.getRight());
-            }
-        } else {
-            this.trackedPerPlayer = false;
-            if(tag.contains("Data", NbtElement.COMPOUND_TYPE)) {
-                this.defaultCrateData = PlayerCrateData.fromCompoundWithoutUUID(tag.getCompound("Data"));
-            }
-        }
-        
-        if(tag.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
-            this.replenishTimeTicks = tag.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
-        } else {
-            this.replenishTimeTicks = -1;
-        }
-        
-        this.trapped = tag.contains(LootCrateTagNames.Trapped.toString()) && tag.getBoolean(LootCrateTagNames.Trapped.toString());
-    
-        if(tag.contains(LootCrateTagNames.LockMode.toString())) {
-            this.lockMode = LootCrateLootComponent.LockMode.valueOf(tag.getString(LootCrateTagNames.LockMode.toString()).toUpperCase(Locale.ROOT));
-        } else {
-            this.lockMode = LootCrateLootComponent.LockMode.NOT_LOCKED;
-        }
-        if(tag.contains(LootCrateTagNames.ReplenishMode.toString())) {
-            this.replenishTimeScale = LootCrateLootComponent.ReplenishTimeScale.valueOf(tag.getString(LootCrateTagNames.ReplenishMode.toString()).toUpperCase(Locale.ROOT));
-        } else {
-            this.replenishTimeScale = LootCrateLootComponent.ReplenishTimeScale.NEVER;
-        }
-        if(tag.contains(LootCrateTagNames.InventoryDeletionMode.toString())) {
-            this.inventoryDeletionMode = LootCrateLootComponent.InventoryDeletionMode.valueOf(tag.getString(LootCrateTagNames.InventoryDeletionMode.toString()).toUpperCase(Locale.ROOT));
-        } else {
-            this.inventoryDeletionMode = LootCrateLootComponent.InventoryDeletionMode.NEVER;
-        }
-    }
-    
-    public void setData(LootCrateLootComponent.ReplenishTimeScale replenishTimeScale, int replenishTimeTicks, boolean trackedPerPlayer, LootCrateLootComponent.LockMode lockMode, LootCrateLootComponent.InventoryDeletionMode inventoryDeletionMode, boolean trapped) {
-        this.replenishTimeScale = replenishTimeScale;
-        this.replenishTimeTicks = replenishTimeTicks;
-        this.trackedPerPlayer = trackedPerPlayer;
-        this.lockMode = lockMode;
-        this.inventoryDeletionMode = inventoryDeletionMode;
-        this.trapped = trapped;
-    }
-    
-    protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
-        if (this.trapped && oldViewerCount != newViewerCount) {
-            Block block = state.getBlock();
-            world.updateNeighborsAlways(pos, block);
-            world.updateNeighborsAlways(pos.down(), block);
-        }
-    }
-
-    @Override
-    protected Text getContainerName() {
-        BlockState state = this.world.getBlockState(this.getPos());
-        Text name = state.getBlock().getName();
-        if(name.getString().startsWith("§")) {
-            return Text.literal(name.getString().substring(2));
-        } else {
-            return name;
-        }
-    }
-
-    public void relockIfNecessary(PlayerEntity player) {
-        Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
-        if(shouldRelock(world, replenishTimeScale, replenishTimeTicks, lockMode, playerCrateDataOptional)) {
-            playerCrateDataOptional.get().unlockTime = -1;
-            this.markDirty();
-        }
-    }
-    
-    public static boolean shouldRelock(World world, LootCrateLootComponent.ReplenishTimeScale replenishTimeScale, long replenishTimeTicks, LootCrateLootComponent.LockMode lockMode, Optional<PlayerCrateData> playerCrateData) {
-        if (lockMode.relocks()) {
-            if(playerCrateData.isPresent()) {
-                return playerCrateData.get().unlockTime < playerCrateData.get().replenishTime && LootCrateBlockEntity.canReplenish(world, playerCrateData, replenishTimeScale, replenishTimeTicks);
-            }
-        }
-        return false;
-    }
-
-    public boolean isUnlocked(PlayerEntity player) {
-        Optional<PlayerCrateData> optionalPlayerCrateData = getPlayerCrateData(player);
-        return lockMode.isUnlocked(optionalPlayerCrateData);
-    }
-
-    public boolean isTrapped() {
-        return this.trapped;
-    }
-
-    public boolean doesItemUnlock(Item item) {
-        if(world != null && item instanceof LootKeyItem) {
-            Optional<LootCrateBlock> block = getBlock();
-            if(block.isPresent()) {
-                LootCrateRarity itemRarity = LootCrateAtlas.getKeyRarity((LootKeyItem) item);
-                LootCrateRarity blockRarity = LootCrateBlock.getCrateRarity(block.get());
-                return itemRarity.equals(blockRarity);
-            }
-        }
-        
-        return false;
-    }
-
-    public LootCrateLootComponent.LockMode getLockType() {
-        return this.lockMode;
-    }
-
-    public void unlock(World world, PlayerEntity player) {
-        Optional<PlayerCrateData> optionalPlayerCrateData = getPlayerCrateData(player);
-        
-        if(optionalPlayerCrateData.isPresent()) {
-            PlayerCrateData playerCrateData = optionalPlayerCrateData.get();
-            playerCrateData.unlockTime = world.getTime();
-        } else {
-            long time = this.replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
-            if (trackedPerPlayer) {
-                playerCrateData.put(player.getUuid(), new PlayerCrateData(-1, time));
-            } else {
-                defaultCrateData = new PlayerCrateData(-1, time);
-            }
-        }
-        
-        this.markDirty();
-        this.playSound(LootCrates.CHEST_UNLOCKS_SOUND_EVENT);
-    }
-
-    public Optional<LootCrateBlock> getBlock() {
-        if(this.world == null) {
-            return Optional.empty();
-        } else {
-            Block block = this.world.getBlockState(this.pos).getBlock();
-            if(block instanceof LootCrateBlock lootCrateBlock) {
-                return Optional.of(lootCrateBlock);
-            } else {
-                return Optional.empty();
-            }
-        }
-    }
-
-    public ScheduledTickEvent getRandomTickEvent() {
-        if(this.scheduledTickEvent == null) {
-            Optional<LootCrateBlock> block = getBlock();
-            block.ifPresent(lootCrateBlock -> scheduledTickEvent = LootCrateAtlas.getRandomTickEvent(lootCrateBlock));
-        }
-        return this.scheduledTickEvent;
-    }
-
-    public void playOpenSoundEffect() {
-        // play default sound
-        if(this instanceof ChestLootCrateBlockEntity) {
-            playSound(SoundEvents.BLOCK_CHEST_OPEN);
-        } else {
-            playSound(SoundEvents.BLOCK_SHULKER_BOX_OPEN);
-        }
-
-        // also play custom sound, if set
-        SoundEvent customSoundEvent = null;
-        Optional<LootCrateBlock> block = getBlock();
-        if(block.isPresent()) {
-            customSoundEvent = LootCrateAtlas.getCustomOpenSoundEvent(block.get());
-        }
-
-        if(customSoundEvent != null) {
-            playSound(customSoundEvent, 0.4F);
-        }
-    }
-
-    public void playCloseSoundEffect() {
-        // play default sound
-        if(this instanceof ChestLootCrateBlockEntity) {
-            playSound(SoundEvents.BLOCK_CHEST_CLOSE);
-        } else {
-            playSound(SoundEvents.BLOCK_SHULKER_BOX_CLOSE);
-        }
-
-        // also play custom sound, if set
-        SoundEvent customSoundEvent = null;
-        Optional<LootCrateBlock> block = getBlock();
-        if(block.isPresent()) {
-            customSoundEvent = LootCrateAtlas.getCustomCloseSoundEvent(block.get());
-        }
-        
-        if(customSoundEvent != null) {
-            playSound(customSoundEvent, 0.4F);
-        }
-    }
-
-    protected static void playSound(@NotNull World world, @NotNull BlockPos pos, BlockState state, SoundEvent soundEvent) {
-        double d = (double)pos.getX() + 0.5D;
-        double e = (double)pos.getY() + 0.5D;
-        double f = (double)pos.getZ() + 0.5D;
-
-        world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
-    }
-
-    public abstract int getCurrentLookingPlayers(BlockView world, BlockPos pos);
-
+	
+	protected DefaultedList<ItemStack> inventory;
+	
+	private LockMode lockMode;
+	private ReplenishTimeScale replenishTimeScale;
+	private InventoryDeletionMode inventoryDeletionMode;
+	private boolean trapped;
+	private long replenishTimeTicks;
+	private boolean trackedPerPlayer;
+	
+	private ScheduledTickEvent scheduledTickEvent;
+	
+	@Nullable
+	private PlayerCrateData defaultCrateData = null;
+	private HashMap<UUID, PlayerCrateData> playerCrateData = new HashMap<>();
+	
+	
+	protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
+		super(blockEntityType, blockPos, blockState);
+		
+		this.lockMode = LockMode.NOT_LOCKED;
+		this.replenishTimeScale = ReplenishTimeScale.NEVER;
+		this.inventoryDeletionMode = InventoryDeletionMode.NEVER;
+		this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
+	}
+	
+	@Override
+	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
+		
+		Inventories.writeNbt(nbt, this.inventory, registryLookup);
+		putLootCrateBlockTags(nbt);
+	}
+	
+	@Override
+	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
+		
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+		if (nbt.contains("Items", 9)) {
+			Inventories.readNbt(nbt, this.inventory, registryLookup);
+		}
+		
+		setLootCrateBlockTags(nbt);
+		
+	}
+	
+	@Override
+	public int size() {
+		return this.inventory.size();
+	}
+	
+	@Override
+	protected DefaultedList<ItemStack> getHeldStacks() {
+		return this.inventory;
+	}
+	
+	@Override
+	protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+		this.inventory = inventory;
+	}
+	
+	protected void playSound(SoundEvent soundEvent) {
+		playSound(soundEvent, 1.0F);
+	}
+	
+	protected void playSound(SoundEvent soundEvent, float volume) {
+		if (hasWorld()) {
+			double d = (double) this.pos.getX() + 0.5D;
+			double e = (double) this.pos.getY() + 0.5D;
+			double f = (double) this.pos.getZ() + 0.5D;
+			this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F * volume, this.world.random.nextFloat() * 0.1F + 0.9F);
+		}
+	}
+	
+	public Optional<PlayerCrateData> getPlayerCrateData(PlayerEntity playerEntity) {
+		if (trackedPerPlayer) {
+			if (playerCrateData.containsKey(playerEntity.getUuid())) {
+				return Optional.of(playerCrateData.get(playerEntity.getUuid()));
+			}
+			return Optional.empty();
+		} else {
+			if (defaultCrateData == null) {
+				return Optional.empty();
+			}
+			return Optional.of(defaultCrateData);
+		}
+	}
+	
+	public boolean tryGenerateLoot(PlayerEntity player) {
+		boolean inventoryCleared = false;
+		if (inventoryDeletionMode == InventoryDeletionMode.ON_OPEN) {
+			this.clear();
+			inventoryCleared = true;
+		}
+		
+		boolean canGenerateNewLoot = canReplenish(player);
+		if (canGenerateNewLoot) {
+			if (!inventoryCleared && inventoryDeletionMode == InventoryDeletionMode.WHEN_REPLENISHED) {
+				this.clear();
+			}
+			
+			setReplenishTimeToNow(player);
+		}
+		return canGenerateNewLoot;
+	}
+	
+	private void setReplenishTimeToNow(PlayerEntity player) {
+		long time = this.replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
+		
+		if (trackedPerPlayer) {
+			if (this.playerCrateData.containsKey(player.getUuid())) {
+				PlayerCrateData playerCrateData = this.playerCrateData.get(player.getUuid());
+				playerCrateData.replenishTime = time;
+			} else {
+				playerCrateData.put(player.getUuid(), new PlayerCrateData(time, -1));
+			}
+		} else {
+			if (defaultCrateData == null) {
+				defaultCrateData = new PlayerCrateData(time, -1);
+			} else {
+				defaultCrateData.replenishTime = time;
+			}
+		}
+		this.markDirty();
+	}
+	
+	public boolean canReplenish(PlayerEntity player) {
+		if (hasWorld()) {
+			Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
+			if (playerCrateDataOptional.isEmpty()) {
+				return true;
+			} else {
+				return canReplenish(world, playerCrateDataOptional, replenishTimeScale, replenishTimeTicks);
+			}
+		}
+		return false;
+	}
+	
+	public static boolean canReplenish(World world, Optional<PlayerCrateData> playerCrateData, ReplenishTimeScale replenishTimeScale, long replenishTimeTicks) {
+		if (playerCrateData.isEmpty()) {
+			return true;
+		} else {
+			return replenishTimeScale.canReplenish(world, playerCrateData, replenishTimeTicks);
+		}
+	}
+	
+	@Override
+	public boolean isEmpty() {
+		return this.getHeldStacks().stream().allMatch(ItemStack::isEmpty);
+	}
+	
+	@Override
+	public void generateLoot(@Nullable PlayerEntity player) {
+		World world = this.getWorld();
+		BlockPos blockPos = this.getPos();
+		RegistryKey<LootTable> registryKey = this.getLootTable();
+		if (registryKey != null && world != null && world.getServer() != null) {
+			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(registryKey);
+			if (player instanceof ServerPlayerEntity) {
+				Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, registryKey);
+			}
+			
+			LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder((ServerWorld)world)).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos));
+			if (player != null) {
+				builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
+			}
+			
+			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST), this.getLootTableSeed());
+		}
+	}
+	
+	public NbtCompound putLootCrateBlockTags(NbtCompound tag) {
+		this.serializeLootTable(tag);
+		
+		tag.putBoolean(LootCrateTagNames.TrackedPerPlayer.toString(), this.trackedPerPlayer);
+		if (this.trackedPerPlayer) {
+			NbtList playerList = new NbtList();
+			for (Map.Entry<UUID, PlayerCrateData> playerCrateData : this.playerCrateData.entrySet()) {
+				playerList.add(playerCrateData.getValue().toCompound(playerCrateData.getKey()));
+			}
+			tag.put("PlayerData", playerList);
+		} else {
+			PlayerCrateData playerCrateData = this.defaultCrateData;
+			if (playerCrateData != null) {
+				tag.put("Data", playerCrateData.toCompound(null));
+			}
+		}
+		
+		tag.putString(LootCrateTagNames.LockMode.toString(), this.lockMode.toString());
+		tag.putString(LootCrateTagNames.ReplenishMode.toString(), this.replenishTimeScale.toString());
+		tag.putString(LootCrateTagNames.InventoryDeletionMode.toString(), this.inventoryDeletionMode.toString());
+		tag.putBoolean(LootCrateTagNames.Trapped.toString(), this.trapped);
+		tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
+		
+		return tag;
+	}
+	
+	public void setLootCrateBlockTags(NbtCompound tag) {
+		this.deserializeLootTable(tag);
+		
+		if (tag.contains(LootCrateTagNames.TrackedPerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.TrackedPerPlayer.toString())) {
+			this.trackedPerPlayer = true;
+			this.playerCrateData = new HashMap<>();
+			NbtList nbtList = tag.getList("PlayerData", NbtElement.COMPOUND_TYPE);
+			for (int i = 0; i < nbtList.size(); i++) {
+				Pair<UUID, PlayerCrateData> data = PlayerCrateData.fromCompoundWithUUID(nbtList.getCompound(i));
+				this.playerCrateData.put(data.getLeft(), data.getRight());
+			}
+		} else {
+			this.trackedPerPlayer = false;
+			if (tag.contains("Data", NbtElement.COMPOUND_TYPE)) {
+				this.defaultCrateData = PlayerCrateData.fromCompoundWithoutUUID(tag.getCompound("Data"));
+			}
+		}
+		
+		if (tag.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
+			this.replenishTimeTicks = tag.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
+		} else {
+			this.replenishTimeTicks = -1;
+		}
+		
+		this.trapped = tag.contains(LootCrateTagNames.Trapped.toString()) && tag.getBoolean(LootCrateTagNames.Trapped.toString());
+		
+		if (tag.contains(LootCrateTagNames.LockMode.toString())) {
+			this.lockMode = LockMode.valueOf(tag.getString(LootCrateTagNames.LockMode.toString()).toUpperCase(Locale.ROOT));
+		} else {
+			this.lockMode = LockMode.NOT_LOCKED;
+		}
+		if (tag.contains(LootCrateTagNames.ReplenishMode.toString())) {
+			this.replenishTimeScale = ReplenishTimeScale.valueOf(tag.getString(LootCrateTagNames.ReplenishMode.toString()).toUpperCase(Locale.ROOT));
+		} else {
+			this.replenishTimeScale = ReplenishTimeScale.NEVER;
+		}
+		if (tag.contains(LootCrateTagNames.InventoryDeletionMode.toString())) {
+			this.inventoryDeletionMode = InventoryDeletionMode.valueOf(tag.getString(LootCrateTagNames.InventoryDeletionMode.toString()).toUpperCase(Locale.ROOT));
+		} else {
+			this.inventoryDeletionMode = InventoryDeletionMode.NEVER;
+		}
+	}
+	
+	public void setData(ReplenishTimeScale replenishTimeScale, int replenishTimeTicks, boolean trackedPerPlayer, LockMode lockMode, InventoryDeletionMode inventoryDeletionMode, boolean trapped) {
+		this.replenishTimeScale = replenishTimeScale;
+		this.replenishTimeTicks = replenishTimeTicks;
+		this.trackedPerPlayer = trackedPerPlayer;
+		this.lockMode = lockMode;
+		this.inventoryDeletionMode = inventoryDeletionMode;
+		this.trapped = trapped;
+	}
+	
+	protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+		if (this.trapped && oldViewerCount != newViewerCount) {
+			Block block = state.getBlock();
+			world.updateNeighborsAlways(pos, block);
+			world.updateNeighborsAlways(pos.down(), block);
+		}
+	}
+	
+	@Override
+	protected Text getContainerName() {
+		BlockState state = this.world.getBlockState(this.getPos());
+		Text name = state.getBlock().getName();
+		if (name.getString().startsWith("§")) {
+			return Text.literal(name.getString().substring(2));
+		} else {
+			return name;
+		}
+	}
+	
+	public void relockIfNecessary(PlayerEntity player) {
+		Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
+		if (shouldRelock(world, replenishTimeScale, replenishTimeTicks, lockMode, playerCrateDataOptional)) {
+			playerCrateDataOptional.get().unlockTime = -1;
+			this.markDirty();
+		}
+	}
+	
+	public static boolean shouldRelock(World world, ReplenishTimeScale replenishTimeScale, long replenishTimeTicks, LockMode lockMode, Optional<PlayerCrateData> playerCrateData) {
+		if (lockMode.relocks()) {
+			if (playerCrateData.isPresent()) {
+				return playerCrateData.get().unlockTime() < playerCrateData.get().replenishTime() && LootCrateBlockEntity.canReplenish(world, playerCrateData, replenishTimeScale, replenishTimeTicks);
+			}
+		}
+		return false;
+	}
+	
+	public boolean isUnlocked(PlayerEntity player) {
+		Optional<PlayerCrateData> optionalPlayerCrateData = getPlayerCrateData(player);
+		return lockMode.isUnlocked(optionalPlayerCrateData);
+	}
+	
+	public boolean isTrapped() {
+		return this.trapped;
+	}
+	
+	public boolean doesItemUnlock(Item item) {
+		if (world != null && item instanceof LootKeyItem) {
+			Optional<LootCrateBlock> block = getBlock();
+			if (block.isPresent()) {
+				LootCrateVariant itemVariant = ((LootKeyItem) item).getVariant();
+				LootCrateVariant blockVariant = block.get().getVariant();
+				return itemVariant.equals(blockVariant);
+			}
+		}
+		
+		return false;
+	}
+	
+	public LockMode getLockType() {
+		return this.lockMode;
+	}
+	
+	public void unlock(World world, PlayerEntity player) {
+		Optional<PlayerCrateData> optionalPlayerCrateData = getPlayerCrateData(player);
+		
+		if (optionalPlayerCrateData.isPresent()) {
+			PlayerCrateData playerCrateData = optionalPlayerCrateData.get();
+			playerCrateData.unlockTime = world.getTime();
+		} else {
+			long time = this.replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
+			if (trackedPerPlayer) {
+				playerCrateData.put(player.getUuid(), new PlayerCrateData(-1, time));
+			} else {
+				defaultCrateData = new PlayerCrateData(-1, time);
+			}
+		}
+		
+		this.markDirty();
+		this.playSound(LootCrates.CHEST_UNLOCKS_SOUND_EVENT);
+	}
+	
+	public Optional<LootCrateBlock> getBlock() {
+		if (this.world == null) {
+			return Optional.empty();
+		} else {
+			Block block = this.world.getBlockState(this.pos).getBlock();
+			if (block instanceof LootCrateBlock lootCrateBlock) {
+				return Optional.of(lootCrateBlock);
+			} else {
+				return Optional.empty();
+			}
+		}
+	}
+	
+	public ScheduledTickEvent getRandomTickEvent() {
+		if (this.scheduledTickEvent == null) {
+			Optional<LootCrateBlock> block = getBlock();
+			block.ifPresent(lootCrateBlock -> scheduledTickEvent = LootCrateAtlas.getRandomTickEvent(lootCrateBlock));
+		}
+		return this.scheduledTickEvent;
+	}
+	
+	public void playOpenSoundEffect() {
+		// play default sound
+		if (this instanceof ChestLootCrateBlockEntity) {
+			playSound(SoundEvents.BLOCK_CHEST_OPEN);
+		} else {
+			playSound(SoundEvents.BLOCK_SHULKER_BOX_OPEN);
+		}
+		
+		// also play custom sound, if set
+		SoundEvent customSoundEvent = null;
+		Optional<LootCrateBlock> block = getBlock();
+		if (block.isPresent()) {
+			customSoundEvent = LootCrateAtlas.getCustomOpenSoundEvent(block.get());
+		}
+		
+		if (customSoundEvent != null) {
+			playSound(customSoundEvent, 0.4F);
+		}
+	}
+	
+	public void playCloseSoundEffect() {
+		// play default sound
+		if (this instanceof ChestLootCrateBlockEntity) {
+			playSound(SoundEvents.BLOCK_CHEST_CLOSE);
+		} else {
+			playSound(SoundEvents.BLOCK_SHULKER_BOX_CLOSE);
+		}
+		
+		// also play custom sound, if set
+		SoundEvent customSoundEvent = null;
+		Optional<LootCrateBlock> block = getBlock();
+		if (block.isPresent()) {
+			customSoundEvent = LootCrateAtlas.getCustomCloseSoundEvent(block.get());
+		}
+		
+		if (customSoundEvent != null) {
+			playSound(customSoundEvent, 0.4F);
+		}
+	}
+	
+	protected static void playSound(@NotNull World world, @NotNull BlockPos pos, BlockState state, SoundEvent soundEvent) {
+		double d = (double) pos.getX() + 0.5D;
+		double e = (double) pos.getY() + 0.5D;
+		double f = (double) pos.getZ() + 0.5D;
+		
+		world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
+	}
+	
+	public abstract int getCurrentLookingPlayers(BlockView world, BlockPos pos);
+	
 }

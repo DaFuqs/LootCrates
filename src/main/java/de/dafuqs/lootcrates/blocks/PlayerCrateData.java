@@ -1,22 +1,22 @@
 package de.dafuqs.lootcrates.blocks;
 
-import net.minecraft.nbt.*;
+import com.mojang.serialization.*;
+import com.mojang.serialization.codecs.*;
 import net.minecraft.util.*;
-import org.jetbrains.annotations.*;
 
 import java.util.*;
 
-public class PlayerCrateData {
+// unlockTime is for the relock to only lock back up when there is new loot to generate
+public record PlayerCrateData(UUID uuid, long replenishTime, long unlockTime) {
 	
-	public long replenishTime;
-	public long unlockTime; // for the relock to only lock back up when there is new loot to generate
+	public static final Codec<PlayerCrateData> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
+			Uuids.CODEC.fieldOf("uuid").forGetter(PlayerCrateData::uuid),
+			Codec.LONG.fieldOf("replenish_time").forGetter(PlayerCrateData::replenishTime),
+			Codec.LONG.fieldOf("unlock_time").forGetter(PlayerCrateData::unlockTime)
+	).apply(instance, PlayerCrateData::new));
 	
-	public PlayerCrateData(long replenishTime, long unlockTime) {
-		this.replenishTime = replenishTime;
-		this.unlockTime = unlockTime;
-	}
 	
-	public NbtCompound toCompound(@Nullable UUID uuid) {
+	/*public NbtCompound toCompound(@Nullable UUID uuid) {
 		NbtCompound nbtCompound = new NbtCompound();
 		if (uuid != null) {
 			nbtCompound.putUuid("UUID", uuid);
@@ -38,19 +38,6 @@ public class PlayerCrateData {
 	@Contract("_ -> new")
 	public static @NotNull PlayerCrateData fromCompoundWithoutUUID(@NotNull NbtCompound nbtCompound) {
 		return new PlayerCrateData(nbtCompound.getLong("ReplenishTime"), nbtCompound.getLong("UnlockTime"));
-	}
-	
-	public static @NotNull Optional<PlayerCrateData> getPlayerSpecificCrateData(NbtCompound nbtCompound, UUID uuid) {
-		if (nbtCompound != null) {
-			NbtList nbtList = nbtCompound.getList("PlayerData", NbtElement.COMPOUND_TYPE);
-			for (int i = 0; i < nbtList.size(); i++) {
-				NbtCompound playerCompound = nbtList.getCompound(i);
-				if (uuid.equals(playerCompound.getUuid("UUID"))) {
-					return Optional.of(PlayerCrateData.fromCompoundWithoutUUID(playerCompound));
-				}
-			}
-		}
-		return Optional.empty();
-	}
+	}*/
 	
 }

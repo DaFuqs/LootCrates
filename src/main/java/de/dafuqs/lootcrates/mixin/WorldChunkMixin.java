@@ -12,8 +12,12 @@ import org.spongepowered.asm.mixin.injection.callback.*;
 @Mixin(WorldChunk.class)
 public class WorldChunkMixin {
 	
-	@Inject(method = "setBlockEntity(Lnet/minecraft/block/entity/BlockEntity;)V",
-			at = @At(target = "Lnet/minecraft/block/entity/BlockEntity;setWorld(Lnet/minecraft/world/World;)V", value = "INVOKE", shift = At.Shift.AFTER)
+	@Inject(
+			method = "setBlockEntity(Lnet/minecraft/block/entity/BlockEntity;)V",
+			at = @At(target = "Lnet/minecraft/block/entity/BlockEntity;setWorld(Lnet/minecraft/world/World;)V",
+					value = "INVOKE",
+					shift = At.Shift.AFTER
+			)
 	)
 	protected void lootCrates$addBlockEntity(BlockEntity blockEntity, CallbackInfo ci) {
 		WorldChunk worldChunk = (WorldChunk) (Object) this;
