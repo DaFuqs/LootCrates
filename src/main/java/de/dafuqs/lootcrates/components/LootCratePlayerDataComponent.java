@@ -18,22 +18,21 @@ public record LootCratePlayerDataComponent(List<PlayerCrateData> playerData) {
 	
 	private static final UUID NO_PLAYER_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 	
-	public static void lockForPlayer(ItemStack stack, PlayerEntity player, boolean trackedPerPlayer) {
-		setUnlockTime(stack, player, trackedPerPlayer, -1);
+	public static LootCratePlayerDataComponent lockForPlayer(@Nullable LootCratePlayerDataComponent playerDataComponent, PlayerEntity player, boolean trackedPerPlayer) {
+		return setUnlockTime(playerDataComponent, player, trackedPerPlayer, -1);
 	}
 	
-	public static void unlockForPlayer(ItemStack stack, PlayerEntity player, boolean trackedPerPlayer, @NotNull ReplenishTimeScale replenishTimeScale) {
+	public static LootCratePlayerDataComponent unlockForPlayer(@Nullable LootCratePlayerDataComponent playerDataComponent, PlayerEntity player, boolean trackedPerPlayer, @NotNull ReplenishTimeScale replenishTimeScale) {
 		long time = replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : player.getWorld().getTime();
-		setUnlockTime(stack, player, trackedPerPlayer, time);
+		return setUnlockTime(playerDataComponent, player, trackedPerPlayer, time);
 	}
 	
-	public static void setReplenishedForPlayer(ItemStack stack, PlayerEntity player, boolean trackedPerPlayer, @NotNull ReplenishTimeScale replenishTimeScale) {
+	public static LootCratePlayerDataComponent setReplenishedForPlayer(@Nullable LootCratePlayerDataComponent playerDataComponent, PlayerEntity player, boolean trackedPerPlayer, @NotNull ReplenishTimeScale replenishTimeScale) {
 		long time = replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : player.getWorld().getTime();
-		setReplenishTime(stack, player, trackedPerPlayer, time);
+		return setReplenishTime(playerDataComponent, player, trackedPerPlayer, time);
 	}
 	
-	private static void setUnlockTime(@NotNull ItemStack stack, PlayerEntity player, boolean trackedPerPlayer, long unlockTime) {
-		@Nullable LootCratePlayerDataComponent playerDataComponent = stack.get(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA);
+	private static LootCratePlayerDataComponent setUnlockTime(@Nullable LootCratePlayerDataComponent playerDataComponent, PlayerEntity player, boolean trackedPerPlayer, long unlockTime) {
 		UUID playerUUID = trackedPerPlayer ? player.getUuid() : NO_PLAYER_UUID;
 		
 		List<PlayerCrateData> newData = new ArrayList<>();
@@ -57,11 +56,10 @@ public record LootCratePlayerDataComponent(List<PlayerCrateData> playerData) {
 		}
 		
 		LootCratePlayerDataComponent newPlayerDataComponent = new LootCratePlayerDataComponent(newData);
-		stack.set(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newPlayerDataComponent);
+		return newPlayerDataComponent;
 	}
 	
-	public static void setReplenishTime(@NotNull ItemStack stack, PlayerEntity player, boolean trackedPerPlayer, long replenishTime) {
-		@Nullable LootCratePlayerDataComponent playerDataComponent = stack.get(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA);
+	public static LootCratePlayerDataComponent setReplenishTime(@Nullable LootCratePlayerDataComponent playerDataComponent, PlayerEntity player, boolean trackedPerPlayer, long replenishTime) {
 		UUID playerUUID = trackedPerPlayer ? player.getUuid() : NO_PLAYER_UUID;
 		
 		List<PlayerCrateData> newData = new ArrayList<>();
@@ -84,8 +82,7 @@ public record LootCratePlayerDataComponent(List<PlayerCrateData> playerData) {
 			newData.add(new PlayerCrateData(playerUUID, replenishTime, foundEntry.unlockTime()));
 		}
 		
-		LootCratePlayerDataComponent newPlayerDataComponent = new LootCratePlayerDataComponent(newData);
-		stack.set(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newPlayerDataComponent);
+		return new LootCratePlayerDataComponent(newData);
 	}
 	
 	

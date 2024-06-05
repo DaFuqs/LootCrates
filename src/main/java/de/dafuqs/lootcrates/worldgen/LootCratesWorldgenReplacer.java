@@ -11,6 +11,7 @@ import de.dafuqs.lootcrates.mixin.*;
 import net.fabricmc.loader.api.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
+import net.minecraft.component.*;
 import net.minecraft.loot.*;
 import net.minecraft.registry.*;
 import net.minecraft.server.*;
@@ -34,19 +35,19 @@ public class LootCratesWorldgenReplacer {
 					"loot_table": "",
 					"entries": [
 						{
-							"crate_rarity": "common",
+							"crate_variant": "common",
 							"tracked_per_player": true,
-							"lock_mode": "none",
+							"lock_mode": "not_locked",
 							"inventory_deletion_mode": "never",
-							"replenish_mode": "never",
+							"replenish_time_scale": "never",
 							"weight": 5
 						},
 						{
-							"crate_rarity": "epic",
+							"crate_variant": "epic",
 							"tracked_per_player": true,
-							"lock_mode": "none",
+							"lock_mode": "not_locked",
 							"inventory_deletion_mode": "never",
-							"replenish_mode": "never",
+							"replenish_time_scale": "never",
 							"weight": 1
 						}
 					]
@@ -54,111 +55,111 @@ public class LootCratesWorldgenReplacer {
 				{
 					"loot_table": "minecraft:chests/bastion_bridge",
 					"entries": [{
-						"crate_rarity": "blaze",
+						"crate_variant": "blaze",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				},
 				{
 					"loot_table": "minecraft:chests/bastion_hoglin_stable",
 					"entries": [{
-						"crate_rarity": "blaze",
+						"crate_variant": "blaze",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				},
 				{
 					"loot_table": "minecraft:chests/bastion_other",
 					"entries": [{
-						"crate_rarity": "blaze",
+						"crate_variant": "blaze",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				},
 				{
 					"loot_table": "minecraft:chests/bastion_treasure",
 					"entries": [{
-						"crate_rarity": "blaze",
+						"crate_variant": "blaze",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				},
 				{
 					"loot_table": "minecraft:chests/buried_treasure",
 					"entries": [{
-						"crate_rarity": "rare",
+						"crate_variant": "rare",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				},
 				{
 					"loot_table": "minecraft:chests/end_city_treasure",
 					"entries": [{
-						"crate_rarity": "epic",
+						"crate_variant": "epic",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				},
 				{
 					"loot_table": "minecraft:chests/simple_dungeon",
 					"entries": [{
-						"crate_rarity": "uncommon",
+						"crate_variant": "uncommon",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				},
 				{
 					"loot_table": "minecraft:chests/stronghold_corridor",
 					"entries": [{
-						"crate_rarity": "uncommon",
+						"crate_variant": "uncommon",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				},
 				{
 					"loot_table": "minecraft:chests/underwater_ruin_big",
 					"entries": [{
-						"crate_rarity": "rare",
+						"crate_variant": "rare",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				},
 				{
 					"loot_table": "minecraft:chests/underwater_ruin_small",
 					"entries": [{
-						"crate_rarity": "rare",
+						"crate_variant": "rare",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				},
 				{
 					"loot_table": "minecraft:chests/woodland_mansion",
 					"entries": [{
-						"crate_rarity": "ghost",
+						"crate_variant": "ghost",
 						"tracked_per_player": true,
-						"lock_mode": "none",
+						"lock_mode": "not_locked",
 						"inventory_deletion_mode": "never",
-						"replenish_mode": "never"
+						"replenish_time_scale": "never"
 					}]
 				}
 			]""";
@@ -207,51 +208,55 @@ public class LootCratesWorldgenReplacer {
 			JsonArray weightedEntries = JsonHelper.getArray(currentEntry, "entries");
 			int totalWeight = 0;
 			List<LootCrateReplacementEntry> lootCrateEntries = new ArrayList<>();
-			for (int j = 0; j < weightedEntries.size(); j++) {
-				JsonObject targetEntry = (JsonObject) weightedEntries.get(j);
-				
-				LootCrateVariant lootCrateVariant = LootCrateVariant.COMMON;
-				Identifier lootTable = null; // null => keep the original loot table
-				boolean trackedPerPlayer = false;
-				int replenishTimeTicks = -1;
-				LockMode lockMode = LockMode.NOT_LOCKED;
-				ReplenishTimeScale replenishTimeScale = ReplenishTimeScale.NEVER;
-				InventoryDeletionMode inventoryDeletionMode = InventoryDeletionMode.NEVER;
-				int weight = 1;
-				
-				if (JsonHelper.hasString(targetEntry, "crate_rarity")) {
-					lootCrateVariant = LootCrateVariant.valueOf(JsonHelper.getString(targetEntry, "crate_rarity").toUpperCase(Locale.ROOT));
+			
+			try {
+				for (int j = 0; j < weightedEntries.size(); j++) {
+					JsonObject targetEntry = (JsonObject) weightedEntries.get(j);
+					
+					LootCrateVariant lootCrateVariant = LootCrateVariant.COMMON;
+					Identifier lootTable = null; // null => keep the original loot table
+					boolean trackedPerPlayer = false;
+					int replenishTimeTicks = -1;
+					LockMode lockMode = LockMode.NOT_LOCKED;
+					ReplenishTimeScale replenishTimeScale = ReplenishTimeScale.NEVER;
+					InventoryDeletionMode inventoryDeletionMode = InventoryDeletionMode.NEVER;
+					int weight = 1;
+					
+					if (JsonHelper.hasString(targetEntry, "crate_variant")) {
+						lootCrateVariant = LootCrateVariant.valueOf(JsonHelper.getString(targetEntry, "crate_variant").toUpperCase(Locale.ROOT));
+					}
+					if (JsonHelper.hasString(targetEntry, "loot_table")) {
+						lootTable = Identifier.tryParse(JsonHelper.getString(targetEntry, "loot_table"));
+					}
+					if (JsonHelper.hasBoolean(targetEntry, "tracked_per_player")) {
+						trackedPerPlayer = JsonHelper.getBoolean(targetEntry, "tracked_per_player");
+					}
+					if (JsonHelper.hasNumber(targetEntry, "replenish_time_ticks")) {
+						replenishTimeTicks = JsonHelper.getInt(targetEntry, "replenish_time_ticks");
+					}
+					if (JsonHelper.hasString(targetEntry, "replenish_time_scale")) {
+						replenishTimeScale = ReplenishTimeScale.valueOf(JsonHelper.getString(targetEntry, "replenish_time_scale").toUpperCase(Locale.ROOT));
+					}
+					if (JsonHelper.hasString(targetEntry, "lock_mode")) {
+						lockMode = LockMode.valueOf(JsonHelper.getString(targetEntry, "lock_mode").toUpperCase(Locale.ROOT));
+					}
+					if (JsonHelper.hasString(targetEntry, "inventory_deletion_mode")) {
+						inventoryDeletionMode = InventoryDeletionMode.valueOf(JsonHelper.getString(targetEntry, "inventory_deletion_mode").toUpperCase(Locale.ROOT));
+					}
+					if (JsonHelper.hasNumber(targetEntry, "weight")) {
+						weight = JsonHelper.getInt(targetEntry, "weight");
+					}
+					totalWeight += weight;
+					
+					
+					lootCrateEntries.add(new LootCrateReplacementEntry(lootCrateVariant, RegistryKey.of(RegistryKeys.LOOT_TABLE, lootTable), replenishTimeScale, replenishTimeTicks, lockMode, inventoryDeletionMode, trackedPerPlayer, weight));
 				}
-				if (JsonHelper.hasString(targetEntry, "loot_table")) {
-					lootTable = Identifier.tryParse(JsonHelper.getString(targetEntry, "loot_table"));
-				}
-				if (JsonHelper.hasBoolean(targetEntry, "tracked_per_player")) {
-					trackedPerPlayer = JsonHelper.getBoolean(targetEntry, "tracked_per_player");
-				}
-				if (JsonHelper.hasNumber(targetEntry, "replenish_time_ticks")) {
-					replenishTimeTicks = JsonHelper.getInt(targetEntry, "replenish_time_ticks");
-				}
-				if (JsonHelper.hasString(targetEntry, "replenish_mode")) {
-					replenishTimeScale = ReplenishTimeScale.valueOf(JsonHelper.getString(targetEntry, "replenish_mode").toUpperCase(Locale.ROOT));
-				}
-				if (JsonHelper.hasString(targetEntry, "lock_mode")) {
-					lockMode = LockMode.valueOf(JsonHelper.getString(targetEntry, "lock_mode").toUpperCase(Locale.ROOT));
-				}
-				if (JsonHelper.hasString(targetEntry, "inventory_deletion_mode")) {
-					inventoryDeletionMode = InventoryDeletionMode.valueOf(JsonHelper.getString(targetEntry, "inventory_deletion_mode").toUpperCase(Locale.ROOT));
-				}
-				if (JsonHelper.hasNumber(targetEntry, "weight")) {
-					weight = JsonHelper.getInt(targetEntry, "weight");
-				}
-				totalWeight += weight;
-				
-				
-				lootCrateEntries.add(new LootCrateReplacementEntry(lootCrateVariant, RegistryKey.of(RegistryKeys.LOOT_TABLE, lootTable), replenishTimeScale, replenishTimeTicks, lockMode, inventoryDeletionMode, trackedPerPlayer, weight));
-				
+			} catch (Exception e) {
+				LootCrates.LOGGER.error("Error while reading worldgen replacement config file: {}", e.getLocalizedMessage());
 			}
 			
 			WeightedLootCrateEntryList weightedLootCrateEntryList = new WeightedLootCrateEntryList(totalWeight, lootCrateEntries);
-			if (lootTableIdentifier == null || lootTableIdentifier.getPath().equals("")) {
+			if (lootTableIdentifier == null || lootTableIdentifier.getPath().isEmpty()) {
 				DefaultLootCrateProviderList = weightedLootCrateEntryList;
 			} else {
 				LootCrateProviders.put(RegistryKey.of(RegistryKeys.LOOT_TABLE, lootTableIdentifier), weightedLootCrateEntryList);
@@ -338,7 +343,13 @@ public class LootCratesWorldgenReplacer {
 						lootCrateBlockEntity.setLootTable(replacementTargetData.lootTable, lootTableSeed);
 					}
 					
-					lootCrateBlockEntity.setData(replacementTargetData.replenishTimeScale, replacementTargetData.replenishTimeTicks, replacementTargetData.trackedPerPlayer, replacementTargetData.lockMode, replacementTargetData.inventoryDeletionMode, trapped);
+					ComponentMap components = lootCrateBlockEntity.getComponents();
+					LootCrateLootComponent lootComponent = new LootCrateLootComponent(lootTable, lootTableSeed, replacementTargetData.lockMode, replacementTargetData.replenishTimeScale,
+							replacementTargetData.replenishTimeTicks, replacementTargetData.inventoryDeletionMode, replacementTargetData.trackedPerPlayer, trapped);
+
+					ComponentMap.Builder builder = ComponentMap.builder().addAll(components).add(LootCrateDataComponentTypes.LOOT_CRATE_LOOT, lootComponent);
+					lootCrateBlockEntity.setComponents(builder.build());
+					lootCrateBlockEntity.markDirty();
 				}
 			}
 		}

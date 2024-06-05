@@ -16,4 +16,8 @@ public class LootCrateDataComponentTypes {
 		return Registry.register(Registries.DATA_COMPONENT_TYPE, new Identifier(LootCrates.MOD_ID, id), builderOperator.apply(DataComponentType.builder()).build());
 	}
 	
+	public static void register() {
+	
+	}
+	
 }

@@ -169,6 +169,8 @@ public class LootCrates implements ModInitializer {
 		AutoConfig.register(LootCratesConfig.class, JanksonConfigSerializer::new);
 		CONFIG = AutoConfig.getConfigHolder(LootCratesConfig.class).getConfig();
 		
+		LootCrateDataComponentTypes.register();
+		
 		// All the different types of crates
 		LOGGER.info("Loading crate definitions...");
 		LootCrateDefinition commonLootCrate = new LootCrateDefinition(LootCrateVariant.COMMON, Rarity.COMMON, MapColor.DIRT_BROWN, 0, false, false);

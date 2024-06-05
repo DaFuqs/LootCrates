@@ -60,7 +60,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 								itemStack.decrement(1);
 							}
 						}
-						lootCrateBlockEntity.unlock(world, player);
+						lootCrateBlockEntity.unlockFor(player);
 						return ActionResult.CONSUME; // just consume the action and play unlock sound.
 					}
 				}
