@@ -33,8 +33,6 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 	protected DefaultedList<ItemStack> inventory;
 	private ScheduledTickEvent scheduledTickEvent;
 	
-	@Nullable
-	private PlayerCrateData defaultCrateData = null;
 	private HashMap<UUID, PlayerCrateData> playerCrateData = new HashMap<>();
 	
 	
@@ -88,25 +86,18 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 		}
 	}
 	
-	
-	
 	public Optional<PlayerCrateData> getPlayerCrateData(PlayerEntity playerEntity) {
 		@Nullable LootCrateLootComponent lootComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
 		if(lootComponent == null) {
 			return Optional.empty();
 		}
 		
-		if (lootComponent.trackedPerPlayer()) {
-			if (playerCrateData.containsKey(playerEntity.getUuid())) {
-				return Optional.of(playerCrateData.get(playerEntity.getUuid()));
-			}
+		LootCratePlayerDataComponent playerDataComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA);
+		if(playerDataComponent == null) {
 			return Optional.empty();
-		} else {
-			if (defaultCrateData == null) {
-				return Optional.empty();
-			}
-			return Optional.of(defaultCrateData);
 		}
+		
+		return playerDataComponent.get(playerEntity, lootComponent.trackedPerPlayer());
 	}
 	
 	private void setReplenishTimeToNow(PlayerEntity player) {
@@ -116,8 +107,9 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 		
 		LootCratePlayerDataComponent newComponent = LootCratePlayerDataComponent.setReplenishedForPlayer(playerDataComponent, player, lootComponent.trackedPerPlayer(), lootComponent.replenishTimeScale());
 		
-		ComponentMap.Builder builder = ComponentMap.builder().add(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newComponent);
-		addComponents(builder);
+		ComponentMap.Builder builder = ComponentMap.builder().addAll(components).add(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newComponent);
+		setComponents(builder.build());
+		
 		this.markDirty();
 	}
 	
@@ -255,8 +247,8 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 			ComponentMap components = getComponents();
 			LootCratePlayerDataComponent playerDataComponent = components.copy(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA).value();
 			LootCratePlayerDataComponent newComponent = LootCratePlayerDataComponent.lockForPlayer(playerDataComponent, player, lootComponent.trackedPerPlayer());
-			ComponentMap.Builder builder = ComponentMap.builder().add(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newComponent);
-			addComponents(builder);
+			ComponentMap.Builder builder = ComponentMap.builder().addAll(components).add(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newComponent);
+			setComponents(builder.build());
 			
 			this.markDirty();
 		}
@@ -303,8 +295,8 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 		@Nullable LootCratePlayerDataComponent playerDataComponent = components.get(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA);
 		LootCratePlayerDataComponent newComponent = LootCratePlayerDataComponent.unlockForPlayer(playerDataComponent, player, lootComponent.trackedPerPlayer(), lootComponent.replenishTimeScale());
 		
-		ComponentMap.Builder builder = ComponentMap.builder().add(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newComponent);
-		addComponents(builder);
+		ComponentMap.Builder builder = ComponentMap.builder().addAll(components).add(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newComponent);
+		setComponents(builder.build());
 		
 		this.markDirty();
 		this.playSound(LootCrates.CHEST_UNLOCKS_SOUND_EVENT);

@@ -56,10 +56,8 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 			if (!lootCrateBlockEntity.isUnlocked(player)) {
 				for (ItemStack itemStack : player.getHandItems()) {
 					if (lootCrateBlockEntity.doesItemUnlock(itemStack.getItem())) {
-						if (!player.isCreative()) {
-							if (lootCrateBlockEntity.getLockType().consumesKey()) {
-								itemStack.decrement(1);
-							}
+						if (lootCrateBlockEntity.getLockType().consumesKey() && !player.isCreative() ) {
+							itemStack.decrement(1);
 						}
 						lootCrateBlockEntity.unlockFor(player);
 						return ActionResult.CONSUME; // just consume the action and play unlock sound.
@@ -68,7 +66,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 				if (!world.isClient()) {
 					LootCrateVariant variant = getCrateVariant(world, pos);
 					Text translatableText = LootCrateAtlas.getKeyNeededTooltip(variant);
-					player.sendMessage(translatableText, false);
+					player.sendMessage(translatableText, true);
 				}
 				playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
 				return ActionResult.FAIL;
