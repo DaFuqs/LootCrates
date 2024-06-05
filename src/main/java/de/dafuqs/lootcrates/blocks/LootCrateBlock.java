@@ -4,6 +4,7 @@ import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.*;
 import de.dafuqs.lootcrates.*;
 import de.dafuqs.lootcrates.blocks.barrel.*;
+import de.dafuqs.lootcrates.components.*;
 import de.dafuqs.lootcrates.enums.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;

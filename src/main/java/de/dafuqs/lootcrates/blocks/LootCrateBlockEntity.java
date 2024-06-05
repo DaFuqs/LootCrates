@@ -16,6 +16,7 @@ import net.minecraft.loot.*;
 import net.minecraft.loot.context.*;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.*;
+import net.minecraft.screen.*;
 import net.minecraft.server.network.*;
 import net.minecraft.server.world.*;
 import net.minecraft.sound.*;
@@ -27,17 +28,9 @@ import org.jetbrains.annotations.*;
 
 import java.util.*;
 
-public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity {
+public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity implements LootableInventory {
 	
 	protected DefaultedList<ItemStack> inventory;
-	
-	private LockMode lockMode;
-	private ReplenishTimeScale replenishTimeScale;
-	private InventoryDeletionMode inventoryDeletionMode;
-	private boolean trapped;
-	private long replenishTimeTicks;
-	private boolean trackedPerPlayer;
-	
 	private ScheduledTickEvent scheduledTickEvent;
 	
 	@Nullable
@@ -47,10 +40,6 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 	
 	protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
 		super(blockEntityType, blockPos, blockState);
-		
-		this.lockMode = LockMode.NOT_LOCKED;
-		this.replenishTimeScale = ReplenishTimeScale.NEVER;
-		this.inventoryDeletionMode = InventoryDeletionMode.NEVER;
 		this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
 	}
 	
@@ -59,7 +48,6 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		super.writeNbt(nbt, registryLookup);
 		
 		Inventories.writeNbt(nbt, this.inventory, registryLookup);
-		//putLootCrateBlockTags(nbt);
 	}
 	
 	@Override
@@ -70,9 +58,6 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		if (nbt.contains("Items", 9)) {
 			Inventories.readNbt(nbt, this.inventory, registryLookup);
 		}
-		
-		//setLootCrateBlockTags(nbt);
-		
 	}
 	
 	@Override
@@ -103,8 +88,15 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		}
 	}
 	
+	
+	
 	public Optional<PlayerCrateData> getPlayerCrateData(PlayerEntity playerEntity) {
-		if (trackedPerPlayer) {
+		@Nullable LootCrateLootComponent lootComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		if(lootComponent == null) {
+			return Optional.empty();
+		}
+		
+		if (lootComponent.trackedPerPlayer()) {
 			if (playerCrateData.containsKey(playerEntity.getUuid())) {
 				return Optional.of(playerCrateData.get(playerEntity.getUuid()));
 			}
@@ -117,27 +109,9 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		}
 	}
 	
-	public boolean tryGenerateLoot(PlayerEntity player) {
-		boolean inventoryCleared = false;
-		if (inventoryDeletionMode == InventoryDeletionMode.ON_OPEN) {
-			this.clear();
-			inventoryCleared = true;
-		}
-		
-		boolean canGenerateNewLoot = canReplenish(player);
-		if (canGenerateNewLoot) {
-			if (!inventoryCleared && inventoryDeletionMode == InventoryDeletionMode.WHEN_REPLENISHED) {
-				this.clear();
-			}
-			
-			setReplenishTimeToNow(player);
-		}
-		return canGenerateNewLoot;
-	}
-	
 	private void setReplenishTimeToNow(PlayerEntity player) {
 		ComponentMap components = getComponents();
-		LootCratePlayerDataComponent playerDataComponent = components.copy(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA).value();
+		@Nullable LootCratePlayerDataComponent playerDataComponent = components.get(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA);
 		LootCrateLootComponent lootComponent = components.get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
 		
 		LootCratePlayerDataComponent newComponent = LootCratePlayerDataComponent.setReplenishedForPlayer(playerDataComponent, player, lootComponent.trackedPerPlayer(), lootComponent.replenishTimeScale());
@@ -145,33 +119,15 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		ComponentMap.Builder builder = ComponentMap.builder().add(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newComponent);
 		addComponents(builder);
 		this.markDirty();
-		
-		/*
-		long time = this.replenishTimeScale.usesRealTime ? ZonedDateTime.now().toInstant().toEpochMilli() : world.getTime();
-		
-		if (trackedPerPlayer) {
-			if (this.playerCrateData.containsKey(player.getUuid())) {
-				PlayerCrateData playerCrateData = this.playerCrateData.get(player.getUuid());
-				playerCrateData.replenishTime = time;
-			} else {
-				playerCrateData.put(player.getUuid(), new PlayerCrateData(time, -1));
-			}
-		} else {
-			if (defaultCrateData == null) {
-				defaultCrateData = new PlayerCrateData(time, -1);
-			} else {
-				defaultCrateData.replenishTime = time;
-			}
-		}*/
 	}
 	
-	public boolean canReplenish(PlayerEntity player) {
+	public boolean canReplenish(LootCrateLootComponent lootComponent, PlayerEntity player) {
 		if (hasWorld()) {
 			Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
 			if (playerCrateDataOptional.isEmpty()) {
 				return true;
 			} else {
-				return canReplenish(world, playerCrateDataOptional, replenishTimeScale, replenishTimeTicks);
+				return canReplenish(world, playerCrateDataOptional, lootComponent.replenishTimeScale(), lootComponent.replenishTime());
 			}
 		}
 		return false;
@@ -190,11 +146,41 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		return this.getHeldStacks().stream().allMatch(ItemStack::isEmpty);
 	}
 	
+	@Nullable
+	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+		if (this.checkUnlocked(playerEntity)) {
+			this.generateLoot(playerInventory.player);
+			return this.createScreenHandler(i, playerInventory);
+		} else {
+			return null;
+		}
+	}
+	
 	@Override
 	public void generateLoot(@Nullable PlayerEntity player) {
+		@Nullable LootCrateLootComponent lootComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		if(lootComponent == null) {
+			return;
+		}
+		
+		boolean inventoryCleared = false;
+		if (lootComponent.inventoryDeletionMode() == InventoryDeletionMode.ON_OPEN) {
+			this.clear();
+			inventoryCleared = true;
+		}
+		
+		boolean canGenerateNewLoot = canReplenish(lootComponent, player);
+		if (canGenerateNewLoot) {
+			if (!inventoryCleared && lootComponent.inventoryDeletionMode() == InventoryDeletionMode.WHEN_REPLENISHED) {
+				this.clear();
+			}
+			
+			setReplenishTimeToNow(player);
+		}
+		
 		World world = this.getWorld();
 		BlockPos blockPos = this.getPos();
-		RegistryKey<LootTable> registryKey = this.getLootTable();
+		RegistryKey<LootTable> registryKey = lootComponent.lootTable();
 		if (registryKey != null && world != null && world.getServer() != null) {
 			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(registryKey);
 			if (player instanceof ServerPlayerEntity) {
@@ -206,91 +192,41 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 				builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
 			}
 			
-			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST), this.getLootTableSeed());
+			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST), lootComponent.seed());
 		}
 	}
 	
-	/*
-	public NbtCompound putLootCrateBlockTags(NbtCompound tag) {
-		this.serializeLootTable(tag);
-		
-		tag.putBoolean(LootCrateTagNames.TrackedPerPlayer.toString(), this.trackedPerPlayer);
-		if (this.trackedPerPlayer) {
-			NbtList playerList = new NbtList();
-			for (Map.Entry<UUID, PlayerCrateData> playerCrateData : this.playerCrateData.entrySet()) {
-				playerList.add(playerCrateData.getValue().toCompound(playerCrateData.getKey()));
-			}
-			tag.put("PlayerData", playerList);
-		} else {
-			PlayerCrateData playerCrateData = this.defaultCrateData;
-			if (playerCrateData != null) {
-				tag.put("Data", playerCrateData.toCompound(null));
-			}
+	@Nullable
+	@Override
+	public RegistryKey<LootTable> getLootTable() {
+		@Nullable LootCrateLootComponent lootComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		if(lootComponent == null) {
+			return null;
 		}
-		
-		tag.putString(LootCrateTagNames.LockMode.toString(), this.lockMode.toString());
-		tag.putString(LootCrateTagNames.ReplenishMode.toString(), this.replenishTimeScale.toString());
-		tag.putString(LootCrateTagNames.InventoryDeletionMode.toString(), this.inventoryDeletionMode.toString());
-		tag.putBoolean(LootCrateTagNames.Trapped.toString(), this.trapped);
-		tag.putLong(LootCrateTagNames.ReplenishTimeTicks.toString(), this.replenishTimeTicks);
-		
-		return tag;
+		return lootComponent.lootTable();
 	}
 	
-	public void setLootCrateBlockTags(NbtCompound tag) {
-		this.deserializeLootTable(tag);
-		
-		if (tag.contains(LootCrateTagNames.TrackedPerPlayer.toString()) && tag.getBoolean(LootCrateTagNames.TrackedPerPlayer.toString())) {
-			this.trackedPerPlayer = true;
-			this.playerCrateData = new HashMap<>();
-			NbtList nbtList = tag.getList("PlayerData", NbtElement.COMPOUND_TYPE);
-			for (int i = 0; i < nbtList.size(); i++) {
-				Pair<UUID, PlayerCrateData> data = PlayerCrateData.fromCompoundWithUUID(nbtList.getCompound(i));
-				this.playerCrateData.put(data.getLeft(), data.getRight());
-			}
-		} else {
-			this.trackedPerPlayer = false;
-			if (tag.contains("Data", NbtElement.COMPOUND_TYPE)) {
-				this.defaultCrateData = PlayerCrateData.fromCompoundWithoutUUID(tag.getCompound("Data"));
-			}
+	@Override
+	public long getLootTableSeed() {
+		@Nullable LootCrateLootComponent lootComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		if(lootComponent == null) {
+			return 0;
 		}
-		
-		if (tag.contains(LootCrateTagNames.ReplenishTimeTicks.toString())) {
-			this.replenishTimeTicks = tag.getLong(LootCrateTagNames.ReplenishTimeTicks.toString());
-		} else {
-			this.replenishTimeTicks = -1;
-		}
-		
-		this.trapped = tag.contains(LootCrateTagNames.Trapped.toString()) && tag.getBoolean(LootCrateTagNames.Trapped.toString());
-		
-		if (tag.contains(LootCrateTagNames.LockMode.toString())) {
-			this.lockMode = LockMode.valueOf(tag.getString(LootCrateTagNames.LockMode.toString()).toUpperCase(Locale.ROOT));
-		} else {
-			this.lockMode = LockMode.NOT_LOCKED;
-		}
-		if (tag.contains(LootCrateTagNames.ReplenishMode.toString())) {
-			this.replenishTimeScale = ReplenishTimeScale.valueOf(tag.getString(LootCrateTagNames.ReplenishMode.toString()).toUpperCase(Locale.ROOT));
-		} else {
-			this.replenishTimeScale = ReplenishTimeScale.NEVER;
-		}
-		if (tag.contains(LootCrateTagNames.InventoryDeletionMode.toString())) {
-			this.inventoryDeletionMode = InventoryDeletionMode.valueOf(tag.getString(LootCrateTagNames.InventoryDeletionMode.toString()).toUpperCase(Locale.ROOT));
-		} else {
-			this.inventoryDeletionMode = InventoryDeletionMode.NEVER;
-		}
+		return lootComponent.seed();
 	}
 	
-	public void setData(ReplenishTimeScale replenishTimeScale, int replenishTimeTicks, boolean trackedPerPlayer, LockMode lockMode, InventoryDeletionMode inventoryDeletionMode, boolean trapped) {
-		this.replenishTimeScale = replenishTimeScale;
-		this.replenishTimeTicks = replenishTimeTicks;
-		this.trackedPerPlayer = trackedPerPlayer;
-		this.lockMode = lockMode;
-		this.inventoryDeletionMode = inventoryDeletionMode;
-		this.trapped = trapped;
-	}*/
+	@Override
+	public void setLootTable(@Nullable RegistryKey<LootTable> lootTable) {
+		// no-op
+	}
+	
+	@Override
+	public void setLootTableSeed(long lootTableSeed) {
+		// no-op
+	}
 	
 	protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
-		if (this.trapped && oldViewerCount != newViewerCount) {
+		if (isTrapped() && oldViewerCount != newViewerCount) {
 			Block block = state.getBlock();
 			world.updateNeighborsAlways(pos, block);
 			world.updateNeighborsAlways(pos.down(), block);
@@ -299,9 +235,9 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 	
 	@Override
 	protected Text getContainerName() {
-		BlockState state = this.world.getBlockState(this.getPos());
+		BlockState state = getCachedState();
 		Text name = state.getBlock().getName();
-		if (name.getString().startsWith("§")) {
+		if (name.getString().startsWith("§")) { // THE FUCK
 			return Text.literal(name.getString().substring(2));
 		} else {
 			return name;
@@ -309,14 +245,16 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 	}
 	
 	public void relockIfNecessary(PlayerEntity player) {
+		@Nullable LootCrateLootComponent lootComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		if(lootComponent == null) {
+			return;
+		}
+		
 		Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
-		if (shouldRelock(world, replenishTimeScale, replenishTimeTicks, lockMode, playerCrateDataOptional)) {
+		if (shouldRelock(world, lootComponent.replenishTimeScale(), lootComponent.replenishTime(), lootComponent.lockMode(), playerCrateDataOptional)) {
 			ComponentMap components = getComponents();
 			LootCratePlayerDataComponent playerDataComponent = components.copy(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA).value();
-			LootCrateLootComponent lootComponent = components.get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
-			
 			LootCratePlayerDataComponent newComponent = LootCratePlayerDataComponent.lockForPlayer(playerDataComponent, player, lootComponent.trackedPerPlayer());
-			
 			ComponentMap.Builder builder = ComponentMap.builder().add(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newComponent);
 			addComponents(builder);
 			
@@ -324,7 +262,7 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		}
 	}
 	
-	public static boolean shouldRelock(World world, ReplenishTimeScale replenishTimeScale, long replenishTimeTicks, LockMode lockMode, Optional<PlayerCrateData> playerCrateData) {
+	private static boolean shouldRelock(World world, ReplenishTimeScale replenishTimeScale, long replenishTimeTicks, LockMode lockMode, Optional<PlayerCrateData> playerCrateData) {
 		if (lockMode.relocks()) {
 			if (playerCrateData.isPresent()) {
 				return playerCrateData.get().unlockTime() < playerCrateData.get().replenishTime() && LootCrateBlockEntity.canReplenish(world, playerCrateData, replenishTimeScale, replenishTimeTicks);
@@ -334,19 +272,19 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 	}
 	
 	public boolean isUnlocked(PlayerEntity player) {
+		@Nullable LootCrateLootComponent lootComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		if(lootComponent == null) {
+			return false;
+		}
 		Optional<PlayerCrateData> optionalPlayerCrateData = getPlayerCrateData(player);
-		return lockMode.isUnlocked(optionalPlayerCrateData);
-	}
-	
-	public boolean isTrapped() {
-		return this.trapped;
+		return lootComponent.isUnlocked(optionalPlayerCrateData);
 	}
 	
 	public boolean doesItemUnlock(Item item) {
-		if (world != null && item instanceof LootKeyItem) {
+		if (world != null && item instanceof LootKeyItem lootKeyItem) {
 			Optional<LootCrateBlock> block = getBlock();
 			if (block.isPresent()) {
-				LootCrateVariant itemVariant = ((LootKeyItem) item).getVariant();
+				LootCrateVariant itemVariant = lootKeyItem.getVariant();
 				LootCrateVariant blockVariant = block.get().getVariant();
 				return itemVariant.equals(blockVariant);
 			}
@@ -355,15 +293,14 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		return false;
 	}
 	
-	public LockMode getLockType() {
-		return this.lockMode;
-	}
-	
 	public void unlockFor(PlayerEntity player) {
 		ComponentMap components = getComponents();
-		LootCratePlayerDataComponent playerDataComponent = components.copy(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA).value();
-		LootCrateLootComponent lootComponent = components.get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		@Nullable LootCrateLootComponent lootComponent = components.get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		if(lootComponent == null) {
+			return;
+		}
 		
+		@Nullable LootCratePlayerDataComponent playerDataComponent = components.get(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA);
 		LootCratePlayerDataComponent newComponent = LootCratePlayerDataComponent.unlockForPlayer(playerDataComponent, player, lootComponent.trackedPerPlayer(), lootComponent.replenishTimeScale());
 		
 		ComponentMap.Builder builder = ComponentMap.builder().add(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newComponent);
@@ -403,14 +340,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		}
 		
 		// also play custom sound, if set
-		SoundEvent customSoundEvent = null;
 		Optional<LootCrateBlock> block = getBlock();
 		if (block.isPresent()) {
-			customSoundEvent = LootCrateAtlas.getCustomOpenSoundEvent(block.get());
-		}
-		
-		if (customSoundEvent != null) {
-			playSound(customSoundEvent, 0.4F);
+			SoundEvent customSoundEvent = LootCrateAtlas.getCustomOpenSoundEvent(block.get());
+			if (customSoundEvent != null) {
+				playSound(customSoundEvent, 0.4F);
+			}
 		}
 	}
 	
@@ -423,14 +358,12 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		}
 		
 		// also play custom sound, if set
-		SoundEvent customSoundEvent = null;
 		Optional<LootCrateBlock> block = getBlock();
 		if (block.isPresent()) {
-			customSoundEvent = LootCrateAtlas.getCustomCloseSoundEvent(block.get());
-		}
-		
-		if (customSoundEvent != null) {
-			playSound(customSoundEvent, 0.4F);
+			SoundEvent customSoundEvent = LootCrateAtlas.getCustomCloseSoundEvent(block.get());
+			if (customSoundEvent != null) {
+				playSound(customSoundEvent, 0.4F);
+			}
 		}
 	}
 	
@@ -438,10 +371,25 @@ public abstract class LootCrateBlockEntity extends LootableContainerBlockEntity 
 		double d = (double) pos.getX() + 0.5D;
 		double e = (double) pos.getY() + 0.5D;
 		double f = (double) pos.getZ() + 0.5D;
-		
 		world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
 	}
 	
 	public abstract int getCurrentLookingPlayers(BlockView world, BlockPos pos);
+	
+	public boolean isTrapped() {
+		@Nullable LootCrateLootComponent lootComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		if(lootComponent == null) {
+			return false;
+		}
+		return lootComponent.trapped();
+	}
+	
+	public LockMode getLockType() {
+		@Nullable LootCrateLootComponent lootComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		if(lootComponent == null) {
+			return LockMode.NOT_LOCKED;
+		}
+		return lootComponent.lockMode();
+	}
 	
 }

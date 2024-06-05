@@ -11,11 +11,14 @@ import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.*;
 import net.minecraft.item.*;
+import net.minecraft.loot.*;
+import net.minecraft.registry.*;
 import net.minecraft.screen.*;
 import net.minecraft.sound.*;
 import net.minecraft.util.collection.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.*;
+import org.jetbrains.annotations.*;
 
 public class LootBarrelBlockEntity extends LootCrateBlockEntity {
 	
@@ -92,5 +95,4 @@ public class LootBarrelBlockEntity extends LootCrateBlockEntity {
 			this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
-	
 }

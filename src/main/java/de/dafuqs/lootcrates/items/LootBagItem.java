@@ -36,18 +36,8 @@ public class LootBagItem extends Item {
 			tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.no_loot_table"));
 		} else {
 			tooltip.add(LootCrateAtlas.getLootBagItemToolTip(stack));
-			tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootComponent.toString()));
+			tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootComponent.lootTable().getValue().toString()));
 		}
-	}
-	
-	public static NbtCompound getItemCompoundTag(Identifier lootTable, int lootTableSeed) {
-		NbtCompound compoundTag = new NbtCompound();
-		
-		compoundTag.putString("LootTable", lootTable.toString());
-		if (lootTableSeed != 0) {
-			compoundTag.putLong("LootTableSeed", lootTableSeed);
-		}
-		return compoundTag;
 	}
 	
 	public @Nullable ContainerLootComponent getLootComponent(@NotNull ItemStack stack) {
@@ -56,11 +46,11 @@ public class LootBagItem extends Item {
 	
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		if (world instanceof ServerWorld) {
+		if (user instanceof ServerPlayerEntity serverPlayerEntity) {
 			ItemStack lootBagItemStack = user.getStackInHand(hand);
-			List<ItemStack> lootTableContents = getLootTableContents((ServerPlayerEntity) user, lootBagItemStack);
-			for (ItemStack itemStack : lootTableContents) {
-				givePlayerStackOrDrop((ServerPlayerEntity) user, itemStack);
+			List<ItemStack> lootTableContents = getLootTableContents(serverPlayerEntity, lootBagItemStack);
+			for (ItemStack lootStack : lootTableContents) {
+				serverPlayerEntity.getInventory().offerOrDrop(lootStack);
 			}
 			lootBagItemStack.decrement(1);
 		}
@@ -77,33 +67,9 @@ public class LootBagItem extends Item {
 			LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder(serverWorld)).add(LootContextParameters.ORIGIN, player.getPos());
 			builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
 			
-			lootTable.generateLoot(builder.build(LootContextTypes.CHEST), lootComponent.seed());
+			return lootTable.generateLoot(builder.build(LootContextTypes.CHEST), lootComponent.seed());
 		}
 		return List.of();
 	}
-	
-	
-	private void givePlayerStackOrDrop(@NotNull ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-		boolean insertInventorySuccess = serverPlayerEntity.getInventory().insertStack(itemStack);
-		ItemEntity itemEntity;
-		if (insertInventorySuccess && itemStack.isEmpty()) {
-			itemStack.setCount(1);
-			itemEntity = serverPlayerEntity.dropItem(itemStack, false);
-			if (itemEntity != null) {
-				itemEntity.setDespawnImmediately();
-			}
-			
-			serverPlayerEntity.getWorld().playSound(null, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-			serverPlayerEntity.currentScreenHandler.sendContentUpdates();
-		} else {
-			itemEntity = serverPlayerEntity.dropItem(itemStack, false);
-			if (itemEntity != null) {
-				itemEntity.resetPickupDelay();
-				itemEntity.setOwner(serverPlayerEntity.getUuid());
-			}
-		}
-		
-	}
-	
 	
 }
