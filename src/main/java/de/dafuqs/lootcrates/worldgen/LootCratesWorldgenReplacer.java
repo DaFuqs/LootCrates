@@ -274,14 +274,21 @@ public class LootCratesWorldgenReplacer {
 	}
 	
 	public static void tick(MinecraftServer server) {
-		for (LootCrateReplacementPosition replacementPosition : replacements) {
+		if (replacements.isEmpty()) {
+			return;
+		}
+		
+		List<LootCrateReplacementPosition> workingSet = new ArrayList<>();
+		workingSet.addAll(replacements);
+		replacements.clear();
+		
+		for (LootCrateReplacementPosition replacementPosition : workingSet) {
 			try {
 				replace(replacementPosition);
 			} catch (Throwable t) {
 				LootCrates.LOGGER.error("Error while replacing a container in the world '{}' at '{}': {}", replacementPosition.world().getRegistryKey().getValue(), replacementPosition.blockPos(), t.getLocalizedMessage());
 			}
 		}
-		replacements.clear();
 	}
 	
 	private static void replace(@NotNull LootCrateReplacementPosition replacementPosition) {
@@ -302,15 +309,13 @@ public class LootCratesWorldgenReplacer {
 			return;
 		}
 		
-		if (blockEntity instanceof LootableContainerBlockEntity && !(blockEntity instanceof LootCrateBlockEntity)) {
+		if (blockEntity instanceof LootableContainerBlockEntity) {
 			RegistryKey<LootTable> lootTable;
 			long lootTableSeed;
 			
 			LootTableAccessor lootTableAccessor = ((LootTableAccessor) blockEntity);
 			lootTable = lootTableAccessor.getLootTable();
 			lootTableSeed = lootTableAccessor.getLootTableSeed();
-			
-			serverWorld.removeBlockEntity(pos);
 			
 			Block sourceBlock = sourceState.getBlock();
 			if (!(sourceBlock instanceof LootCrateBlock)) {
@@ -321,10 +326,13 @@ public class LootCratesWorldgenReplacer {
 					if (sourceBlock instanceof TrappedChestBlock) {
 						trapped = true;
 					}
+					serverWorld.removeBlockEntity(pos);
 					serverWorld.setBlockState(pos, LootCrateAtlas.getLootCrate(replacementTargetData.lootCrateVariant).getDefaultState().with(ChestLootCrateBlock.FACING, sourceState.get(ChestBlock.FACING)));
 				} else if (sourceBlock instanceof BarrelBlock) {
+					serverWorld.removeBlockEntity(pos);
 					serverWorld.setBlockState(pos, LootCrateAtlas.getLootBarrel(replacementTargetData.lootCrateVariant).getDefaultState().with(Properties.FACING, sourceState.get(Properties.FACING)));
 				} else if (sourceBlock instanceof ShulkerBoxBlock) {
+					serverWorld.removeBlockEntity(pos);
 					serverWorld.setBlockState(pos, LootCrateAtlas.getShulkerCrate(replacementTargetData.lootCrateVariant).getDefaultState().with(Properties.FACING, sourceState.get(Properties.FACING)));
 				} else {
 					// the worldgen may have been replaced by other blocks.

@@ -103,7 +103,11 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 	private void setReplenishTimeToNow(PlayerEntity player) {
 		ComponentMap components = getComponents();
 		@Nullable LootCratePlayerDataComponent playerDataComponent = components.get(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA);
+		
 		LootCrateLootComponent lootComponent = components.get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
+		if (lootComponent == null) {
+			return;
+		}
 		
 		LootCratePlayerDataComponent newComponent = LootCratePlayerDataComponent.setReplenishedForPlayer(playerDataComponent, player, lootComponent.trackedPerPlayer(), lootComponent.replenishTimeScale());
 		
@@ -162,13 +166,15 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 		}
 		
 		boolean canGenerateNewLoot = canReplenish(lootComponent, player);
-		if (canGenerateNewLoot) {
-			if (!inventoryCleared && lootComponent.inventoryDeletionMode() == InventoryDeletionMode.WHEN_REPLENISHED) {
-				this.clear();
-			}
-			
-			setReplenishTimeToNow(player);
+		if (!canGenerateNewLoot) {
+			return;
 		}
+		
+		if (!inventoryCleared && lootComponent.inventoryDeletionMode() == InventoryDeletionMode.WHEN_REPLENISHED) {
+			this.clear();
+		}
+		setReplenishTimeToNow(player);
+		
 		
 		World world = this.getWorld();
 		BlockPos blockPos = this.getPos();

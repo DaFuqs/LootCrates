@@ -29,7 +29,6 @@ public class WorldChunkMixin {
 				&& !LootCrates.CONFIG.isWorldBlacklisted(worldChunk.getWorld())) {
 			
 			LootCratesWorldgenReplacer.replacements.add(new LootCrateReplacementPosition((ServerWorld) worldChunk.getWorld(), blockEntity.getPos()));
-			
 		}
 		
 	}

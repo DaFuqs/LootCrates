@@ -11,6 +11,8 @@ import java.util.*;
 @Config(name = "LootCrates")
 public class LootCratesConfig implements ConfigData {
 	
+	public boolean AddExampleCratesAndBundlesItemGroups = false;
+	
 	@ConfigEntry.Category("general")
 	@ConfigEntry.Gui.PrefixText
 	@Comment(value = """
