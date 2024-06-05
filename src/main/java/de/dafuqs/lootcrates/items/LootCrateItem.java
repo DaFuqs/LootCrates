@@ -1,7 +1,5 @@
 package de.dafuqs.lootcrates.items;
 
-import de.dafuqs.lootcrates.*;
-import de.dafuqs.lootcrates.blocks.*;
 import de.dafuqs.lootcrates.components.*;
 import de.dafuqs.lootcrates.enums.*;
 import net.fabricmc.api.*;
@@ -10,7 +8,6 @@ import net.minecraft.client.*;
 import net.minecraft.client.item.*;
 import net.minecraft.component.*;
 import net.minecraft.component.type.*;
-import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
@@ -74,22 +71,6 @@ public class LootCrateItem extends BlockItem {
 				tooltip.add(Text.translatable("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
 			}
 		}
-		
-	}
-	
-	public static boolean consumeKey(@NotNull PlayerEntity player, @NotNull ItemStack itemStack) {
-		LootCrateVariant lootCrateVariant = LootCrateAtlas.getCrateItemVariant(itemStack.getItem());
-		if (player.isCreative()) {
-			return true;
-		} else {
-			ItemStack lootKeyItemStack = new ItemStack(LootCrateAtlas.getLootKeyItem(lootCrateVariant));
-			PlayerInventory inventory = player.getInventory();
-			if (inventory.contains(lootKeyItemStack)) {
-				inventory.removeOne(lootKeyItemStack);
-				return true;
-			}
-		}
-		return false;
 	}
 	
 }

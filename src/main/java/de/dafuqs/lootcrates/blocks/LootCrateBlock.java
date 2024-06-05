@@ -4,7 +4,6 @@ import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.*;
 import de.dafuqs.lootcrates.*;
 import de.dafuqs.lootcrates.blocks.barrel.*;
-import de.dafuqs.lootcrates.components.*;
 import de.dafuqs.lootcrates.enums.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
@@ -64,8 +63,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 					}
 				}
 				if (!world.isClient()) {
-					LootCrateVariant variant = getCrateVariant(world, pos);
-					Text translatableText = LootCrateAtlas.getKeyNeededTooltip(variant);
+					Text translatableText = LootCrateAtlas.getKeyNeededTooltip(getVariant());
 					player.sendMessage(translatableText, true);
 				}
 				playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
@@ -73,15 +71,6 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 			}
 		}
 		return ActionResult.PASS;
-	}
-	
-	protected static LootCrateVariant getCrateVariant(@NotNull World world, BlockPos blockPos) {
-		Block block = world.getBlockState(blockPos).getBlock();
-		return getCrateVariant(block);
-	}
-	
-	protected static LootCrateVariant getCrateVariant(Block block) {
-		return LootCrateAtlas.getCrateVariant(block);
 	}
 	
 	@Override
@@ -121,16 +110,6 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 		}
 		return 0;
 	}
-
-    /*@Override
-    public void onPlaced(@NotNull World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
-            if (itemStack.hasCustomName()) {
-                ((LootCrateBlockEntity) blockEntity).setCustomName(itemStack.getName());
-            }
-        }
-    }*/
 	
 	@Override
 	public void scheduledTick(BlockState state, @NotNull ServerWorld world, BlockPos pos, Random random) {

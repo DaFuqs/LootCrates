@@ -1,6 +1,5 @@
 package de.dafuqs.lootcrates.components;
 
-import de.dafuqs.lootcrates.blocks.*;
 import net.minecraft.util.*;
 
 import java.util.*;

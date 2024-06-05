@@ -19,8 +19,8 @@ import org.jetbrains.annotations.*;
 
 public class ShulkerLootCrateBlock extends LootCrateBlock {
 	
-	public static final DirectionProperty FACING;
-	public static final Identifier CONTENTS;
+	public static final DirectionProperty FACING = FacingBlock.FACING;
+	public static final Identifier CONTENTS = new Identifier("contents");
 	
 	public ShulkerLootCrateBlock(LootCrateVariant variant, AbstractBlock.Settings settings) {
 		super(variant, settings);
@@ -109,11 +109,6 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
 	@Override
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
 		return state.rotate(mirror.getRotation(state.get(FACING)));
-	}
-	
-	static {
-		FACING = FacingBlock.FACING;
-		CONTENTS = new Identifier("contents");
 	}
 	
 	@Nullable

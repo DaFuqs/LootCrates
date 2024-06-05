@@ -23,8 +23,6 @@ import net.minecraft.util.*;
 
 import java.util.*;
 
-import static net.minecraft.client.render.TexturedRenderLayers.*;
-
 public class LootCrateAtlas {
 	
 	private static final HashMap<LootCrateVariant, LootCrateDefinition> lootCrateDefinitions = new HashMap<>();
@@ -120,25 +118,15 @@ public class LootCrateAtlas {
 	}
 	
 	public static SpriteIdentifier getChestTexture(LootCrateBlockEntity lootCrateBlockEntity) {
-		if (lootCrateBlockEntity.hasWorld()) {
-			Block block = lootCrateBlockEntity.getWorld().getBlockState(lootCrateBlockEntity.getPos()).getBlock();
-			LootCrateDefinition lootCrateDefinition = lootCrateDefinitions.get(getCrateVariant(block));
-			if (lootCrateDefinition != null) {
-				return lootCrateDefinition.chestTexture;
-			}
-		}
-		return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "block/common_crate"));
+		Block block = lootCrateBlockEntity.getCachedState().getBlock();
+		LootCrateDefinition lootCrateDefinition = lootCrateDefinitions.get(((LootCrateBlock) block).getVariant());
+		return lootCrateDefinition.chestTexture;
 	}
 	
 	public static SpriteIdentifier getShulkerTexture(LootCrateBlockEntity lootCrateBlockEntity) {
-		if (lootCrateBlockEntity.hasWorld()) {
-			Block block = lootCrateBlockEntity.getWorld().getBlockState(lootCrateBlockEntity.getPos()).getBlock();
-			LootCrateDefinition lootCrateDefinition = lootCrateDefinitions.get(getShulkerRarity(block));
-			if (lootCrateDefinition != null) {
-				return lootCrateDefinition.shulkerTexture;
-			}
-		}
-		return new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier(LootCrates.MOD_ID, "block/common_crate"));
+		Block block = lootCrateBlockEntity.getCachedState().getBlock();
+		LootCrateDefinition lootCrateDefinition = lootCrateDefinitions.get(((LootCrateBlock) block).getVariant());
+		return lootCrateDefinition.shulkerTexture;
 	}
 	
 	public static Block getLootCrate(LootCrateVariant lootCrateVariant) {
@@ -158,15 +146,8 @@ public class LootCrateAtlas {
 			return false;
 		}
 		
-		BlockState blockState = lootCrateBlockEntity.getWorld().getBlockState(lootCrateBlockEntity.getPos());
-		LootCrateVariant lootCrateVariant = getCrateVariant(blockState.getBlock());
-		
-		LootCrateDefinition lootCrateDefinition = lootCrateDefinitions.get(lootCrateVariant);
-		if (lootCrateDefinition == null) {
-			return false;
-		} else {
-			return lootCrateDefinition.hasTransparency;
-		}
+		BlockState blockState = lootCrateBlockEntity.getCachedState();
+		return ((LootCrateBlock) blockState.getBlock()).getVariant().hasTransparency();
 	}
 	
 	public static Text getItemLockedTooltip(LootCrateVariant variant, LockMode lockMode) {
@@ -215,49 +196,8 @@ public class LootCrateAtlas {
 		return lootCrateDefinitions.get(rarity).keyNeededTooltip;
 	}
 	
-	public static LootCrateVariant getCrateVariant(Block block) {
-		if (block instanceof ChestLootCrateBlock) {
-			return lootCrateBlocks.inverse().get(block);
-		} else if (block instanceof ShulkerLootCrateBlock) {
-			return shulkerCrateBlocks.inverse().get(block);
-		} else {
-			return lootBarrelBlocks.inverse().get(block);
-		}
-	}
-	
-	public static LootCrateVariant getCrateItemVariant(Item item) {
-		BlockItem blockItem = (BlockItem) item;
-		
-		if (blockItem.getBlock() instanceof LootCrateBlock lootCrateBlock) {
-			return getCrateVariant(lootCrateBlock);
-		}
-		return LootCrateVariant.COMMON;
-	}
-	
-	private static LootCrateVariant getShulkerRarity(Block block) {
-		return shulkerCrateBlocks.inverse().get(block);
-	}
-	
-	private static LootCrateVariant getBarrelRarity(Block block) {
-		return lootBarrelBlocks.inverse().get(block);
-	}
-	
-	public static LootCrateVariant getKeyRarity(LootKeyItem item) {
-		return lootCrateKeys.inverse().get(item);
-	}
-	
 	public static LootKeyItem getLootKeyItem(LootCrateVariant lootCrateVariant) {
 		return lootCrateKeys.get(lootCrateVariant);
-	}
-	
-	protected static LootCrateVariant getCrateItemVariant(LootCrateItem item) {
-		if (item.getBlock() instanceof ChestLootCrateBlock) {
-			return chestCrateItems.inverse().get(item);
-		} else if (item.getBlock() instanceof ShulkerLootCrateBlock) {
-			return shulkerCrateItems.inverse().get(item);
-		} else {
-			return lootBarrelItems.inverse().get(item);
-		}
 	}
 	
 	public static Text getLootKeyItemToolTip(ItemStack itemStack) {
@@ -271,30 +211,15 @@ public class LootCrateAtlas {
 	}
 	
 	public static ScheduledTickEvent getRandomTickEvent(LootCrateBlock lootCrateBlock) {
-		LootCrateVariant lootCrateVariant = getCrateVariant(lootCrateBlock);
-		return lootCrateDefinitions.get(lootCrateVariant).scheduledTickEvent;
+		return lootCrateDefinitions.get(lootCrateBlock.getVariant()).scheduledTickEvent;
 	}
 	
 	public static SoundEvent getCustomOpenSoundEvent(LootCrateBlock lootCrateBlock) {
-		LootCrateVariant lootCrateVariant;
-		if (lootCrateBlock instanceof ChestLootCrateBlock) {
-			lootCrateVariant = getCrateVariant(lootCrateBlock);
-		} else if (lootCrateBlock instanceof ShulkerLootCrateBlock) {
-			lootCrateVariant = getShulkerRarity(lootCrateBlock);
-		} else {
-			lootCrateVariant = getBarrelRarity(lootCrateBlock);
-		}
-		return lootCrateDefinitions.get(lootCrateVariant).customOpenSoundEvent;
+		return lootCrateDefinitions.get(lootCrateBlock.getVariant()).customOpenSoundEvent;
 	}
 	
 	public static SoundEvent getCustomCloseSoundEvent(LootCrateBlock lootCrateBlock) {
-		LootCrateVariant lootCrateVariant;
-		if (lootCrateBlock instanceof ChestLootCrateBlock) {
-			lootCrateVariant = getCrateVariant(lootCrateBlock);
-		} else {
-			lootCrateVariant = getShulkerRarity(lootCrateBlock);
-		}
-		return lootCrateDefinitions.get(lootCrateVariant).customCloseSoundEvent;
+		return lootCrateDefinitions.get(lootCrateBlock.getVariant()).customCloseSoundEvent;
 	}
 	
 	@Environment(EnvType.CLIENT)

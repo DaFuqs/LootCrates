@@ -3,7 +3,6 @@ package de.dafuqs.lootcrates.components;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.*;
 import de.dafuqs.lootcrates.*;
-import de.dafuqs.lootcrates.blocks.*;
 import de.dafuqs.lootcrates.enums.*;
 import net.minecraft.client.item.*;
 import net.minecraft.item.*;

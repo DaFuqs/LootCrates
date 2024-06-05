@@ -22,8 +22,8 @@ import org.jetbrains.annotations.*;
 
 public class ChestLootCrateBlock extends LootCrateBlock {
 	
-	public static final DirectionProperty FACING;
-	protected static final VoxelShape SHAPE;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
 	
 	public ChestLootCrateBlock(LootCrateVariant variant, AbstractBlock.Settings settings) {
 		super(variant, settings);
@@ -127,11 +127,6 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
-	}
-	
-	static {
-		FACING = HorizontalFacingBlock.FACING;
-		SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
 	}
 	
 }

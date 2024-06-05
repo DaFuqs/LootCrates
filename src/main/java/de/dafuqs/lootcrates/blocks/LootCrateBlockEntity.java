@@ -33,9 +33,6 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 	protected DefaultedList<ItemStack> inventory;
 	private ScheduledTickEvent scheduledTickEvent;
 	
-	private HashMap<UUID, PlayerCrateData> playerCrateData = new HashMap<>();
-	
-	
 	protected LootCrateBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
 		super(blockEntityType, blockPos, blockState);
 		this.inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
@@ -251,8 +248,8 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 		Optional<PlayerCrateData> playerCrateDataOptional = getPlayerCrateData(player);
 		if (shouldRelock(world, lootComponent.replenishTimeScale(), lootComponent.replenishTime(), lootComponent.lockMode(), playerCrateDataOptional)) {
 			ComponentMap components = getComponents();
-			LootCratePlayerDataComponent playerDataComponent = components.copy(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA).value();
-			LootCratePlayerDataComponent newComponent = LootCratePlayerDataComponent.lockForPlayer(playerDataComponent, player, lootComponent.trackedPerPlayer());
+			@Nullable LootCratePlayerDataComponent playerDataComponent = components.get(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA);
+			@Nullable LootCratePlayerDataComponent newComponent = LootCratePlayerDataComponent.lockForPlayer(playerDataComponent, player, lootComponent.trackedPerPlayer());
 			ComponentMap.Builder builder = ComponentMap.builder().addAll(components).add(LootCrateDataComponentTypes.LOOT_CRATE_PLAYER_DATA, newComponent);
 			setComponents(builder.build());
 			
@@ -272,7 +269,7 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 	public boolean isUnlocked(PlayerEntity player) {
 		@Nullable LootCrateLootComponent lootComponent = getComponents().get(LootCrateDataComponentTypes.LOOT_CRATE_LOOT);
 		if(lootComponent == null) {
-			return false;
+			return true;
 		}
 		Optional<PlayerCrateData> optionalPlayerCrateData = getPlayerCrateData(player);
 		return lootComponent.isUnlocked(optionalPlayerCrateData);

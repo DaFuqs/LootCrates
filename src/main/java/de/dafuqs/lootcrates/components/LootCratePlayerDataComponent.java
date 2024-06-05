@@ -2,9 +2,7 @@ package de.dafuqs.lootcrates.components;
 
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.*;
-import de.dafuqs.lootcrates.blocks.*;
 import net.minecraft.entity.player.*;
-import net.minecraft.item.*;
 import org.jetbrains.annotations.*;
 
 import java.time.*;
@@ -55,8 +53,7 @@ public record LootCratePlayerDataComponent(List<PlayerCrateData> playerData) {
 			newData.add(new PlayerCrateData(playerUUID, foundEntry.replenishTime(), unlockTime));
 		}
 		
-		LootCratePlayerDataComponent newPlayerDataComponent = new LootCratePlayerDataComponent(newData);
-		return newPlayerDataComponent;
+		return new LootCratePlayerDataComponent(newData);
 	}
 	
 	public static LootCratePlayerDataComponent setReplenishTime(@Nullable LootCratePlayerDataComponent playerDataComponent, PlayerEntity player, boolean trackedPerPlayer, long replenishTime) {

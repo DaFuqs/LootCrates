@@ -4,16 +4,13 @@ import de.dafuqs.lootcrates.*;
 import net.minecraft.client.item.*;
 import net.minecraft.component.*;
 import net.minecraft.component.type.*;
-import net.minecraft.entity.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
 import net.minecraft.loot.*;
 import net.minecraft.loot.context.*;
-import net.minecraft.nbt.*;
 import net.minecraft.registry.*;
 import net.minecraft.server.network.*;
 import net.minecraft.server.world.*;
-import net.minecraft.sound.*;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
 import net.minecraft.world.*;
@@ -48,16 +45,18 @@ public class LootBagItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if (user instanceof ServerPlayerEntity serverPlayerEntity) {
 			ItemStack lootBagItemStack = user.getStackInHand(hand);
-			List<ItemStack> lootTableContents = getLootTableContents(serverPlayerEntity, lootBagItemStack);
-			for (ItemStack lootStack : lootTableContents) {
+			List<ItemStack> loot = generateLoot(serverPlayerEntity, lootBagItemStack);
+			for (ItemStack lootStack : loot) {
 				serverPlayerEntity.getInventory().offerOrDrop(lootStack);
 			}
-			lootBagItemStack.decrement(1);
+			if (!serverPlayerEntity.isCreative()) {
+				lootBagItemStack.decrement(1);
+			}
 		}
 		return super.use(world, user, hand);
 	}
 	
-	public List<ItemStack> getLootTableContents(ServerPlayerEntity player, ItemStack stack) {
+	public List<ItemStack> generateLoot(ServerPlayerEntity player, ItemStack stack) {
 		@Nullable ContainerLootComponent lootComponent = getLootComponent(stack);
 		if (lootComponent != null) {
 			ServerWorld serverWorld = player.getServerWorld();
