@@ -20,7 +20,6 @@ import org.jetbrains.annotations.*;
 public class ShulkerLootCrateBlock extends LootCrateBlock {
 	
 	public static final DirectionProperty FACING = FacingBlock.FACING;
-	public static final Identifier CONTENTS = new Identifier("contents");
 	
 	public ShulkerLootCrateBlock(LootCrateVariant variant, AbstractBlock.Settings settings) {
 		super(variant, settings);

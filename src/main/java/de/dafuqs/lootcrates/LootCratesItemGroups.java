@@ -34,21 +34,21 @@ public class LootCratesItemGroups {
 	public static @Nullable ItemGroup PREDEFINED_BAGS_GROUP;
 	
 	public static void register(boolean addExampleCratesAndBundlesItemGroups) {
-		Registry.register(Registries.ITEM_GROUP, new Identifier(LootCrates.MOD_ID, "loot_crates"), ITEM_GROUP);
+		Registry.register(Registries.ITEM_GROUP, Identifier.of(LootCrates.MOD_ID, "loot_crates"), ITEM_GROUP);
 		
 		if (addExampleCratesAndBundlesItemGroups) {
 			PREDEFINED_CRATES_GROUP = FabricItemGroup.builder()
 					.displayName(Text.translatable("itemGroup.lootcrates.predefined_loot_crates"))
 					.icon(() -> new ItemStack(LootCrateAtlas.getLootCrate(LootCrateVariant.EPIC)))
-					.entries((displayContext, entries) -> entries.addAll(getPredefinedLootCrates())).build(); // Icon is set in the tab directly
+					.entries((displayContext, entries) -> entries.addAll(getPredefinedLootCrates())).build();
 			
 			PREDEFINED_BAGS_GROUP = FabricItemGroup.builder()
 					.displayName(Text.translatable("itemGroup.lootcrates.predefined_loot_bags"))
 					.icon(() -> new ItemStack(LootCrateAtlas.getLootBagItem(LootCrateVariant.EPIC)))
-					.entries((displayContext, entries) -> entries.addAll(getPredefinedLootBags())).build(); // Icon is set in the tab directly
+					.entries((displayContext, entries) -> entries.addAll(getPredefinedLootBags())).build();
 			
-			Registry.register(Registries.ITEM_GROUP, new Identifier(LootCrates.MOD_ID, "predefined_loot_crates"), PREDEFINED_CRATES_GROUP);
-			Registry.register(Registries.ITEM_GROUP, new Identifier(LootCrates.MOD_ID, "predefined_loot_bags"), PREDEFINED_BAGS_GROUP);
+			Registry.register(Registries.ITEM_GROUP, Identifier.of(LootCrates.MOD_ID, "predefined_loot_crates"), PREDEFINED_CRATES_GROUP);
+			Registry.register(Registries.ITEM_GROUP, Identifier.of(LootCrates.MOD_ID, "predefined_loot_bags"), PREDEFINED_BAGS_GROUP);
 		}
 		
 	}

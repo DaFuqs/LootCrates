@@ -2,8 +2,8 @@ package de.dafuqs.lootcrates.items;
 
 import de.dafuqs.lootcrates.*;
 import de.dafuqs.lootcrates.enums.*;
-import net.minecraft.client.item.*;
 import net.minecraft.item.*;
+import net.minecraft.item.tooltip.*;
 import net.minecraft.text.*;
 
 import java.util.*;
@@ -27,5 +27,4 @@ public class LootKeyItem extends Item {
 		
 		tooltip.add(LootCrateAtlas.getLootKeyItemToolTip(stack));
 	}
-	
 }

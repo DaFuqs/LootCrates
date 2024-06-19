@@ -140,9 +140,9 @@ public class LootCrateDefinition {
 	
 	@Environment(EnvType.CLIENT)
 	public void setupTextures() {
-		this.chestTextureIdentifier = new Identifier(LootCrates.MOD_ID, "block/" + this.identifier + "_crate");
+		this.chestTextureIdentifier = Identifier.of(LootCrates.MOD_ID, "block/" + this.identifier + "_crate");
 		this.chestTexture = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, this.chestTextureIdentifier);
-		this.shulkerTextureIdentifier = new Identifier(LootCrates.MOD_ID, "block/" + this.identifier + "_shulker");
+		this.shulkerTextureIdentifier = Identifier.of(LootCrates.MOD_ID, "block/" + this.identifier + "_shulker");
 		this.shulkerTexture = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, this.shulkerTextureIdentifier);
 	}
 	

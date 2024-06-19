@@ -1,11 +1,11 @@
 package de.dafuqs.lootcrates.items;
 
 import de.dafuqs.lootcrates.*;
-import net.minecraft.client.item.*;
 import net.minecraft.component.*;
 import net.minecraft.component.type.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
+import net.minecraft.item.tooltip.*;
 import net.minecraft.loot.*;
 import net.minecraft.loot.context.*;
 import net.minecraft.registry.*;

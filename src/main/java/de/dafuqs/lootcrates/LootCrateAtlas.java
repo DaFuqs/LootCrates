@@ -51,7 +51,7 @@ public class LootCrateAtlas {
 		lootCrateDefinitions.put(variant, lootCrateDefinition);
 		
 		// create & register key item
-		Identifier keyItemIdentifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_crate_key");
+		Identifier keyItemIdentifier = Identifier.of(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_crate_key");
 		
 		LootKeyItem keyItem = new LootKeyItem(variant, lootCrateDefinition.getKeyItemSettings());
 		Registry.register(Registries.ITEM, keyItemIdentifier, keyItem);
@@ -59,9 +59,9 @@ public class LootCrateAtlas {
 		lootCrateKeys.put(variant, keyItem);
 		
 		// create & register blocks
-		Identifier lootCrateIdentifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_chest_loot_crate");
-		Identifier shulkerCrateIdentifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_shulker_loot_crate");
-		Identifier lootBarrelIdentifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_loot_barrel");
+		Identifier lootCrateIdentifier = Identifier.of(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_chest_loot_crate");
+		Identifier shulkerCrateIdentifier = Identifier.of(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_shulker_loot_crate");
+		Identifier lootBarrelIdentifier = Identifier.of(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_loot_barrel");
 		
 		ChestLootCrateBlock lootCrateBlock = new ChestLootCrateBlock(variant, lootCrateDefinition.getChestBlockSettings());
 		ShulkerLootCrateBlock shulkerLootCrateBlock = createShulkerLootCrateBlock(variant, lootCrateDefinition.getShulkerBlockSettings());
@@ -102,7 +102,7 @@ public class LootCrateAtlas {
 		lootBarrelItems.put(variant, lootBarrelBlockItem);
 		
 		// create & register loot bag item
-		Identifier lootBagIdentifier = new Identifier(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_loot_bag");
+		Identifier lootBagIdentifier = Identifier.of(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_loot_bag");
 		
 		LootBagItem lootBagItem;
 		if (lootCrateDefinition.scheduledTickEvent == ScheduledTickEvent.NONE) {

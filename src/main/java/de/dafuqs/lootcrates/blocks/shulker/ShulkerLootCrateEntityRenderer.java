@@ -40,16 +40,16 @@ public class ShulkerLootCrateEntityRenderer implements BlockEntityRenderer<Shulk
 		}
 		
 		matrixStack.push();
-		matrixStack.translate(0.5D, 0.5D, 0.5D);
+		matrixStack.translate(0.5F, 0.5F, 0.5F);
 		float g = 0.9995F;
 		matrixStack.scale(0.9995F, 0.9995F, 0.9995F);
 		matrixStack.multiply(direction.getRotationQuaternion());
 		matrixStack.scale(1.0F, -1.0F, -1.0F);
-		matrixStack.translate(0.0D, -1.0D, 0.0D);
+		matrixStack.translate(0.0F, -1.0F, 0.0F);
 		ModelPart modelPart = this.model.getLid();
 		modelPart.setPivot(0.0F, 24.0F - shulkerLootCrateBlockEntity.getAnimationProgress(f) * 0.5F * 16.0F, 0.0F);
 		modelPart.yaw = 270.0F * shulkerLootCrateBlockEntity.getAnimationProgress(f) * 0.017453292F;
-		this.model.render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
+		this.model.render(matrixStack, vertexConsumer, i, j);
 		matrixStack.pop();
 	}
 	

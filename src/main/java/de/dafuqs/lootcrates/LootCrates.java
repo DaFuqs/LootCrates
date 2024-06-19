@@ -33,7 +33,7 @@ public class LootCrates implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static LootCratesConfig CONFIG;
 	
-	public static final Identifier CHEST_UNLOCKS_SOUND_ID = new Identifier(MOD_ID, "chest_unlocks");
+	public static final Identifier CHEST_UNLOCKS_SOUND_ID = Identifier.of(MOD_ID, "chest_unlocks");
 	public static final SoundEvent CHEST_UNLOCKS_SOUND_EVENT = SoundEvent.of(CHEST_UNLOCKS_SOUND_ID);
 	
 	public static final DispenserBehavior LOOT_BAG_DISPENSER_BEHAVIOR = (pointer, stack) -> {

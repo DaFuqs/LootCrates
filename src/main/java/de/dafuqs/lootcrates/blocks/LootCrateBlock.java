@@ -112,7 +112,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 	}
 	
 	@Override
-	public void scheduledTick(BlockState state, @NotNull ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		world.scheduleBlockTick(pos, this, getRandomTickTime(world.random));
 		
 		BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -191,7 +191,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 		}
 	}
 	
-	public static final Identifier CONTENTS_DYNAMIC_DROP_ID = new Identifier("contents");
+	public static final Identifier CONTENTS_DYNAMIC_DROP_ID = Identifier.of(LootCrates.MOD_ID, "contents");
 	
 	@Override
 	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
