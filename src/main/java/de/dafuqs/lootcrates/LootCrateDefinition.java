@@ -7,6 +7,7 @@ import net.minecraft.block.piston.*;
 import net.minecraft.client.texture.*;
 import net.minecraft.client.util.*;
 import net.minecraft.item.*;
+import net.minecraft.registry.*;
 import net.minecraft.sound.*;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
@@ -59,82 +60,88 @@ public class LootCrateDefinition {
 		this.scheduledTickEvent = scheduledTickEvent;
 	}
 	
-	public Item.Settings getKeyItemSettings() {
+	public Item.Settings getKeyItemSettings(Identifier id) {
+		RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
+		Item.Settings settings = new Item.Settings().registryKey(key).maxCount(16).rarity(rarity);
 		if (fireProof) {
-			return new Item.Settings().maxCount(16).rarity(rarity).fireproof();
-		} else {
-			return new Item.Settings().maxCount(16).rarity(rarity);
+			settings = settings.fireproof();
 		}
+		return settings;
 	}
 	
-	public Item.Settings getLootBagItemSettings() {
+	public Item.Settings getLootBagItemSettings(Identifier id) {
+		RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
+		Item.Settings settings = new Item.Settings().registryKey(key).maxCount(16).rarity(rarity);
 		if (fireProof) {
-			return new Item.Settings().maxCount(16).rarity(rarity).fireproof();
-		} else {
-			return new Item.Settings().maxCount(16).rarity(rarity);
+			settings = settings.fireproof();
 		}
+		return settings;
 	}
 	
-	public Item.Settings getBlockItemSettings() {
+	public Item.Settings getBlockItemSettings(Identifier id) {
+		RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
+		Item.Settings settings = new Item.Settings().registryKey(key).useBlockPrefixedTranslationKey().rarity(rarity);
 		if (fireProof) {
-			return new Item.Settings().rarity(rarity).fireproof();
-		} else {
-			return new Item.Settings().rarity(rarity);
+			settings = settings.fireproof();
 		}
+		return settings;
 	}
 	
-	public AbstractBlock.Settings getChestBlockSettings() {
-		AbstractBlock.Settings blockSettings = AbstractBlock.Settings.copy(Blocks.CHEST).mapColor(mapColor).luminance(value -> luminance).pistonBehavior(LootCrates.CONFIG.ChestCrateHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
+	public AbstractBlock.Settings getChestBlockSettings(Identifier id) {
+		RegistryKey<Block> key = RegistryKey.of(RegistryKeys.BLOCK, id);
+		AbstractBlock.Settings settings = AbstractBlock.Settings.copy(Blocks.CHEST).registryKey(key).mapColor(mapColor).luminance(value -> luminance).pistonBehavior(LootCrates.CONFIG.ChestCrateHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
 		
 		if (LootCrates.CONFIG.ChestCrateHardness < 0) {
-			blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
+			settings = settings.strength(-1.0F, 3600000.0F).dropsNothing();
 		} else {
-			blockSettings = blockSettings.strength(LootCrates.CONFIG.ChestCrateHardness);
+			settings = settings.strength(LootCrates.CONFIG.ChestCrateHardness);
 		}
 		if (!LootCrates.CONFIG.ChestCratesDropAsItems) {
-			blockSettings = blockSettings.dropsNothing();
+			settings = settings.dropsNothing();
 		}
 		
 		if (hasTransparency) {
-			blockSettings = blockSettings.nonOpaque();
+			settings = settings.nonOpaque();
 		}
 		
-		return blockSettings;
+		return settings;
 	}
 	
-	public AbstractBlock.Settings getShulkerBlockSettings() {
-		AbstractBlock.Settings blockSettings = AbstractBlock.Settings.copy(Blocks.SHULKER_BOX).mapColor(mapColor).luminance(value -> luminance).pistonBehavior(LootCrates.CONFIG.ShulkerCrateHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
+	public AbstractBlock.Settings getShulkerBlockSettings(Identifier id) {
+		RegistryKey<Block> key = RegistryKey.of(RegistryKeys.BLOCK, id);
+		AbstractBlock.Settings settings = AbstractBlock.Settings.copy(Blocks.SHULKER_BOX).registryKey(key).mapColor(mapColor).luminance(value -> luminance).pistonBehavior(LootCrates.CONFIG.ShulkerCrateHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
 		
 		if (LootCrates.CONFIG.ShulkerCrateHardness < 0) {
-			blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
+			settings = settings.strength(-1.0F, 3600000.0F).dropsNothing();
 		} else {
-			blockSettings = blockSettings.strength(LootCrates.CONFIG.ShulkerCrateHardness);
+			settings = settings.strength(LootCrates.CONFIG.ShulkerCrateHardness);
 		}
 		if (!LootCrates.CONFIG.ShulkerCratesDropAsItems) {
-			blockSettings = blockSettings.dropsNothing();
+			settings = settings.dropsNothing();
 		}
 		
 		// shulker blocks are always opaque
-		return blockSettings;
+		return settings;
 	}
 	
-	public AbstractBlock.Settings getLootBarrelBlockSettings() {
-		AbstractBlock.Settings blockSettings = AbstractBlock.Settings.copy(Blocks.BARREL).mapColor(mapColor).luminance(value -> luminance).pistonBehavior(LootCrates.CONFIG.LootBarrelHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
+	public AbstractBlock.Settings getLootBarrelBlockSettings(Identifier id) {
+		RegistryKey<Block> key = RegistryKey.of(RegistryKeys.BLOCK, id);
+		AbstractBlock.Settings settings = AbstractBlock.Settings.copy(Blocks.BARREL).registryKey(key).mapColor(mapColor).luminance(value -> luminance).pistonBehavior(LootCrates.CONFIG.LootBarrelHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
 		
 		if (LootCrates.CONFIG.LootBarrelHardness < 0) {
-			blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
+			settings = settings.strength(-1.0F, 3600000.0F).dropsNothing();
 		} else {
-			blockSettings = blockSettings.strength(LootCrates.CONFIG.LootBarrelHardness);
+			settings = settings.strength(LootCrates.CONFIG.LootBarrelHardness);
 		}
 		if (!LootCrates.CONFIG.LootBarrelsDropAsItems) {
-			blockSettings = blockSettings.dropsNothing();
+			settings = settings.dropsNothing();
 		}
 		
 		if (hasTransparency) {
-			blockSettings = blockSettings.nonOpaque();
+			settings = settings.nonOpaque();
 		}
 		
-		return blockSettings;
+		return settings;
 	}
 	
 	@Environment(EnvType.CLIENT)

@@ -50,22 +50,22 @@ public class LootCrateAtlas {
 	public static void registerLootCrateDefinition(LootCrateVariant variant, LootCrateDefinition lootCrateDefinition) {
 		lootCrateDefinitions.put(variant, lootCrateDefinition);
 		
-		// create & register key item
+		// create and register key item
 		Identifier keyItemIdentifier = Identifier.of(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_crate_key");
 		
-		LootKeyItem keyItem = new LootKeyItem(variant, lootCrateDefinition.getKeyItemSettings());
+		LootKeyItem keyItem = new LootKeyItem(variant, lootCrateDefinition.getKeyItemSettings(keyItemIdentifier));
 		Registry.register(Registries.ITEM, keyItemIdentifier, keyItem);
 		
 		lootCrateKeys.put(variant, keyItem);
 		
-		// create & register blocks
+		// create and register blocks
 		Identifier lootCrateIdentifier = Identifier.of(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_chest_loot_crate");
 		Identifier shulkerCrateIdentifier = Identifier.of(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_shulker_loot_crate");
 		Identifier lootBarrelIdentifier = Identifier.of(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_loot_barrel");
 		
-		ChestLootCrateBlock lootCrateBlock = new ChestLootCrateBlock(variant, lootCrateDefinition.getChestBlockSettings());
-		ShulkerLootCrateBlock shulkerLootCrateBlock = createShulkerLootCrateBlock(variant, lootCrateDefinition.getShulkerBlockSettings());
-		LootBarrelBlock lootBarrelBlock = new LootBarrelBlock(variant, lootCrateDefinition.getLootBarrelBlockSettings());
+		ChestLootCrateBlock lootCrateBlock = new ChestLootCrateBlock(variant, lootCrateDefinition.getChestBlockSettings(lootCrateIdentifier));
+		ShulkerLootCrateBlock shulkerLootCrateBlock = createShulkerLootCrateBlock(variant, lootCrateDefinition.getShulkerBlockSettings(shulkerCrateIdentifier));
+		LootBarrelBlock lootBarrelBlock = new LootBarrelBlock(variant, lootCrateDefinition.getLootBarrelBlockSettings(lootBarrelIdentifier));
 		Registry.register(Registries.BLOCK, lootCrateIdentifier, lootCrateBlock);
 		Registry.register(Registries.BLOCK, shulkerCrateIdentifier, shulkerLootCrateBlock);
 		Registry.register(Registries.BLOCK, lootBarrelIdentifier, lootBarrelBlock);
@@ -74,20 +74,22 @@ public class LootCrateAtlas {
 		shulkerCrateBlocks.put(variant, shulkerLootCrateBlock);
 		lootBarrelBlocks.put(variant, lootBarrelBlock);
 		
-		// create & register block items
-		Item.Settings blockItemSettings = lootCrateDefinition.getBlockItemSettings();
+		// create and register block items
+		Item.Settings crateBlockItemSettings = lootCrateDefinition.getBlockItemSettings(lootCrateIdentifier);
+		Item.Settings shulkerCrateItemSettings = lootCrateDefinition.getBlockItemSettings(shulkerCrateIdentifier);
+		Item.Settings barrelItemSettings = lootCrateDefinition.getBlockItemSettings(lootBarrelIdentifier);
 		
 		BlockItem lootCrateBlockItem;
 		BlockItem shulkerCrateBlockItem;
 		BlockItem lootBarrelBlockItem;
 		if (lootCrateDefinition.scheduledTickEvent == ScheduledTickEvent.NONE) {
-			lootCrateBlockItem = new LootCrateItem(variant, lootCrateBlock, blockItemSettings);
-			shulkerCrateBlockItem = new LootCrateItem(variant, shulkerLootCrateBlock, blockItemSettings);
-			lootBarrelBlockItem = new LootCrateItem(variant, lootBarrelBlock, blockItemSettings);
+			lootCrateBlockItem = new LootCrateItem(variant, lootCrateBlock, crateBlockItemSettings);
+			shulkerCrateBlockItem = new LootCrateItem(variant, shulkerLootCrateBlock, shulkerCrateItemSettings);
+			lootBarrelBlockItem = new LootCrateItem(variant, lootBarrelBlock, barrelItemSettings);
 		} else {
-			lootCrateBlockItem = new TickingLootCrateItem(variant, lootCrateBlock, blockItemSettings, lootCrateDefinition.scheduledTickEvent);
-			shulkerCrateBlockItem = new TickingLootCrateItem(variant, shulkerLootCrateBlock, blockItemSettings, lootCrateDefinition.scheduledTickEvent);
-			lootBarrelBlockItem = new TickingLootCrateItem(variant, lootBarrelBlock, blockItemSettings, lootCrateDefinition.scheduledTickEvent);
+			lootCrateBlockItem = new TickingLootCrateItem(variant, lootCrateBlock, crateBlockItemSettings, lootCrateDefinition.scheduledTickEvent);
+			shulkerCrateBlockItem = new TickingLootCrateItem(variant, shulkerLootCrateBlock, shulkerCrateItemSettings, lootCrateDefinition.scheduledTickEvent);
+			lootBarrelBlockItem = new TickingLootCrateItem(variant, lootBarrelBlock, barrelItemSettings, lootCrateDefinition.scheduledTickEvent);
 		}
 		Registry.register(Registries.ITEM, lootCrateIdentifier, lootCrateBlockItem);
 		Registry.register(Registries.ITEM, shulkerCrateIdentifier, shulkerCrateBlockItem);
@@ -101,14 +103,14 @@ public class LootCrateAtlas {
 		shulkerCrateItems.put(variant, shulkerCrateBlockItem);
 		lootBarrelItems.put(variant, lootBarrelBlockItem);
 		
-		// create & register loot bag item
+		// create and register loot bag item
 		Identifier lootBagIdentifier = Identifier.of(LootCrates.MOD_ID, lootCrateDefinition.identifier + "_loot_bag");
 		
 		LootBagItem lootBagItem;
 		if (lootCrateDefinition.scheduledTickEvent == ScheduledTickEvent.NONE) {
-			lootBagItem = new LootBagItem(lootCrateDefinition.getLootBagItemSettings());
+			lootBagItem = new LootBagItem(lootCrateDefinition.getLootBagItemSettings(lootBagIdentifier));
 		} else {
-			lootBagItem = new TickingLootBagItem(lootCrateDefinition.getLootBagItemSettings(), lootCrateDefinition.scheduledTickEvent);
+			lootBagItem = new TickingLootBagItem(lootCrateDefinition.getLootBagItemSettings(lootBagIdentifier), lootCrateDefinition.scheduledTickEvent);
 		}
 		
 		Registry.register(Registries.ITEM, lootBagIdentifier, lootBagItem);
