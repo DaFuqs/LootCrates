@@ -2,7 +2,6 @@ package de.dafuqs.lootcrates;
 
 import de.dafuqs.lootcrates.enums.*;
 import net.fabricmc.api.*;
-import net.fabricmc.fabric.api.object.builder.v1.block.*;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.*;
 import net.minecraft.client.texture.*;
@@ -85,7 +84,7 @@ public class LootCrateDefinition {
 	}
 	
 	public AbstractBlock.Settings getChestBlockSettings() {
-		AbstractBlock.Settings blockSettings = FabricBlockSettings.copyOf(Blocks.CHEST).mapColor(mapColor).luminance(luminance).pistonBehavior(LootCrates.CONFIG.ChestCrateHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
+		AbstractBlock.Settings blockSettings = AbstractBlock.Settings.copy(Blocks.CHEST).mapColor(mapColor).luminance(value -> luminance).pistonBehavior(LootCrates.CONFIG.ChestCrateHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
 		
 		if (LootCrates.CONFIG.ChestCrateHardness < 0) {
 			blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
@@ -104,7 +103,7 @@ public class LootCrateDefinition {
 	}
 	
 	public AbstractBlock.Settings getShulkerBlockSettings() {
-		AbstractBlock.Settings blockSettings = FabricBlockSettings.copyOf(Blocks.SHULKER_BOX).mapColor(mapColor).luminance(luminance).pistonBehavior(LootCrates.CONFIG.ShulkerCrateHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
+		AbstractBlock.Settings blockSettings = AbstractBlock.Settings.copy(Blocks.SHULKER_BOX).mapColor(mapColor).luminance(value -> luminance).pistonBehavior(LootCrates.CONFIG.ShulkerCrateHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
 		
 		if (LootCrates.CONFIG.ShulkerCrateHardness < 0) {
 			blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();
@@ -120,7 +119,7 @@ public class LootCrateDefinition {
 	}
 	
 	public AbstractBlock.Settings getLootBarrelBlockSettings() {
-		AbstractBlock.Settings blockSettings = FabricBlockSettings.copyOf(Blocks.BARREL).mapColor(mapColor).luminance(luminance).pistonBehavior(LootCrates.CONFIG.LootBarrelHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
+		AbstractBlock.Settings blockSettings = AbstractBlock.Settings.copy(Blocks.BARREL).mapColor(mapColor).luminance(value -> luminance).pistonBehavior(LootCrates.CONFIG.LootBarrelHardness < 0 ? PistonBehavior.BLOCK : PistonBehavior.DESTROY);
 		
 		if (LootCrates.CONFIG.LootBarrelHardness < 0) {
 			blockSettings = blockSettings.strength(-1.0F, 3600000.0F).dropsNothing();

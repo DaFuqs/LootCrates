@@ -182,7 +182,7 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 				Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, registryKey);
 			}
 			
-			LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder((ServerWorld)world)).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos));
+			LootWorldContext.Builder builder = (new LootWorldContext.Builder((ServerWorld) world)).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos));
 			if (player != null) {
 				builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
 			}

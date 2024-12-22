@@ -4,6 +4,7 @@ import de.dafuqs.lootcrates.*;
 import de.dafuqs.lootcrates.blocks.barrel.*;
 import de.dafuqs.lootcrates.blocks.chest.*;
 import de.dafuqs.lootcrates.blocks.shulker.*;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.registry.*;
 import net.minecraft.util.*;
@@ -19,9 +20,9 @@ public class LootCratesBlockEntityType {
 	public static BlockEntityType<LootBarrelBlockEntity> LOOT_BARREL_BLOCK_ENTITY;
 	
 	public static void register() {
-		CHEST_LOOT_CRATE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, CHEST_LOOT_CRATE_BLOCK_ENTITY_IDENTIFIER, BlockEntityType.Builder.create(ChestLootCrateBlockEntity::new, LootCrateAtlas.getChestCrates()).build());
-		SHULKER_LOOT_CRATE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, SHULKER_LOOT_CRATE_BLOCK_ENTITY_IDENTIFIER, BlockEntityType.Builder.create(ShulkerLootCrateBlockEntity::new, LootCrateAtlas.getShulkerCrates()).build());
-		LOOT_BARREL_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, LOOT_BARREL_BLOCK_ENTITY_IDENTIFIER, BlockEntityType.Builder.create(LootBarrelBlockEntity::new, LootCrateAtlas.getLootBarrels()).build());
+		CHEST_LOOT_CRATE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, CHEST_LOOT_CRATE_BLOCK_ENTITY_IDENTIFIER, FabricBlockEntityTypeBuilder.create(ChestLootCrateBlockEntity::new, LootCrateAtlas.getChestCrates()).build());
+		SHULKER_LOOT_CRATE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, SHULKER_LOOT_CRATE_BLOCK_ENTITY_IDENTIFIER, FabricBlockEntityTypeBuilder.create(ShulkerLootCrateBlockEntity::new, LootCrateAtlas.getShulkerCrates()).build());
+		LOOT_BARREL_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, LOOT_BARREL_BLOCK_ENTITY_IDENTIFIER, FabricBlockEntityTypeBuilder.create(LootBarrelBlockEntity::new, LootCrateAtlas.getLootBarrels()).build());
 	}
 	
 }

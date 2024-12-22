@@ -43,7 +43,7 @@ public class LootCrates implements ModInitializer {
 				ServerWorld world = pointer.world();
 				LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(lootComponent.lootTable());
 				
-				LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(pointer.world()).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pointer.pos()));
+				LootWorldContext.Builder builder = new LootWorldContext.Builder(pointer.world()).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pointer.pos()));
 				List<ItemStack> lootStacks = lootTable.generateLoot(builder.build(LootContextTypes.CHEST), lootComponent.seed());
 				Position position = DispenserBlock.getOutputLocation(pointer);
 				Direction direction = pointer.state().get(DispenserBlock.FACING);

@@ -8,6 +8,7 @@ import net.minecraft.block.entity.*;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
+import net.minecraft.server.world.*;
 import net.minecraft.state.*;
 import net.minecraft.state.property.*;
 import net.minecraft.util.*;
@@ -19,16 +20,11 @@ import org.jetbrains.annotations.*;
 
 public class ShulkerLootCrateBlock extends LootCrateBlock {
 	
-	public static final DirectionProperty FACING = FacingBlock.FACING;
+	public static final EnumProperty<Direction> FACING = FacingBlock.FACING;
 	
 	public ShulkerLootCrateBlock(LootCrateVariant variant, AbstractBlock.Settings settings) {
 		super(variant, settings);
 		this.setDefaultState((this.stateManager.getDefaultState()).with(FACING, Direction.UP));
-	}
-	
-	@Override
-	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 	
 	@Override
@@ -56,35 +52,23 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
 	
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else if (player.isSpectator()) {
-			return ActionResult.CONSUME;
-		} else {
-			ActionResult actionResult = super.onUse(state, world, pos, player, hit);
-			if (actionResult == ActionResult.PASS) {
-				BlockEntity blockEntity = world.getBlockEntity(pos);
-				if (blockEntity instanceof ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity) {
-					if (canOpen(state, world, pos, shulkerLootCrateBlockEntity)) {
-						player.openHandledScreen(shulkerLootCrateBlockEntity);
-						PiglinBrain.onGuardedBlockInteracted(player, true);
-					}
-					
-					return ActionResult.CONSUME;
-				} else {
-					return ActionResult.PASS;
+		if (world instanceof ServerWorld serverWorld) {
+			BlockEntity var8 = world.getBlockEntity(pos);
+			if (var8 instanceof ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity) {
+				if (canOpen(state, world, pos, shulkerLootCrateBlockEntity)) {
+					player.openHandledScreen(shulkerLootCrateBlockEntity);
+					PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
 				}
-			} else {
-				return ActionResult.CONSUME;
 			}
 		}
+		return ActionResult.SUCCESS;
 	}
 	
 	private static boolean canOpen(BlockState state, World world, BlockPos pos, ShulkerLootCrateBlockEntity entity) {
 		if (entity.getAnimationStage() != ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
 			return true;
 		} else {
-			Box box = ShulkerEntity.calculateBoundingBox(1.0F, state.get(FACING), 0.0F, 0.5F).offset(pos).contract(1.0E-6);
+			Box box = ShulkerEntity.calculateBoundingBox(1.0F, state.get(FACING), 0.0F, 0.5F, pos.toBottomCenterPos()).contract(1.0E-6);
 			return world.isSpaceEmpty(box);
 		}
 	}

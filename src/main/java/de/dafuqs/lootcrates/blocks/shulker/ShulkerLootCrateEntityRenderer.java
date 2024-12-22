@@ -14,13 +14,13 @@ import net.minecraft.util.math.*;
 @Environment(EnvType.CLIENT)
 public class ShulkerLootCrateEntityRenderer implements BlockEntityRenderer<ShulkerLootCrateBlockEntity> {
 	
-	private final ShulkerEntityModel<?> model;
+	private final ShulkerLootCrateBlockModel model;
 	
 	public ShulkerLootCrateEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-		this.model = new ShulkerEntityModel<>(ctx.getLayerModelPart(EntityModelLayers.SHULKER));
+		this.model = new ShulkerLootCrateBlockModel(ctx.getLayerModelPart(EntityModelLayers.SHULKER_BOX));
 	}
 	
-	public void render(ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+	public void render(ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
 		Direction direction = Direction.UP;
 		if (shulkerLootCrateBlockEntity.hasWorld()) {
 			BlockState blockState = shulkerLootCrateBlockEntity.getWorld().getBlockState(shulkerLootCrateBlockEntity.getPos());
@@ -46,11 +46,25 @@ public class ShulkerLootCrateEntityRenderer implements BlockEntityRenderer<Shulk
 		matrixStack.multiply(direction.getRotationQuaternion());
 		matrixStack.scale(1.0F, -1.0F, -1.0F);
 		matrixStack.translate(0.0F, -1.0F, 0.0F);
-		ModelPart modelPart = this.model.getLid();
-		modelPart.setPivot(0.0F, 24.0F - shulkerLootCrateBlockEntity.getAnimationProgress(f) * 0.5F * 16.0F, 0.0F);
-		modelPart.yaw = 270.0F * shulkerLootCrateBlockEntity.getAnimationProgress(f) * 0.017453292F;
-		this.model.render(matrixStack, vertexConsumer, i, j);
+		float openness = shulkerLootCrateBlockEntity.getAnimationProgress(f);
+		this.model.animateLid(openness);
+		this.model.render(matrixStack, vertexConsumer, light, overlay);
 		matrixStack.pop();
+	}
+	
+	@Environment(EnvType.CLIENT)
+	private static class ShulkerLootCrateBlockModel extends Model {
+		private final ModelPart lid;
+		
+		public ShulkerLootCrateBlockModel(ModelPart root) {
+			super(root, RenderLayer::getEntityCutoutNoCull);
+			this.lid = root.getChild("lid");
+		}
+		
+		public void animateLid(float openness) {
+			this.lid.setPivot(0.0F, 24.0F - openness * 0.5F * 16.0F, 0.0F);
+			this.lid.yaw = 270.0F * openness * 0.017453292F;
+		}
 	}
 	
 }

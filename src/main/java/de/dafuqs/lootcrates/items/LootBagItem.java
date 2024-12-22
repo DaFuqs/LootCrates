@@ -42,7 +42,7 @@ public class LootBagItem extends Item {
 	}
 	
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		if (user instanceof ServerPlayerEntity serverPlayerEntity) {
 			ItemStack lootBagItemStack = user.getStackInHand(hand);
 			List<ItemStack> loot = generateLoot(serverPlayerEntity, lootBagItemStack);
@@ -63,7 +63,7 @@ public class LootBagItem extends Item {
 			
 			RegistryKey<LootTable> lootTableKey = lootComponent.lootTable();
 			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(lootTableKey);
-			LootContextParameterSet.Builder builder = (new LootContextParameterSet.Builder(serverWorld)).add(LootContextParameters.ORIGIN, player.getPos());
+			LootWorldContext.Builder builder = (new LootWorldContext.Builder(serverWorld)).add(LootContextParameters.ORIGIN, player.getPos());
 			builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
 			
 			return lootTable.generateLoot(builder.build(LootContextTypes.CHEST), lootComponent.seed());

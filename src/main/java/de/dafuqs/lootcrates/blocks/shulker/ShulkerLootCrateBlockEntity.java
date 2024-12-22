@@ -59,38 +59,50 @@ public class ShulkerLootCrateBlockEntity extends LootCrateBlockEntity implements
 	
 	private void updateAnimation(World world, BlockPos pos, BlockState state) {
 		this.prevAnimationProgress = this.animationProgress;
-		switch (this.animationStage) {
-			case CLOSED -> this.animationProgress = 0.0F;
-			case OPENING -> {
+		switch (this.animationStage.ordinal()) {
+			case 0:
+				this.animationProgress = 0.0F;
+				break;
+			case 1:
 				this.animationProgress += 0.1F;
+				if (this.prevAnimationProgress == 0.0F) {
+					updateNeighborStates(world, pos, state);
+				}
+				
 				if (this.animationProgress >= 1.0F) {
 					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
 					this.animationProgress = 1.0F;
 					updateNeighborStates(world, pos, state);
 				}
+				
 				this.pushEntities(world, pos, state);
-			}
-			case CLOSING -> {
+				break;
+			case 2:
+				this.animationProgress = 1.0F;
+				break;
+			case 3:
 				this.animationProgress -= 0.1F;
+				if (this.prevAnimationProgress == 1.0F) {
+					updateNeighborStates(world, pos, state);
+				}
+				
 				if (this.animationProgress <= 0.0F) {
 					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
 					this.animationProgress = 0.0F;
 					updateNeighborStates(world, pos, state);
 				}
-			}
-			case OPENED -> this.animationProgress = 1.0F;
 		}
 	}
 	
 	private void pushEntities(World world, BlockPos pos, BlockState state) {
 		if (state.getBlock() instanceof ShulkerLootCrateBlock) {
 			Direction direction = state.get(ShulkerBoxBlock.FACING);
-			Box box = ShulkerEntity.calculateBoundingBox(1.0F, direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
+			Box box = ShulkerEntity.calculateBoundingBox(1.0F, direction, this.prevAnimationProgress, this.animationProgress, pos.toBottomCenterPos());
 			List<Entity> list = world.getOtherEntities(null, box);
 			if (!list.isEmpty()) {
 				for (Entity entity : list) {
 					if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
-						entity.move(MovementType.SHULKER_BOX, new Vec3d((box.getLengthX() + 0.01D) * (double) direction.getOffsetX(), (box.getLengthY() + 0.01D) * (double) direction.getOffsetY(), (box.getLengthZ() + 0.01D) * (double) direction.getOffsetZ()));
+						entity.move(MovementType.SHULKER_BOX, new Vec3d((box.getLengthX() + 0.01) * (double) direction.getOffsetX(), (box.getLengthY() + 0.01) * (double) direction.getOffsetY(), (box.getLengthZ() + 0.01) * (double) direction.getOffsetZ()));
 					}
 				}
 			}

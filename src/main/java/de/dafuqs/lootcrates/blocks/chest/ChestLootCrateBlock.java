@@ -22,7 +22,7 @@ import org.jetbrains.annotations.*;
 
 public class ChestLootCrateBlock extends LootCrateBlock {
 	
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final EnumProperty<Direction> FACING = HorizontalFacingBlock.FACING;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
 	
 	public ChestLootCrateBlock(LootCrateVariant variant, AbstractBlock.Settings settings) {
@@ -32,21 +32,15 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 	
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
-			ActionResult actionResult = super.onUse(state, world, pos, player, hit);
-			if (actionResult == ActionResult.PASS) {
-				if (!hasBlockOnTop(world, pos)) {
-					NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
-					if (namedScreenHandlerFactory != null) {
-						player.openHandledScreen(namedScreenHandlerFactory);
-						PiglinBrain.onGuardedBlockInteracted(player, true);
-					}
-				}
+		if (!isChestBlocked(world, pos) && world instanceof ServerWorld serverWorld) {
+			NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
+			if (namedScreenHandlerFactory != null) {
+				player.openHandledScreen(namedScreenHandlerFactory);
+				PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
 			}
-			return ActionResult.CONSUME;
 		}
+		
+		return ActionResult.SUCCESS;
 	}
 	
 	public void onStateReplaced(BlockState state, @NotNull World world, BlockPos pos, BlockState newState, boolean moved) {
@@ -88,6 +82,10 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 		}
 	}
 	
+	public static boolean isChestBlocked(WorldAccess world, BlockPos pos) {
+		return hasBlockOnTop(world, pos);
+	}
+	
 	public static boolean hasBlockOnTop(BlockView world, BlockPos pos) {
 		BlockPos blockPos = pos.up();
 		return world.getBlockState(blockPos).isSolidBlock(world, blockPos);
@@ -96,11 +94,6 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 	@Nullable
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return new ChestLootCrateBlockEntity(pos, state);
-	}
-	
-	@Override
-	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 	
 	@Override

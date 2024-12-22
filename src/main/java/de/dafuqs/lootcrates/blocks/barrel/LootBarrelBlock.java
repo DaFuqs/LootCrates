@@ -8,7 +8,6 @@ import net.minecraft.block.entity.*;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
-import net.minecraft.screen.*;
 import net.minecraft.server.world.*;
 import net.minecraft.state.*;
 import net.minecraft.state.property.*;
@@ -21,7 +20,7 @@ import org.jetbrains.annotations.*;
 
 public class LootBarrelBlock extends LootCrateBlock {
 	
-	public static final DirectionProperty FACING = Properties.FACING;
+	public static final EnumProperty<Direction> FACING = Properties.FACING;
 	public static final BooleanProperty OPEN = Properties.OPEN;
 	
 	public LootBarrelBlock(LootCrateVariant variant, Settings settings) {
@@ -31,19 +30,15 @@ public class LootBarrelBlock extends LootCrateBlock {
 	
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
-			ActionResult actionResult = super.onUse(state, world, pos, player, hit);
-			if (actionResult == ActionResult.PASS) {
-				NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
-				if (namedScreenHandlerFactory != null) {
-					player.openHandledScreen(namedScreenHandlerFactory);
-					PiglinBrain.onGuardedBlockInteracted(player, true);
-				}
+		if (world instanceof ServerWorld serverWorld) {
+			BlockEntity var8 = world.getBlockEntity(pos);
+			if (var8 instanceof LootBarrelBlockEntity lootBarrelBlockEntity) {
+				player.openHandledScreen(lootBarrelBlockEntity);
+				PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
 			}
-			return ActionResult.CONSUME;
 		}
+		
+		return ActionResult.SUCCESS;
 	}
 	
 	@Override

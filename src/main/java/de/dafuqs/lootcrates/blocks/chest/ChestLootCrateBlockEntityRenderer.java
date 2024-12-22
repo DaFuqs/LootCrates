@@ -55,7 +55,7 @@ public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & LidOpenab
 				}
 				
 				matrices.push();
-				float f = (blockState.get(ChestBlock.FACING)).asRotation();
+				float f = (blockState.get(ChestBlock.FACING)).getPositiveHorizontalDegrees();
 				matrices.translate(0.5D, 0.5D, 0.5D);
 				matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-f));
 				matrices.translate(-0.5D, -0.5D, -0.5D);

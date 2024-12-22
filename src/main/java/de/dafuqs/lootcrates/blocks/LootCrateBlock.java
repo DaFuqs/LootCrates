@@ -194,8 +194,7 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 	public static final Identifier CONTENTS_DYNAMIC_DROP_ID = Identifier.of(LootCrates.MOD_ID, "contents");
 	
 	@Override
-	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
-		
+	protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
 		BlockBreakAction blockBreakAction = getBlockBreakAction();
 		switch (blockBreakAction) {
 			case KEEP_INVENTORY, DROP_AND_SCATTER_INVENTORY -> {
