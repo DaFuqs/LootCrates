@@ -43,6 +43,11 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 		return ActionResult.SUCCESS;
 	}
 	
+	@Override
+	protected BlockRenderType getRenderType(BlockState state) {
+		return BlockRenderType.INVISIBLE;
+	}
+	
 	public void onStateReplaced(BlockState state, @NotNull World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);

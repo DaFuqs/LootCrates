@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "lootcrates:block/common_shulker_loot_crate" }
+    "": {
+      "model": "lootcrates:block/common_shulker_loot_crate"
+    }
   }
 }
