@@ -8,7 +8,6 @@ import net.minecraft.block.entity.*;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
-import net.minecraft.server.world.*;
 import net.minecraft.state.*;
 import net.minecraft.state.property.*;
 import net.minecraft.util.*;
@@ -17,6 +16,8 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.shape.*;
 import net.minecraft.world.*;
 import org.jetbrains.annotations.*;
+
+import java.util.*;
 
 public class ShulkerLootCrateBlock extends LootCrateBlock {
 	
@@ -52,16 +53,14 @@ public class ShulkerLootCrateBlock extends LootCrateBlock {
 	
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world instanceof ServerWorld serverWorld) {
-			BlockEntity var8 = world.getBlockEntity(pos);
-			if (var8 instanceof ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity) {
-				if (canOpen(state, world, pos, shulkerLootCrateBlockEntity)) {
-					player.openHandledScreen(shulkerLootCrateBlockEntity);
-					PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
-				}
-			}
+		Optional<ShulkerLootCrateBlockEntity> e = world.getBlockEntity(pos, LootCratesBlockEntityType.SHULKER_LOOT_CRATE_BLOCK_ENTITY);
+		if (e.isEmpty()) {
+			return ActionResult.FAIL;
 		}
-		return ActionResult.SUCCESS;
+		if (!canOpen(state, world, pos, e.get())) {
+			return ActionResult.FAIL;
+		}
+		return super.onUse(state, world, pos, player, hit);
 	}
 	
 	private static boolean canOpen(BlockState state, World world, BlockPos pos, ShulkerLootCrateBlockEntity entity) {

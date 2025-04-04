@@ -5,10 +5,8 @@ import de.dafuqs.lootcrates.blocks.*;
 import de.dafuqs.lootcrates.enums.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
-import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
-import net.minecraft.screen.*;
 import net.minecraft.server.world.*;
 import net.minecraft.state.*;
 import net.minecraft.state.property.*;
@@ -32,15 +30,10 @@ public class ChestLootCrateBlock extends LootCrateBlock {
 	
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (!isChestBlocked(world, pos) && world instanceof ServerWorld serverWorld) {
-			NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
-			if (namedScreenHandlerFactory != null) {
-				player.openHandledScreen(namedScreenHandlerFactory);
-				PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
-			}
+		if (isChestBlocked(world, pos)) {
+			return ActionResult.FAIL;
 		}
-		
-		return ActionResult.SUCCESS;
+		return super.onUse(state, world, pos, player, hit);
 	}
 	
 	@Override

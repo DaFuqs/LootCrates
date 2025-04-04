@@ -5,17 +5,13 @@ import de.dafuqs.lootcrates.blocks.*;
 import de.dafuqs.lootcrates.enums.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
-import net.minecraft.entity.mob.*;
-import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
 import net.minecraft.server.world.*;
 import net.minecraft.state.*;
 import net.minecraft.state.property.*;
 import net.minecraft.util.*;
-import net.minecraft.util.hit.*;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.*;
-import net.minecraft.world.*;
 import org.jetbrains.annotations.*;
 
 public class LootBarrelBlock extends LootCrateBlock {
@@ -26,19 +22,6 @@ public class LootBarrelBlock extends LootCrateBlock {
 	public LootBarrelBlock(LootCrateVariant variant, Settings settings) {
 		super(variant, settings);
 		this.setDefaultState(((this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(OPEN, false));
-	}
-	
-	@Override
-	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (world instanceof ServerWorld serverWorld) {
-			BlockEntity var8 = world.getBlockEntity(pos);
-			if (var8 instanceof LootBarrelBlockEntity lootBarrelBlockEntity) {
-				player.openHandledScreen(lootBarrelBlockEntity);
-				PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
-			}
-		}
-		
-		return ActionResult.SUCCESS;
 	}
 	
 	@Override

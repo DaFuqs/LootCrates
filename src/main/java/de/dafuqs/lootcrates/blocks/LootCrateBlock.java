@@ -8,13 +8,13 @@ import de.dafuqs.lootcrates.enums.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.*;
+import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.item.*;
 import net.minecraft.loot.context.*;
 import net.minecraft.screen.*;
 import net.minecraft.server.world.*;
 import net.minecraft.sound.*;
-import net.minecraft.text.*;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.*;
 import net.minecraft.util.math.*;
@@ -49,27 +49,15 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 	
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
-			lootCrateBlockEntity.relockIfNecessary(player);
-			if (!lootCrateBlockEntity.isUnlocked(player)) {
-				ItemStack mainHandStack = player.getMainHandStack();
-				if (lootCrateBlockEntity.doesItemUnlock(mainHandStack.getItem())) {
-					if (lootCrateBlockEntity.getLockType().consumesKey() && !player.isCreative()) {
-						mainHandStack.decrement(1);
-					}
-					lootCrateBlockEntity.unlockFor(player);
-					return ActionResult.CONSUME; // just consume the action and play unlock sound.
-				}
-				if (!world.isClient()) {
-					Text translatableText = LootCrateAtlas.getKeyNeededTooltip(getVariant());
-					player.sendMessage(translatableText, true);
-				}
-				playSound(world, pos, SoundEvents.BLOCK_CHEST_LOCKED);
-				return ActionResult.FAIL;
+		if (world instanceof ServerWorld serverWorld) {
+			BlockEntity var8 = world.getBlockEntity(pos);
+			if (var8 instanceof LootCrateBlockEntity lootCrateBlockEntity) {
+				player.openHandledScreen(lootCrateBlockEntity);
+				PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
 			}
 		}
-		return ActionResult.PASS;
+		
+		return ActionResult.SUCCESS;
 	}
 	
 	@Override

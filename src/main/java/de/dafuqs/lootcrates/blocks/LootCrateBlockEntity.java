@@ -142,12 +142,41 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 	
 	@Nullable
 	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		if (this.checkUnlocked(playerEntity)) {
+		if (this.checkLootCrateLock(playerEntity) && this.checkUnlocked(playerEntity)) {
 			this.generateLoot(playerInventory.player);
 			return this.createScreenHandler(i, playerInventory);
 		} else {
 			return null;
 		}
+	}
+	
+	private boolean checkLootCrateLock(PlayerEntity player) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
+			lootCrateBlockEntity.relockIfNecessary(player);
+			if (lootCrateBlockEntity.isUnlocked(player)) {
+				return true;
+			}
+			
+			ItemStack mainHandStack = player.getMainHandStack();
+			if (lootCrateBlockEntity.doesItemUnlock(mainHandStack.getItem())) {
+				if (lootCrateBlockEntity.getLockType().consumesKey() && !player.isCreative()) {
+					mainHandStack.decrement(1);
+				}
+				lootCrateBlockEntity.unlockFor(player);
+				return true; // just consume the action and play unlock sound.
+			}
+			Optional<LootCrateBlock> block = getBlock();
+			if (block.isPresent()) {
+				if (!world.isClient()) {
+					Text translatableText = LootCrateAtlas.getKeyNeededTooltip(block.get().getVariant());
+					player.sendMessage(translatableText, true);
+				}
+				playSound(world, pos, world.getBlockState(pos), SoundEvents.BLOCK_CHEST_LOCKED);
+			}
+			return false;
+		}
+		return false;
 	}
 	
 	@Override
