@@ -4,7 +4,8 @@ import de.dafuqs.lootcrates.enums.*;
 import net.minecraft.block.*;
 import net.minecraft.entity.*;
 import net.minecraft.item.*;
-import net.minecraft.world.*;
+import net.minecraft.server.world.*;
+import org.jetbrains.annotations.*;
 
 public class TickingLootCrateItem extends LootCrateItem implements LootCrateItemEffect {
 	
@@ -16,7 +17,9 @@ public class TickingLootCrateItem extends LootCrateItem implements LootCrateItem
 	}
 	
 	@Override
-	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+	public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
+		super.inventoryTick(stack, world, entity, slot);
+		
 		doInventoryTick(world, entity, this.scheduledTickEvent);
 	}
 	

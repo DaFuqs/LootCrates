@@ -20,7 +20,8 @@ public class ShulkerLootCrateEntityRenderer implements BlockEntityRenderer<Shulk
 		this.model = new ShulkerLootCrateBlockModel(ctx.getLayerModelPart(EntityModelLayers.SHULKER_BOX));
 	}
 	
-	public void render(ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
+	@Override
+	public void render(ShulkerLootCrateBlockEntity shulkerLootCrateBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay, Vec3d cameraPos) {
 		Direction direction = Direction.UP;
 		if (shulkerLootCrateBlockEntity.hasWorld()) {
 			BlockState blockState = shulkerLootCrateBlockEntity.getWorld().getBlockState(shulkerLootCrateBlockEntity.getPos());
@@ -62,7 +63,7 @@ public class ShulkerLootCrateEntityRenderer implements BlockEntityRenderer<Shulk
 		}
 		
 		public void animateLid(float openness) {
-			this.lid.setPivot(0.0F, 24.0F - openness * 0.5F * 16.0F, 0.0F);
+			this.lid.setOrigin(0.0F, 24.0F - openness * 0.5F * 16.0F, 0.0F);
 			this.lid.yaw = 270.0F * openness * 0.017453292F;
 		}
 	}

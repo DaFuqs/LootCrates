@@ -53,14 +53,13 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 		if (blockEntity instanceof LootCrateBlockEntity lootCrateBlockEntity) {
 			lootCrateBlockEntity.relockIfNecessary(player);
 			if (!lootCrateBlockEntity.isUnlocked(player)) {
-				for (ItemStack itemStack : player.getHandItems()) {
-					if (lootCrateBlockEntity.doesItemUnlock(itemStack.getItem())) {
-						if (lootCrateBlockEntity.getLockType().consumesKey() && !player.isCreative() ) {
-							itemStack.decrement(1);
-						}
-						lootCrateBlockEntity.unlockFor(player);
-						return ActionResult.CONSUME; // just consume the action and play unlock sound.
+				ItemStack mainHandStack = player.getMainHandStack();
+				if (lootCrateBlockEntity.doesItemUnlock(mainHandStack.getItem())) {
+					if (lootCrateBlockEntity.getLockType().consumesKey() && !player.isCreative()) {
+						mainHandStack.decrement(1);
 					}
+					lootCrateBlockEntity.unlockFor(player);
+					return ActionResult.CONSUME; // just consume the action and play unlock sound.
 				}
 				if (!world.isClient()) {
 					Text translatableText = LootCrateAtlas.getKeyNeededTooltip(getVariant());
@@ -172,23 +171,8 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 	}
 	
 	@Override
-	protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		BlockBreakAction blockBreakAction = getBlockBreakAction();
-		switch (blockBreakAction) {
-			case KEEP_INVENTORY -> {
-				if (!state.isOf(newState.getBlock())) {
-					BlockEntity blockEntity = world.getBlockEntity(pos);
-					if (blockEntity instanceof LootCrateBlockEntity) {
-						world.updateComparators(pos, state.getBlock());
-					}
-					
-					super.onStateReplaced(state, world, pos, newState, moved);
-				}
-			}
-			case DROP_AND_SCATTER_INVENTORY, DESTROY_AND_SCATTER_INVENTORY -> {
-				ItemScatterer.onStateReplaced(state, newState, world, pos);
-			}
-		}
+	protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+		ItemScatterer.onStateReplaced(state, world, pos);
 	}
 	
 	public static final Identifier CONTENTS_DYNAMIC_DROP_ID = Identifier.of(LootCrates.MOD_ID, "contents");
@@ -206,9 +190,6 @@ public abstract class LootCrateBlock extends BlockWithEntity {
 						}
 					});
 				}
-			}
-			case DESTROY_AND_SCATTER_INVENTORY -> {
-			
 			}
 		}
 		

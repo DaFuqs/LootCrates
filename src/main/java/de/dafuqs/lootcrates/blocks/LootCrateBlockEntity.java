@@ -24,6 +24,7 @@ import net.minecraft.text.*;
 import net.minecraft.util.collection.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.*;
+import net.minecraft.world.block.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
@@ -50,7 +51,7 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 		super.readNbt(nbt, registryLookup);
 		
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (nbt.contains("Items", 9)) {
+		if (nbt.contains("Items")) {
 			Inventories.readNbt(nbt, this.inventory, registryLookup);
 		}
 	}
@@ -222,9 +223,10 @@ public abstract class LootCrateBlockEntity extends LockableContainerBlockEntity 
 	
 	protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
 		if (isTrapped() && oldViewerCount != newViewerCount) {
+			WireOrientation wireOrientation = OrientationHelper.getEmissionOrientation(world, state.get(TrappedChestBlock.FACING).getOpposite(), Direction.UP);
 			Block block = state.getBlock();
-			world.updateNeighborsAlways(pos, block);
-			world.updateNeighborsAlways(pos.down(), block);
+			world.updateNeighborsAlways(pos, block, wireOrientation);
+			world.updateNeighborsAlways(pos.down(), block, wireOrientation);
 		}
 	}
 	

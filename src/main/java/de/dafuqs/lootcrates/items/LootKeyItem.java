@@ -2,11 +2,12 @@ package de.dafuqs.lootcrates.items;
 
 import de.dafuqs.lootcrates.*;
 import de.dafuqs.lootcrates.enums.*;
+import net.minecraft.component.type.*;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.*;
 import net.minecraft.text.*;
 
-import java.util.*;
+import java.util.function.*;
 
 public class LootKeyItem extends Item {
 	
@@ -22,9 +23,9 @@ public class LootKeyItem extends Item {
 	}
 	
 	@Override
-	public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-		super.appendTooltip(stack, context, tooltip, type);
+	public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+		super.appendTooltip(stack, context, displayComponent, textConsumer, type);
 		
-		tooltip.add(LootCrateAtlas.getLootKeyItemToolTip(stack));
+		textConsumer.accept(LootCrateAtlas.getLootKeyItemToolTip(stack));
 	}
 }

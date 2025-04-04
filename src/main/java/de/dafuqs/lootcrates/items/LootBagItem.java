@@ -17,6 +17,7 @@ import net.minecraft.world.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
+import java.util.function.*;
 
 public class LootBagItem extends Item {
 	
@@ -25,15 +26,15 @@ public class LootBagItem extends Item {
 	}
 	
 	@Override
-	public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-		super.appendTooltip(stack, context, tooltip, type);
+	public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+		super.appendTooltip(stack, context, displayComponent, textConsumer, type);
 		
 		@Nullable ContainerLootComponent lootComponent = getLootComponent(stack);
 		if (lootComponent == null) {
-			tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.no_loot_table"));
+			textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.no_loot_table"));
 		} else {
-			tooltip.add(LootCrateAtlas.getLootBagItemToolTip(stack));
-			tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootComponent.lootTable().getValue().toString()));
+			textConsumer.accept(LootCrateAtlas.getLootBagItemToolTip(stack));
+			textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootComponent.lootTable().getValue().toString()));
 		}
 	}
 	

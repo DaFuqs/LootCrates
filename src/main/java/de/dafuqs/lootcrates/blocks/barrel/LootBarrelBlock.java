@@ -42,18 +42,6 @@ public class LootBarrelBlock extends LootCrateBlock {
 	}
 	
 	@Override
-	public void onStateReplaced(BlockState state, @NotNull World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (!state.isOf(newState.getBlock())) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof LootCrateBlockEntity) {
-				world.updateComparators(pos, state.getBlock());
-			}
-			
-			super.onStateReplaced(state, world, pos, newState, moved);
-		}
-	}
-	
-	@Override
 	protected BlockBreakAction getBlockBreakAction() {
 		if (LootCrates.CONFIG.LootBarrelsKeepTheirInventory) {
 			return BlockBreakAction.KEEP_INVENTORY;

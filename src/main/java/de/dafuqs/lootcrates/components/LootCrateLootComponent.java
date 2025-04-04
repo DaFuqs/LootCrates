@@ -13,6 +13,7 @@ import net.minecraft.world.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
+import java.util.function.*;
 
 public record LootCrateLootComponent(RegistryKey<LootTable> lootTable, long seed, LockMode lockMode,
 									 ReplenishTimeScale replenishTimeScale, long replenishTime,
@@ -34,74 +35,74 @@ public record LootCrateLootComponent(RegistryKey<LootTable> lootTable, long seed
 		return this.lockMode.isUnlocked(playerCrateData);
 	}
 	
-	public void appendTooltip(LootCrateVariant variant, Optional<PlayerCrateData> playerCrateData, World world, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+	public void appendTooltip(LootCrateVariant variant, Optional<PlayerCrateData> playerCrateData, World world, Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type) {
 		
 		if (playerCrateData.isEmpty() || playerCrateData.get().replenishTime() < 0 || replenishTimeScale.canReplenish(world, playerCrateData, replenishTime)) {
-			tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.contains_loot"));
+			textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.contains_loot"));
 		} else {
 			if (trackedPerPlayer) {
-				tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.already_looted_by_you"));
+				textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.already_looted_by_you"));
 			} else {
-				tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.already_looted"));
+				textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.already_looted"));
 			}
 		}
 		
 		if (!lockMode.isUnlocked(playerCrateData)) {
-			tooltip.add(LootCrateAtlas.getItemLockedTooltip(variant, lockMode));
+			textConsumer.accept(LootCrateAtlas.getItemLockedTooltip(variant, lockMode));
 		}
 		
 		switch (replenishTimeScale) {
 			case HOURS -> {
-				tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_hourly"));
+				textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_hourly"));
 			}
 			case DAYS -> {
-				tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_daily"));
+				textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_daily"));
 			}
 			case WEEKS -> {
-				tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_weekly"));
+				textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_weekly"));
 			}
 			case MONTHS -> {
-				tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_monthly"));
+				textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.replenish_monthly"));
 			}
 			case TICKS -> {
 				Text text = getReplenishTimeGameTimeHumanReadableText(replenishTime);
 				if (text != null) {
-					tooltip.add(text);
+					textConsumer.accept(text);
 				}
 			}
 			case SECONDS -> {
 				Text text = getReplenishTimeRealTimeHumanReadableText(replenishTime);
 				if (text != null) {
-					tooltip.add(text);
+					textConsumer.accept(text);
 				}
 			}
 		}
 		if (trackedPerPlayer) {
-			tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.tracked_per_player"));
+			textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.tracked_per_player"));
 		}
 		if (lockMode.relocks()) {
-			tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.relocks"));
+			textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.relocks"));
 		}
 		
 		switch (inventoryDeletionMode) {
 			case ON_OPEN -> {
-				tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.inventory_deletes_on_open"));
+				textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.inventory_deletes_on_open"));
 			}
 			case WHEN_REPLENISHED -> {
-				tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.inventory_deletes_when_replenished"));
+				textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.inventory_deletes_when_replenished"));
 			}
 		}
 		
 		if (trapped) {
-			tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.trapped"));
+			textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.trapped"));
 		}
 		
 		// loot table and seed
 		boolean advanced = type.isAdvanced();
 		if (advanced) {
-			tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootTable.getValue().toString()));
+			textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.loot_table", lootTable.getValue().toString()));
 			if (seed != 0) {
-				tooltip.add(Text.translatable("item.lootcrates.loot_crate.tooltip.fixed_seed", seed));
+				textConsumer.accept(Text.translatable("item.lootcrates.loot_crate.tooltip.fixed_seed", seed));
 			}
 		}
 	}

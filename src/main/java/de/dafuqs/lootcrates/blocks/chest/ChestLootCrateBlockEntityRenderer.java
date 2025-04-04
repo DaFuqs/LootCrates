@@ -36,7 +36,7 @@ public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & LidOpenab
 	}
 	
 	@Override
-	public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
+	public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int light, int overlay, Vec3d cameraPos) {
 		World world = entity.getWorld();
 		boolean bl = world != null;
 		
@@ -70,4 +70,5 @@ public class ChestLootCrateBlockEntityRenderer<T extends BlockEntity & LidOpenab
 			}
 		}
 	}
+	
 }
